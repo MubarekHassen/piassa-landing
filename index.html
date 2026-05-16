@@ -133,10 +133,10 @@
     }
     .hero h1 {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(36px, 5vw, 64px);
+      font-size: clamp(30px, 4.2vw, 48px);
       font-weight: 700;
-      line-height: 1.05;
-      letter-spacing: -2px;
+      line-height: 1.08;
+      letter-spacing: -1.5px;
       margin-bottom: 20px;
       color: #000;
     }
@@ -762,6 +762,41 @@
     </div>
   </section>
 
+  <!-- HOW IT WORKS -->
+  <section class="how-it-works" id="how">
+    <div class="how-header">
+      <div class="section-tag reveal">Process</div>
+      <h2 class="section-title reveal reveal-delay-1">From data capture<br>to decision.</h2>
+      <p class="section-subtitle reveal reveal-delay-2">A seamless workflow that turns field observations into prioritized, actionable intelligence.</p>
+    </div>
+    <div class="how-steps">
+      <div class="how-step reveal">
+        <div class="how-step-bg" style="background-image: url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80')"></div>
+        <div class="step-num">01</div>
+        <div class="step-text">
+          <h3>Ingest</h3>
+          <p>Connect your building data — inspections, spreadsheets, photos, and existing systems — into a single unified platform.</p>
+        </div>
+      </div>
+      <div class="how-step reveal reveal-delay-1">
+        <div class="how-step-bg" style="background-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80')"></div>
+        <div class="step-num">02</div>
+        <div class="step-text">
+          <h3>Analyze</h3>
+          <p>AI processes inspection data, identifies patterns, flags priorities, and generates structured intelligence.</p>
+        </div>
+      </div>
+      <div class="how-step reveal reveal-delay-2">
+        <div class="how-step-bg" style="background-image: url('https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?w=800&q=80')"></div>
+        <div class="step-num">03</div>
+        <div class="step-text">
+          <h3>Act</h3>
+          <p>Automated work orders, maintenance schedules, and institutional-ready reports — exported to your systems.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- TRUST BAR -->
   <div class="trust-bar">
     <div class="trust-label">Trusted by institutional operators</div>
@@ -857,41 +892,6 @@
     </div>
   </section>
 
-  <!-- HOW IT WORKS -->
-  <section class="how-it-works" id="how">
-    <div class="how-header">
-      <div class="section-tag reveal">Process</div>
-      <h2 class="section-title reveal reveal-delay-1">From data capture<br>to decision.</h2>
-      <p class="section-subtitle reveal reveal-delay-2">A seamless workflow that turns field observations into prioritized, actionable intelligence.</p>
-    </div>
-    <div class="how-steps">
-      <div class="how-step reveal">
-        <div class="how-step-bg" style="background-image: url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80')"></div>
-        <div class="step-num">01</div>
-        <div class="step-text">
-          <h3>Ingest</h3>
-          <p>Connect your building data — inspections, spreadsheets, photos, and existing systems — into a single unified platform.</p>
-        </div>
-      </div>
-      <div class="how-step reveal reveal-delay-1">
-        <div class="how-step-bg" style="background-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80')"></div>
-        <div class="step-num">02</div>
-        <div class="step-text">
-          <h3>Analyze</h3>
-          <p>AI processes inspection data, identifies patterns, flags priorities, and generates structured intelligence.</p>
-        </div>
-      </div>
-      <div class="how-step reveal reveal-delay-2">
-        <div class="how-step-bg" style="background-image: url('https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?w=800&q=80')"></div>
-        <div class="step-num">03</div>
-        <div class="step-text">
-          <h3>Act</h3>
-          <p>Automated work orders, maintenance schedules, and institutional-ready reports — exported to your systems.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- CTA -->
   <section class="cta">
     <div class="cta-bg"></div>
@@ -981,22 +981,29 @@
       btn.textContent = 'Submitting...';
       const form = document.getElementById('accessForm');
       const data = new FormData(form);
-      // Send to email via formsubmit.co (free, no-backend)
-      fetch('https://formsubmit.co/ajax/info@piassa.ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          name: data.get('name'),
-          email: data.get('email'),
-          company: data.get('company'),
-          portfolio: data.get('portfolio') || 'Not specified',
-          _subject: 'New piassa.ai Access Request'
+      const payload = {
+        name: data.get('name'),
+        email: data.get('email'),
+        company: data.get('company'),
+        portfolio: data.get('portfolio') || 'Not specified',
+        _subject: 'New piassa.ai Access Request',
+        _template: 'table'
+      };
+      // Send to both email addresses for reliability
+      const targets = [
+        'https://formsubmit.co/ajax/mubarek@berkeley.edu',
+        'https://formsubmit.co/ajax/info@piassa.ai'
+      ];
+      Promise.allSettled(targets.map(url =>
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
         })
-      }).then(() => {
+      )).then(() => {
         document.getElementById('formContent').style.display = 'none';
         document.getElementById('formSuccess').style.display = 'block';
       }).catch(() => {
-        // Fallback — still show success, email may still go through
         document.getElementById('formContent').style.display = 'none';
         document.getElementById('formSuccess').style.display = 'block';
       });
