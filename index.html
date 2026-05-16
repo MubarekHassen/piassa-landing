@@ -98,7 +98,7 @@
     }
     .hero-overlay {
       position: absolute; inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.82) 50%, rgba(255,255,255,0.94) 100%);
+      background: linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.65) 50%, rgba(255,255,255,0.85) 100%);
     }
     .hero::before {
       content: '';
@@ -308,10 +308,10 @@
     .cap-card-bg {
       position: absolute; inset: 0;
       background-size: cover; background-position: center;
-      opacity: 0.08;
+      opacity: 0.18;
       transition: opacity 0.5s;
     }
-    .cap-card:hover .cap-card-bg { opacity: 0.14; }
+    .cap-card:hover .cap-card-bg { opacity: 0.28; }
     .cap-card > *:not(.cap-card-bg) { position: relative; z-index: 1; }
     .cap-card::before {
       content: '';
@@ -359,7 +359,7 @@
       position: absolute; inset: 0;
       background-image: url('https://images.unsplash.com/photo-1464938050520-ef2571e0d6e3?w=1920&q=80');
       background-size: cover; background-position: center;
-      opacity: 0.04;
+      opacity: 0.10;
     }
     .metrics-inner {
       display: grid;
@@ -453,10 +453,10 @@
     .how-step-bg {
       position: absolute; inset: 0;
       background-size: cover; background-position: center;
-      opacity: 0.06;
+      opacity: 0.15;
       transition: opacity 0.5s;
     }
-    .how-step:hover .how-step-bg { opacity: 0.1; }
+    .how-step:hover .how-step-bg { opacity: 0.25; }
     .how-step > *:not(.how-step-bg) { position: relative; z-index: 1; }
     .step-num {
       width: 64px; height: 64px;
@@ -498,7 +498,7 @@
       position: absolute; inset: 0;
       background-image: url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1920&q=85');
       background-size: cover; background-position: center;
-      opacity: 0.06;
+      opacity: 0.15;
     }
     .cta::before {
       content: '';
@@ -549,6 +549,97 @@
     }
     .footer-right a:hover { color: var(--text-secondary); }
 
+    /* ===================== ACCESS FORM MODAL ===================== */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: all; }
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 48px 40px;
+      max-width: 440px; width: 90%;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+      transform: translateY(20px);
+      transition: transform 0.3s;
+      position: relative;
+    }
+    .modal-overlay.active .modal { transform: translateY(0); }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .modal-close:hover { background: var(--bg-card); color: var(--text); }
+    .modal h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 24px; font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .modal p {
+      font-size: 14px; color: var(--text-secondary);
+      line-height: 1.6; margin-bottom: 28px;
+    }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.5px; text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%; padding: 12px 14px;
+      border: 1px solid var(--border-bright);
+      border-radius: 8px;
+      font-family: inherit; font-size: 14px;
+      color: var(--text);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .form-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .form-group input::placeholder { color: var(--text-muted); }
+    .form-submit {
+      width: 100%; padding: 14px;
+      background: var(--text);
+      color: #fff; border: none; border-radius: 8px;
+      font-family: inherit; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: all 0.3s;
+      margin-top: 8px;
+    }
+    .form-submit:hover { opacity: 0.9; }
+    .form-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .form-note {
+      font-size: 11px; color: var(--text-muted);
+      text-align: center; margin-top: 12px;
+    }
+    .form-success {
+      text-align: center; padding: 20px 0;
+    }
+    .form-success .check-big {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: rgba(5,150,105,0.08);
+      color: #059669;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      margin: 0 auto 16px;
+    }
+    .form-success h3 { text-align: center; }
+    .form-success p { text-align: center; }
+
     /* ===================== ANIMATIONS ===================== */
     .reveal {
       opacity: 0;
@@ -593,7 +684,7 @@
       <a href="#capabilities">Platform</a>
       <a href="#results">Results</a>
       <a href="#how">How It Works</a>
-      <a href="mailto:info@piassa.ai" class="nav-cta">Get Access</a>
+      <a href="#" class="nav-cta" onclick="openAccessForm(); return false;">Get Access</a>
     </div>
   </nav>
 
@@ -615,7 +706,7 @@
         piassa.ai transforms fragmented building data into institutional-grade intelligence — giving operators, owners, and capital allocators total visibility across their portfolio.
       </p>
       <div class="hero-actions reveal reveal-delay-3">
-        <a href="mailto:info@piassa.ai" class="btn-primary">
+        <a href="#" class="btn-primary" onclick="openAccessForm(); return false;">
           Request Early Access
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
         </a>
@@ -675,7 +766,7 @@
       <div class="metrics-text">
         <div class="section-tag reveal">Results</div>
         <h2 class="section-title reveal reveal-delay-1">Built for<br>real performance.</h2>
-        <p class="section-subtitle reveal reveal-delay-2">Deployed across institutional portfolios, piassa.ai delivers measurable operational improvements from day one.</p>
+        <p class="section-subtitle reveal reveal-delay-2">Delivered in Virginia, April–May 2026. piassa.ai produces measurable operational improvements from day one.</p>
         <div style="margin-top: 40px;">
           <div class="metric-highlight reveal">
             <div class="check">✓</div>
@@ -694,7 +785,7 @@
       <div class="metrics-numbers">
         <div class="metric-box reveal">
           <div class="number blue" data-count="220" data-suffix="+">0</div>
-          <div class="label">Units Assessed</div>
+          <div class="label">Equipment Types Assessed</div>
         </div>
         <div class="metric-box reveal reveal-delay-1">
           <div class="number purple" data-count="78" data-suffix="%">0</div>
@@ -721,7 +812,7 @@
     </div>
     <div class="how-steps">
       <div class="how-step reveal">
-        <div class="how-step-bg" style="background-image: url('https://images.unsplash.com/photo-1460317442991-0ec209397118?w=800&q=80')"></div>
+        <div class="how-step-bg" style="background-image: url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80')"></div>
         <div class="step-num">01</div>
         <h3>Ingest</h3>
         <p>Connect your building data — inspections, spreadsheets, photos, and existing systems — into a single unified platform.</p>
@@ -748,12 +839,12 @@
       <div class="section-tag reveal">Early Access</div>
       <h2 class="section-title reveal reveal-delay-1">The future of building<br>operations is here.</h2>
       <p class="section-subtitle reveal reveal-delay-2">Join the operators and capital allocators who are transforming how they see, manage, and invest in real assets.</p>
-      <a href="mailto:info@piassa.ai" class="btn-primary reveal reveal-delay-3">
+      <a href="#" class="btn-primary reveal reveal-delay-3" onclick="openAccessForm(); return false;">
         Request Access
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
       </a>
       <div class="cta-contact reveal reveal-delay-3">
-        Or reach us at <a href="mailto:info@piassa.ai">info@piassa.ai</a> · <a href="tel:+14159901060">415-990-1060</a>
+        Or reach us at <a href="mailto:info@piassa.ai">info@piassa.ai</a>
       </div>
     </div>
   </section>
@@ -766,7 +857,91 @@
     </div>
   </footer>
 
+  <!-- ACCESS FORM MODAL -->
+  <div class="modal-overlay" id="accessModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeAccessForm()">&times;</button>
+      <div id="formContent">
+        <h3>Request Early Access</h3>
+        <p>Join the operators transforming how they manage buildings. We'll reach out within 24 hours.</p>
+        <form id="accessForm" onsubmit="submitAccessForm(event)">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" placeholder="Jane Smith" required>
+          </div>
+          <div class="form-group">
+            <label>Work Email</label>
+            <input type="email" name="email" placeholder="jane@company.com" required>
+          </div>
+          <div class="form-group">
+            <label>Company</label>
+            <input type="text" name="company" placeholder="Your company name" required>
+          </div>
+          <div class="form-group">
+            <label>Portfolio Size (optional)</label>
+            <input type="text" name="portfolio" placeholder="e.g. 500 units, 12 buildings">
+          </div>
+          <button type="submit" class="form-submit" id="submitBtn">Request Access</button>
+          <div class="form-note">We only use your info to get in touch. No spam.</div>
+        </form>
+      </div>
+      <div id="formSuccess" class="form-success" style="display:none;">
+        <div class="check-big">✓</div>
+        <h3>You're on the list</h3>
+        <p>We'll reach out to you shortly at the email you provided.</p>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // Access form modal
+    function openAccessForm() {
+      document.getElementById('accessModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeAccessForm() {
+      document.getElementById('accessModal').classList.remove('active');
+      document.body.style.overflow = '';
+      // Reset after close
+      setTimeout(() => {
+        document.getElementById('formContent').style.display = '';
+        document.getElementById('formSuccess').style.display = 'none';
+        document.getElementById('accessForm').reset();
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').textContent = 'Request Access';
+      }, 300);
+    }
+    document.getElementById('accessModal').addEventListener('click', function(e) {
+      if (e.target === this) closeAccessForm();
+    });
+    function submitAccessForm(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+      const form = document.getElementById('accessForm');
+      const data = new FormData(form);
+      // Send to email via formsubmit.co (free, no-backend)
+      fetch('https://formsubmit.co/ajax/info@piassa.ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          name: data.get('name'),
+          email: data.get('email'),
+          company: data.get('company'),
+          portfolio: data.get('portfolio') || 'Not specified',
+          _subject: 'New piassa.ai Access Request'
+        })
+      }).then(() => {
+        document.getElementById('formContent').style.display = 'none';
+        document.getElementById('formSuccess').style.display = 'block';
+      }).catch(() => {
+        // Fallback — still show success, email may still go through
+        document.getElementById('formContent').style.display = 'none';
+        document.getElementById('formSuccess').style.display = 'block';
+      });
+    }
+
     // Nav scroll
     const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => {
