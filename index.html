@@ -287,7 +287,14 @@
     }
 
     /* ===================== CAPABILITIES ===================== */
-    .capabilities { border-top: 1px solid var(--border); }
+    .capabilities { border-top: 1px solid var(--border); position: relative; overflow: hidden; }
+    .capabilities-bg {
+      position: absolute; inset: 0;
+      background: url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1800&q=80') center/cover no-repeat;
+      opacity: 0.12;
+      z-index: 0;
+    }
+    .capabilities-header, .capabilities-grid { position: relative; z-index: 1; }
     .capabilities-header { margin-bottom: 80px; }
     .capabilities-grid {
       display: grid;
@@ -732,6 +739,7 @@
 
   <!-- CAPABILITIES -->
   <section class="capabilities" id="capabilities">
+    <div class="capabilities-bg"></div>
     <div class="capabilities-header">
       <div class="section-tag reveal">Platform</div>
       <h2 class="section-title reveal reveal-delay-1">One platform.<br>Total building intelligence.</h2>
