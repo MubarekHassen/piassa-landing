@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90">
+  <rect width="220" height="90" rx="4" fill="#f0f0f0"/>
+  <text x="110" y="48" font-family="Arial,Helvetica,sans-serif" font-size="42" fill="#1a1a1a" text-anchor="middle" font-weight="800" letter-spacing="-1">UCSF</text>
+  <text x="110" y="66" font-family="Arial,Helvetica,sans-serif" font-size="10" fill="#555" text-anchor="middle">University of California</text>
+  <text x="110" y="78" font-family="Arial,Helvetica,sans-serif" font-size="10" fill="#555" text-anchor="middle">San Francisco</text>
+</svg>

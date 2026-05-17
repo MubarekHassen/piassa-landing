@@ -228,39 +228,41 @@
       letter-spacing: -1px;
     }
     .pedigree-logos {
+      overflow: hidden;
+      width: 100%;
+      position: relative;
+      padding: 20px 0;
+    }
+    .pedigree-logos::before,
+    .pedigree-logos::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 120px;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .pedigree-logos::before { left: 0; background: linear-gradient(to right, var(--bg) 0%, transparent 100%); }
+    .pedigree-logos::after { right: 0; background: linear-gradient(to left, var(--bg) 0%, transparent 100%); }
+    .logo-track {
       display: flex;
       align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 32px 48px;
-      max-width: 1100px;
-      margin: 0 auto;
+      gap: 64px;
+      animation: scrollLogos 30s linear infinite;
+      width: max-content;
     }
-    .pedigree-logos span {
-      font-size: 17px;
-      font-weight: 600;
-      color: #1a1a2e;
-      opacity: 0.6;
-      letter-spacing: 0.3px;
+    .logo-track img {
+      height: 52px;
+      flex-shrink: 0;
+      opacity: 0.8;
       transition: opacity 0.3s;
-      white-space: nowrap;
     }
-    .pedigree-logos span:hover {
-      opacity: 0.95;
+    .logo-track img:hover { opacity: 1; }
+    @keyframes scrollLogos {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
-    .pedigree-logos span.serif {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-weight: 400;
-      font-size: 18px;
-    }
-    .pedigree-logos span.bold-caps {
-      font-weight: 800;
-      letter-spacing: 2px;
-      font-size: 15px;
-      text-transform: uppercase;
-    }
-    .pedigree-logos img.logo-tall { height: 36px; }
-    .pedigree-logos img.logo-short { height: 22px; }
 
     .trust-bar {
       padding: 60px 48px;
@@ -802,12 +804,9 @@
       /* Trust bar */
       .team-pedigree { padding: 48px 24px 40px; }
       .team-pedigree h2 { font-size: 28px; }
-      .pedigree-logos { gap: 20px 28px; }
-      .pedigree-logos span { font-size: 14px; }
-      .pedigree-logos span.serif { font-size: 15px; }
-      .pedigree-logos span.bold-caps { font-size: 13px; }
-      .pedigree-logos img.logo-tall { height: 28px; }
-      .pedigree-logos img.logo-short { height: 18px; }
+      .logo-track { gap: 40px; animation-duration: 20s; }
+      .logo-track img { height: 40px; }
+      .pedigree-logos::before, .pedigree-logos::after { width: 60px; }
       .trust-bar { padding: 24px 16px; }
       .trust-label { font-size: 9px; margin-bottom: 0; }
       .asset-class-section { margin-top: 20px; padding-top: 20px; }
@@ -904,16 +903,29 @@
   <div class="team-pedigree">
     <h2>Built by the top minds in real estate and AI.</h2>
     <div class="pedigree-logos">
-      <span class="serif" style="color:#A41034;">Harvard Business School</span>
-      <span style="color:#003262; font-weight:700;">University of California, Berkeley</span>
-      <span style="font-weight:800;letter-spacing:-0.5px;color:#A31F34;">MIT</span>
-      <span style="font-weight:500;font-size:18px;"><span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span></span>
-      <span style="color:#555;font-size:19px;font-weight:400;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="17" viewBox="0 0 14 17" fill="#555" style="vertical-align:-2px;margin-right:2px;opacity:0.85;"><path d="M13.5 12.1c-.3.7-.7 1.3-1.1 1.8-.6.8-1.1 1.3-1.5 1.6-.6.5-1.3.7-2 .7-.5 0-1.1-.1-1.8-.4-.7-.3-1.3-.4-1.8-.4s-1.1.1-1.8.4c-.7.3-1.2.4-1.7.5-.7 0-1.3-.3-2-.8C.3 15 0 14.3 0 14.3c-.6-1-.9-2.2-.9-3.4 0-1.3.3-2.3.8-3.1.5-.7 1-1.2 1.7-1.6.7-.4 1.4-.6 2.2-.6.5 0 1.2.2 2 .5.8.3 1.3.5 1.5.5.2 0 .7-.2 1.7-.6.8-.3 1.5-.5 2.1-.4 1.5.1 2.7.8 3.4 1.9-1.4.8-2 2-2 3.5 0 1.2.4 2.1 1.3 2.9.4.4.8.7 1.3.9-.1.3-.2.6-.3.9zM10.1 1c0 .9-.3 1.8-1 2.6-.8.9-1.8 1.5-2.9 1.4 0-.1 0-.2 0-.3 0-.9.4-1.8 1-2.5.3-.4.7-.7 1.2-1 .5-.3 1-.4 1.5-.5 0 .1 0 .2 0 .3z"/></svg> Apple</span>
-      <span class="serif" style="color:#00205C;">McKinsey &amp; Company</span>
-      <span class="bold-caps" style="color:#006A4D;">CBRE</span>
-      <span class="bold-caps" style="color:#052049;">UCSF</span>
-      <span style="color:#003D6B;font-weight:700;">DPR Construction</span>
-      <span class="serif" style="color:#1B365D;">Lincoln Property Company</span>
+      <div class="logo-track">
+        <img src="logos/hbs.svg" alt="Harvard Business School">
+        <img src="logos/berkeley.svg" alt="UC Berkeley">
+        <img src="logos/mit.svg" alt="MIT">
+        <img src="logos/google.svg" alt="Google">
+        <img src="logos/apple.svg" alt="Apple">
+        <img src="logos/mckinsey.svg" alt="McKinsey & Company">
+        <img src="logos/cbre.svg" alt="CBRE">
+        <img src="logos/ucsf.svg" alt="UCSF">
+        <img src="logos/dpr.svg" alt="DPR Construction">
+        <img src="logos/lincoln.svg" alt="Lincoln Property Company">
+        <!-- Duplicate for seamless loop -->
+        <img src="logos/hbs.svg" alt="Harvard Business School">
+        <img src="logos/berkeley.svg" alt="UC Berkeley">
+        <img src="logos/mit.svg" alt="MIT">
+        <img src="logos/google.svg" alt="Google">
+        <img src="logos/apple.svg" alt="Apple">
+        <img src="logos/mckinsey.svg" alt="McKinsey & Company">
+        <img src="logos/cbre.svg" alt="CBRE">
+        <img src="logos/ucsf.svg" alt="UCSF">
+        <img src="logos/dpr.svg" alt="DPR Construction">
+        <img src="logos/lincoln.svg" alt="Lincoln Property Company">
+      </div>
     </div>
   </div>
 
