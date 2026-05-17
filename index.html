@@ -1170,17 +1170,20 @@
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // Count-up animation
+    // Count-up animation — re-triggers every time section scrolls into view
     const countObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
+        const el = entry.target;
         if (entry.isIntersecting) {
-          const el = entry.target;
+          // Reset and animate
           const target = parseInt(el.dataset.count);
           const suffix = el.dataset.suffix || '';
           const duration = 2000;
           const start = performance.now();
+          el._counting = true;
 
           function tick(now) {
+            if (!el._counting) return;
             const elapsed = now - start;
             const progress = Math.min(elapsed / duration, 1);
             const eased = 1 - Math.pow(1 - progress, 3);
@@ -1189,10 +1192,14 @@
             if (progress < 1) requestAnimationFrame(tick);
           }
           requestAnimationFrame(tick);
-          countObserver.unobserve(el);
+        } else {
+          // Reset to 0 when scrolled away so it re-animates on return
+          el._counting = false;
+          const suffix = el.dataset.suffix || '';
+          el.textContent = '0' + suffix;
         }
       });
-    }, { threshold: 0.5 });
+    }, { threshold: 0.3 });
 
     document.querySelectorAll('[data-count]').forEach(el => countObserver.observe(el));
 
