@@ -1,16 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80">
-  <rect width="200" height="80" rx="5" fill="#A41034"/>
-  <!-- Shield outline -->
-  <rect x="14" y="12" width="40" height="56" rx="2" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.2"/>
-  <path d="M14 50 L34 56 L54 50" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
-  <!-- Books in shield -->
-  <rect x="22" y="22" width="22" height="3" rx="1" fill="rgba(255,255,255,0.5)"/>
-  <rect x="22" y="28" width="22" height="3" rx="1" fill="rgba(255,255,255,0.5)"/>
-  <rect x="22" y="34" width="22" height="3" rx="1" fill="rgba(255,255,255,0.5)"/>
-  <text x="34" y="47" font-family="Georgia,serif" font-size="7" fill="rgba(255,255,255,0.8)" text-anchor="middle" letter-spacing="1">VERITAS</text>
-  <!-- Divider -->
-  <line x1="64" y1="14" x2="64" y2="66" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
-  <!-- Text -->
-  <text x="132" y="32" font-family="Georgia,'Times New Roman',serif" font-size="18" fill="white" text-anchor="middle">Harvard</text>
-  <text x="132" y="50" font-family="Georgia,'Times New Roman',serif" font-size="13" fill="white" text-anchor="middle">Business School</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80">
+  <rect width="280" height="80" rx="4" fill="#FFFFFF"/>
+  <!-- Harvard Shield -->
+  <g transform="translate(20, 8)">
+    <!-- Shield shape -->
+    <path d="M0 0 L48 0 L48 44 L24 62 L0 44 Z" fill="#A41034"/>
+    <!-- Three books (white rectangles with lines) -->
+    <!-- Top book -->
+    <rect x="6" y="5" width="16" height="12" rx="1" fill="#FFFFFF"/>
+    <line x1="10" y1="7" x2="10" y2="15" stroke="#A41034" stroke-width="0.6"/>
+    <line x1="14" y1="7" x2="14" y2="15" stroke="#A41034" stroke-width="0.6"/>
+    <line x1="18" y1="7" x2="18" y2="15" stroke="#A41034" stroke-width="0.6"/>
+    <!-- Top right book -->
+    <rect x="26" y="5" width="16" height="12" rx="1" fill="#FFFFFF"/>
+    <line x1="30" y1="7" x2="30" y2="15" stroke="#A41034" stroke-width="0.6"/>
+    <line x1="34" y1="7" x2="34" y2="15" stroke="#A41034" stroke-width="0.6"/>
+    <line x1="38" y1="7" x2="38" y2="15" stroke="#A41034" stroke-width="0.6"/>
+    <!-- Bottom center book (upside down — lines on top) -->
+    <rect x="16" y="22" width="16" height="12" rx="1" fill="#FFFFFF"/>
+    <line x1="20" y1="24" x2="20" y2="32" stroke="#A41034" stroke-width="0.6"/>
+    <line x1="24" y1="24" x2="24" y2="32" stroke="#A41034" stroke-width="0.6"/>
+    <line x1="28" y1="24" x2="28" y2="32" stroke="#A41034" stroke-width="0.6"/>
+    <!-- VE RI TAS text on books -->
+    <text x="14" y="14" font-family="Georgia,serif" font-size="5.5" fill="#A41034" text-anchor="middle" font-weight="700">VE</text>
+    <text x="34" y="14" font-family="Georgia,serif" font-size="5.5" fill="#A41034" text-anchor="middle" font-weight="700">RI</text>
+    <text x="24" y="31" font-family="Georgia,serif" font-size="5.5" fill="#A41034" text-anchor="middle" font-weight="700">TAS</text>
+  </g>
+  <!-- Red vertical divider -->
+  <line x1="78" y1="12" x2="78" y2="68" stroke="#A41034" stroke-width="1.5"/>
+  <!-- HARVARD BUSINESS SCHOOL text -->
+  <text x="90" y="30" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#1a1a1a" font-weight="400" letter-spacing="2.5">HARVARD</text>
+  <text x="90" y="48" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#1a1a1a" font-weight="400" letter-spacing="2.5">BUSINESS</text>
+  <text x="90" y="66" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#1a1a1a" font-weight="400" letter-spacing="2.5">SCHOOL</text>
 </svg>
