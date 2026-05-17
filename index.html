@@ -953,7 +953,7 @@
       <div class="cap-card reveal reveal-delay-2">
         <div class="cap-icon green">◈</div>
         <h3>Portfolio Analytics</h3>
-        <p>Institutional-grade reporting across your entire portfolio — auditable and built for capital partners and property management platforms.</p>
+        <p>Institutional-grade reporting across your entire portfolio — auditable and built for facility managers, owners, investors, insurance providers, and capital partners.</p>
       </div>
     </div>
   </section>
@@ -1228,17 +1228,17 @@
 
     // 6 scattered shapes that later converge to center
     const shapeDefs = [
-      { cx: 0.18, cy: 0.18, radius: 0.12,
+      { cx: 0.15, cy: 0.18, radius: 0.16,
         pts: (() => { const p=[]; for(let i=0;i<6;i++){const a=(i/6)*Math.PI*2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
-      { cx: 0.78, cy: 0.15, radius: 0.11,
+      { cx: 0.80, cy: 0.15, radius: 0.14,
         pts: [{ax:-1,ay:-0.7},{ax:1,ay:-0.7},{ax:1,ay:0.7},{ax:-1,ay:0.7},{ax:0,ay:0}] },
-      { cx: 0.12, cy: 0.55, radius: 0.10,
+      { cx: 0.10, cy: 0.55, radius: 0.13,
         pts: (() => { const p=[]; for(let i=0;i<5;i++){const a=(i/5)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
-      { cx: 0.82, cy: 0.58, radius: 0.10,
+      { cx: 0.85, cy: 0.55, radius: 0.13,
         pts: (() => { const p=[]; for(let i=0;i<4;i++){const a=(i/4)*Math.PI*2 + Math.PI/4; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
-      { cx: 0.25, cy: 0.85, radius: 0.10,
+      { cx: 0.22, cy: 0.82, radius: 0.13,
         pts: (() => { const p=[]; for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} p.push({ax:0,ay:0}); return p; })() },
-      { cx: 0.72, cy: 0.85, radius: 0.10,
+      { cx: 0.75, cy: 0.82, radius: 0.13,
         pts: (() => { const p=[]; for(let i=0;i<8;i++){const a=(i/8)*Math.PI*2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
     ];
 
@@ -1255,7 +1255,7 @@
     }
 
     const TOTAL_CHAOS = 20;
-    const COLLECT_INTERVAL = 500;
+    const COLLECT_INTERVAL = 300;
     const ORDER_HOLD_MS = 2500;
     const CONVERGE_MS = 2000;
     const UNIFIED_HOLD_MS = 3000;
@@ -1329,12 +1329,12 @@
       ctx.save();
 
       const sx = rect.left, sy = rect.top, sw = rect.width, sh = rect.height;
-      const zoneX = sx + sw * 0.45;
-      const zoneW = sw * 0.52;
-      const zoneY = sy + sh * 0.05;
-      const zoneH = sh * 0.9;
+      const zoneX = sx + sw * 0.15;
+      const zoneW = sw * 0.70;
+      const zoneY = sy + sh * 0.03;
+      const zoneH = sh * 0.60;
       const zoneCX = zoneX + zoneW * 0.5;
-      const zoneCY = zoneY + zoneH * 0.48;
+      const zoneCY = zoneY + zoneH * 0.50;
       const now = Date.now();
       const dt = 16;
 
@@ -1343,9 +1343,10 @@
         collectTimer += dt;
         if (collectTimer >= COLLECT_INTERVAL && chaosParticles.length > 0) {
           collectParticle();
+          collectParticle();
           collectTimer = 0;
-          if (chaosParticles.length < 5) collectParticle();
-          if (chaosParticles.length < 2) collectParticle();
+          if (chaosParticles.length < 6) collectParticle();
+          if (chaosParticles.length < 3) collectParticle();
         }
         if (chaosParticles.length === 0 && travelers.length === 0) {
           phase = 'ordered'; phaseTimer = 0;
@@ -1455,7 +1456,7 @@
       // === DRAW SHAPES (scattered or converging) ===
       if (shapeAlpha > 0.01) {
         // Compute unified ring radius
-        const uniR = Math.min(zoneW, zoneH) * 0.32;
+        const uniR = Math.min(zoneW, zoneH) * 0.42;
 
         // Build all node positions (scattered + unified targets)
         let allNodes = [];
