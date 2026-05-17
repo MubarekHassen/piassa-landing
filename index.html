@@ -212,6 +212,42 @@
     }
 
     /* ===================== TRUST BAR ===================== */
+    /* Built by top minds section */
+    .team-pedigree {
+      padding: 80px 48px 60px;
+      text-align: center;
+      background: #fff;
+      border-top: 1px solid var(--border);
+    }
+    .team-pedigree h2 {
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 48px;
+      letter-spacing: -1px;
+    }
+    .pedigree-logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 40px 56px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .pedigree-logos img {
+      height: 28px;
+      opacity: 0.55;
+      filter: grayscale(100%);
+      transition: opacity 0.3s, filter 0.3s;
+    }
+    .pedigree-logos img:hover {
+      opacity: 0.9;
+      filter: grayscale(0%);
+    }
+    .pedigree-logos img.logo-tall { height: 36px; }
+    .pedigree-logos img.logo-short { height: 22px; }
+
     .trust-bar {
       padding: 60px 48px;
       border-top: 1px solid var(--border);
@@ -750,6 +786,12 @@
       .btn-ghost { padding: 10px 16px; font-size: 12px; }
       .hero-actions { flex-direction: column; align-items: flex-start; gap: 10px; }
       /* Trust bar */
+      .team-pedigree { padding: 48px 24px 40px; }
+      .team-pedigree h2 { font-size: 28px; }
+      .pedigree-logos { gap: 28px 36px; }
+      .pedigree-logos img { height: 22px; }
+      .pedigree-logos img.logo-tall { height: 28px; }
+      .pedigree-logos img.logo-short { height: 18px; }
       .trust-bar { padding: 24px 16px; }
       .trust-label { font-size: 9px; margin-bottom: 0; }
       .asset-class-section { margin-top: 20px; padding-top: 20px; }
@@ -842,6 +884,23 @@
   </section>
 
   <!-- TRUST BAR -->
+  <!-- BUILT BY TOP MINDS -->
+  <div class="team-pedigree">
+    <h2>Built by the top minds in real estate and AI.</h2>
+    <div class="pedigree-logos">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Harvard_Business_School_shield_logo.svg" alt="Harvard Business School" class="logo-tall">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a1/Seal_of_University_of_California%2C_Berkeley.svg" alt="UC Berkeley" class="logo-tall">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/MIT_Seal.svg" alt="MIT" class="logo-tall">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google" class="logo-short">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" style="height:30px;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/McKinsey_and_Company_Logo_1.svg" alt="McKinsey & Company">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/CBRE_Group_logo.svg" alt="CBRE">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/UCSF_sig_navy_RGB.png" alt="UCSF" class="logo-short">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/DPR_Construction_logo.png" alt="DPR Construction" class="logo-short">
+      <img src="https://upload.wikimedia.org/wikipedia/en/1/14/Lincoln_Property_Company_logo.png" alt="Lincoln Property" class="logo-short">
+    </div>
+  </div>
+
   <div class="trust-bar">
     <div class="trust-label">Trusted by institutional operators</div>
     <div class="asset-class-section">
@@ -1118,7 +1177,7 @@
     });
   </script>
 
-  <!-- NETWORK ANIMATION — chaos to order with shape cycling, process header white space -->
+  <!-- NETWORK ANIMATION — multiple organized shapes, process header white space -->
   <canvas id="networkCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
   <script>
   (function() {
@@ -1126,78 +1185,39 @@
     const ctx = canvas.getContext('2d');
     let w, h;
 
-    const hubColor = '#6366f1';
-    const orderColors = ['#6366f1','#0284c7','#059669','#818cf8','#7c3aed'];
+    // Colors for each shape cluster
+    const clusterColors = [
+      { node: '#6366f1', line: '#6366f1' },  // indigo - hexagon
+      { node: '#0284c7', line: '#0284c7' },  // blue - rectangle
+      { node: '#059669', line: '#059669' },  // green - pentagon
+      { node: '#7c3aed', line: '#7c3aed' },  // violet - triangle
+    ];
 
-    // Multiple constellation shapes — each is an array of {ax, ay} normalized to radius 1
-    const shapes = {
-      hexagon: (() => {
-        const pts = [];
-        for (let i = 0; i < 6; i++) { const a = (i/6)*Math.PI*2; pts.push({ax:Math.cos(a), ay:Math.sin(a)}); }
-        for (let i = 0; i < 6; i++) { const a = (i/6)*Math.PI*2 + Math.PI/6; pts.push({ax:Math.cos(a)*0.5, ay:Math.sin(a)*0.5}); }
-        return pts;
-      })(),
-      triangle: (() => {
-        const pts = [];
-        // Outer triangle
-        for (let i = 0; i < 3; i++) { const a = (i/3)*Math.PI*2 - Math.PI/2; pts.push({ax:Math.cos(a), ay:Math.sin(a)}); }
-        // Inner inverted triangle
-        for (let i = 0; i < 3; i++) { const a = (i/3)*Math.PI*2 + Math.PI/6; pts.push({ax:Math.cos(a)*0.45, ay:Math.sin(a)*0.45}); }
-        // Edge midpoints
-        for (let i = 0; i < 3; i++) { const a = (i/3)*Math.PI*2 + Math.PI/6; pts.push({ax:Math.cos(a)*0.75, ay:Math.sin(a)*0.75}); }
-        // Center
-        pts.push({ax:0, ay:0});
-        return pts;
-      })(),
-      diamond: (() => {
-        const pts = [];
-        // 4 corners of diamond
-        pts.push({ax:0, ay:-1}, {ax:1, ay:0}, {ax:0, ay:1}, {ax:-1, ay:0});
-        // Inner diamond
-        pts.push({ax:0, ay:-0.45}, {ax:0.45, ay:0}, {ax:0, ay:0.45}, {ax:-0.45, ay:0});
-        // Midpoints of edges
-        pts.push({ax:0.55, ay:-0.55}, {ax:0.55, ay:0.55}, {ax:-0.55, ay:0.55}, {ax:-0.55, ay:-0.55});
-        return pts;
-      })(),
-      grid: (() => {
-        const pts = [];
-        for (let r = -1; r <= 1; r++) {
-          for (let c = -1; c <= 1; c++) {
-            pts.push({ax: c * 0.8, ay: r * 0.8});
-          }
-        }
-        // Extra points on edges
-        pts.push({ax:-0.4, ay:-0.4}, {ax:0.4, ay:0.4}, {ax:-0.4, ay:0.4});
-        return pts;
-      })(),
-      star: (() => {
-        const pts = [];
-        for (let i = 0; i < 5; i++) {
-          const a = (i/5)*Math.PI*2 - Math.PI/2;
-          pts.push({ax:Math.cos(a), ay:Math.sin(a)});
-          const b = a + Math.PI/5;
-          pts.push({ax:Math.cos(b)*0.42, ay:Math.sin(b)*0.42});
-        }
-        pts.push({ax:0, ay:0}); // center
-        pts.push({ax:0, ay:-0.55}); // inner accent
-        return pts;
-      })()
-    };
+    // 4 shapes, each with their own center position (relative to white zone)
+    // All coordinates normalized 0-1 relative to shape center
+    const shapeDefs = [
+      { // Hexagon — top-left of ordered zone
+        cx: 0.3, cy: 0.28, radius: 0.18,
+        pts: (() => { const p=[]; for(let i=0;i<6;i++){const a=(i/6)*Math.PI*2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })()
+      },
+      { // Rectangle — top-right
+        cx: 0.72, cy: 0.25, radius: 0.16,
+        pts: [{ax:-1,ay:-0.7},{ax:1,ay:-0.7},{ax:1,ay:0.7},{ax:-1,ay:0.7},{ax:0,ay:-0.7},{ax:0,ay:0.7},{ax:-1,ay:0},{ax:1,ay:0}]
+      },
+      { // Pentagon — bottom-left
+        cx: 0.25, cy: 0.75, radius: 0.15,
+        pts: (() => { const p=[]; for(let i=0;i<5;i++){const a=(i/5)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} p.push({ax:0,ay:0}); return p; })()
+      },
+      { // Triangle — bottom-right
+        cx: 0.7, cy: 0.78, radius: 0.14,
+        pts: (() => { const p=[]; for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2+Math.PI/6; p.push({ax:Math.cos(a)*0.45,ay:Math.sin(a)*0.45});} return p; })()
+      }
+    ];
 
-    const shapeNames = Object.keys(shapes);
-    let currentShapeIdx = 0;
-    let currentShape = shapes[shapeNames[0]];
-    let nextShape = null;
-    let morphT = 0; // 0 = current shape, 1 = next shape
-    let morphing = false;
-    let shapeHoldTime = 0;
-    const SHAPE_HOLD_MS = 8000;   // hold each shape for 8s
-    const MORPH_DURATION = 2000;  // 2s to morph between shapes
-
+    // Each shape cluster has its own ordered particles
+    let clusters = [];
     let chaosParticles = [];
     let travelers = [];
-    let ordered = [];
-    let lastTimestamp = 0;
 
     function resize() {
       w = canvas.width = window.innerWidth;
@@ -1213,132 +1233,102 @@
 
     function init() {
       chaosParticles = [];
-      ordered = [];
-      currentShapeIdx = 0;
-      currentShape = shapes[shapeNames[0]];
-      // Pre-fill ordered
-      for (let i = 0; i < Math.min(10, currentShape.length); i++) {
-        ordered.push({
-          slot: i, ax: currentShape[i].ax, ay: currentShape[i].ay,
-          r: 3, color: orderColors[i % orderColors.length], alpha: 0.8
-        });
-      }
-      for (let i = 0; i < 12; i++) chaosParticles.push(makeChaos());
+      travelers = [];
+      clusters = shapeDefs.map((sd, ci) => {
+        const particles = [];
+        // Pre-fill each shape
+        for (let i = 0; i < sd.pts.length; i++) {
+          particles.push({
+            slot: i, ax: sd.pts[i].ax, ay: sd.pts[i].ay,
+            r: 3, alpha: 0.75
+          });
+        }
+        return { def: sd, particles, colorIdx: ci };
+      });
+      // Chaos particles in the left 40% of white space
+      for (let i = 0; i < 10; i++) chaosParticles.push(makeChaos());
     }
 
     function makeChaos() {
       return {
-        rx: 0.48 + Math.random() * 0.20,
-        ry: 0.08 + Math.random() * 0.84,
-        vx: (Math.random() - 0.5) * 0.003,
-        vy: (Math.random() - 0.5) * 0.003,
-        r: Math.random() * 3 + 3,
+        rx: 0.42 + Math.random() * 0.16,
+        ry: 0.1 + Math.random() * 0.8,
+        vx: (Math.random()-0.5)*0.002,
+        vy: (Math.random()-0.5)*0.002,
+        r: Math.random()*2.5 + 2.5,
         color: '#94a3b8',
-        phase: Math.random() * Math.PI * 2
+        phase: Math.random()*Math.PI*2
       };
     }
 
+    // Collect a chaos particle and send it to a random shape
     function collectParticle() {
-      if (chaosParticles.length < 4) { chaosParticles.push(makeChaos()); return; }
-      const idx = Math.floor(Math.random() * chaosParticles.length);
+      if (chaosParticles.length < 3) { chaosParticles.push(makeChaos()); return; }
+      const idx = Math.floor(Math.random()*chaosParticles.length);
       const p = chaosParticles.splice(idx, 1)[0];
-      const slot = ordered.length % currentShape.length;
-      travelers.push({ startX: p.rx, startY: p.ry, t: 0, slot, r: p.r, color: p.color });
+      const ci = Math.floor(Math.random()*clusters.length);
+      const cluster = clusters[ci];
+      const slot = Math.floor(Math.random()*cluster.def.pts.length);
+      travelers.push({
+        startX: p.rx, startY: p.ry, t: 0,
+        clusterIdx: ci, slot, r: p.r, color: p.color
+      });
       chaosParticles.push(makeChaos());
     }
-    setInterval(collectParticle, 1800);
+    setInterval(collectParticle, 2200);
 
     function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
 
-    // Get the current effective shape point (handles morphing between shapes)
-    function getShapePoint(slotIdx) {
-      const s = currentShape[slotIdx % currentShape.length];
-      if (!morphing || !nextShape) return s;
-      const n = nextShape[slotIdx % nextShape.length];
-      const e = easeInOut(morphT);
-      return { ax: s.ax + (n.ax - s.ax) * e, ay: s.ay + (n.ay - s.ay) * e };
-    }
-
-    function animate(timestamp) {
-      if (!lastTimestamp) lastTimestamp = timestamp;
-      const dt = timestamp - lastTimestamp;
-      lastTimestamp = timestamp;
-
+    function animate() {
       ctx.clearRect(0, 0, w, h);
       const rect = getSection();
       if (!rect || rect.bottom < 0 || rect.top > h) { requestAnimationFrame(animate); return; }
 
       ctx.save();
+      const top = Math.max(0, rect.top);
+      const bot = Math.min(h, rect.bottom);
       ctx.beginPath();
-      ctx.rect(rect.left, Math.max(0, rect.top), rect.width, Math.min(h, rect.bottom) - Math.max(0, rect.top));
+      ctx.rect(rect.left, top, rect.width, bot - top);
       ctx.clip();
 
       const sx = rect.left, sy = rect.top, sw = rect.width, sh = rect.height;
-      const hubX = sx + sw * 0.85;
-      const hubY = sy + sh * 0.5;
-      const hubRadius = Math.min(sw * 0.12, sh * 0.35);
-
-      // Shape cycling logic
-      if (morphing) {
-        morphT += dt / MORPH_DURATION;
-        if (morphT >= 1) {
-          morphT = 0;
-          morphing = false;
-          currentShape = nextShape;
-          nextShape = null;
-          // Update ordered particles to new shape positions
-          ordered.forEach(p => {
-            const pt = currentShape[p.slot % currentShape.length];
-            p.ax = pt.ax; p.ay = pt.ay;
-          });
-          shapeHoldTime = 0;
-        } else {
-          // Smoothly move ordered particles during morph
-          ordered.forEach(p => {
-            const pt = getShapePoint(p.slot);
-            p.ax = pt.ax; p.ay = pt.ay;
-          });
-        }
-      } else {
-        shapeHoldTime += dt;
-        if (shapeHoldTime > SHAPE_HOLD_MS) {
-          morphing = true;
-          morphT = 0;
-          currentShapeIdx = (currentShapeIdx + 1) % shapeNames.length;
-          nextShape = shapes[shapeNames[currentShapeIdx]];
-        }
-      }
+      // The white zone is the right ~55% of header
+      const zoneX = sx + sw * 0.45;
+      const zoneW = sw * 0.52;
+      const zoneY = sy + sh * 0.05;
+      const zoneH = sh * 0.9;
 
       // === CHAOS PARTICLES ===
       chaosParticles.forEach(p => {
         p.phase += 0.04;
-        p.rx += p.vx + Math.sin(p.phase * 1.7) * 0.008;
-        p.ry += p.vy + Math.cos(p.phase * 2.3) * 0.006;
-        if (p.rx < 0.48 || p.rx > 0.68) p.vx *= -1;
-        if (p.ry < 0.08 || p.ry > 0.92) p.vy *= -1;
-        p.rx = Math.max(0.48, Math.min(0.68, p.rx));
-        p.ry = Math.max(0.08, Math.min(0.92, p.ry));
+        p.rx += p.vx + Math.sin(p.phase*1.7)*0.006;
+        p.ry += p.vy + Math.cos(p.phase*2.3)*0.005;
+        if (p.rx < 0.42 || p.rx > 0.58) p.vx *= -1;
+        if (p.ry < 0.1 || p.ry > 0.9) p.vy *= -1;
+        p.rx = Math.max(0.42, Math.min(0.58, p.rx));
+        p.ry = Math.max(0.1, Math.min(0.9, p.ry));
 
+        const px = sx + p.rx*sw, py = sy + p.ry*sh;
         ctx.beginPath();
-        ctx.arc(sx + p.rx * sw, sy + p.ry * sh, p.r, 0, Math.PI*2);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = 0.55;
+        ctx.arc(px, py, p.r, 0, Math.PI*2);
+        ctx.fillStyle = '#94a3b8';
+        ctx.globalAlpha = 0.45;
         ctx.fill();
         ctx.globalAlpha = 1;
       });
 
-      // Chaos connections (dashed)
+      // Chaos dashed connections
       for (let i = 0; i < chaosParticles.length; i++) {
         for (let j = i+1; j < chaosParticles.length; j++) {
           const a = chaosParticles[i], b = chaosParticles[j];
           const dx = (a.rx-b.rx)*sw, dy = (a.ry-b.ry)*sh;
           const dist = Math.sqrt(dx*dx+dy*dy);
-          if (dist < sh * 0.22) {
+          if (dist < sh*0.2) {
             ctx.beginPath();
             ctx.moveTo(sx+a.rx*sw, sy+a.ry*sh);
             ctx.lineTo(sx+b.rx*sw, sy+b.ry*sh);
             ctx.strokeStyle = '#94a3b8';
-            ctx.globalAlpha = 0.15*(1-dist/(sh*0.22));
+            ctx.globalAlpha = 0.12*(1-dist/(sh*0.2));
             ctx.lineWidth = 0.5;
             ctx.setLineDash([2,4]);
             ctx.stroke();
@@ -1351,110 +1341,95 @@
       // === TRAVELERS ===
       for (let i = travelers.length-1; i >= 0; i--) {
         const t = travelers[i];
-        t.t += 0.006;
+        t.t += 0.005;
+        const cluster = clusters[t.clusterIdx];
+        const sd = cluster.def;
+        const pt = sd.pts[t.slot % sd.pts.length];
+        const destX = zoneX + sd.cx*zoneW + pt.ax*sd.radius*Math.min(zoneW,zoneH);
+        const destY = zoneY + sd.cy*zoneH + pt.ay*sd.radius*Math.min(zoneW,zoneH);
+        const startX = sx + t.startX*sw;
+        const startY = sy + t.startY*sh;
+
         if (t.t >= 1) {
-          const pt = getShapePoint(t.slot);
-          if (ordered.length > 16) ordered.shift();
-          ordered.push({
-            slot: t.slot, ax: pt.ax, ay: pt.ay,
-            r: t.r + 0.5, color: orderColors[t.slot % orderColors.length], alpha: 0
-          });
           travelers.splice(i, 1);
           continue;
         }
 
         const ease = easeInOut(t.t);
-        const pt = getShapePoint(t.slot);
-        const destX = hubX + pt.ax * hubRadius;
-        const destY = hubY + pt.ay * hubRadius;
-        const startX = sx + t.startX * sw;
-        const startY = sy + t.startY * sh;
-
         const px = startX + (destX-startX)*ease;
         const py = startY + (destY-startY)*ease;
-        const color = t.t > 0.5 ? orderColors[t.slot % orderColors.length] : '#94a3b8';
+        const cc = clusterColors[t.clusterIdx];
+        const color = t.t > 0.5 ? cc.node : '#94a3b8';
 
         ctx.beginPath();
         ctx.arc(px, py, t.r*(1+t.t*0.3), 0, Math.PI*2);
         ctx.fillStyle = color;
-        ctx.globalAlpha = 0.6+t.t*0.3;
+        ctx.globalAlpha = 0.5+t.t*0.4;
         ctx.fill();
         // Trail
-        const te = Math.max(0, ease-0.04);
+        const te = Math.max(0, ease-0.05);
         ctx.beginPath();
         ctx.moveTo(startX+(destX-startX)*te, startY+(destY-startY)*te);
         ctx.lineTo(px, py);
         ctx.strokeStyle = color;
-        ctx.globalAlpha = 0.3;
-        ctx.lineWidth = 1.5;
+        ctx.globalAlpha = 0.25;
+        ctx.lineWidth = 1.2;
         ctx.lineCap = 'round';
         ctx.stroke();
         ctx.globalAlpha = 1;
       }
 
-      // === ORDERED CONSTELLATION ===
-      for (let i = 0; i < ordered.length; i++) {
-        const a = ordered[i];
-        const ax = hubX + a.ax*hubRadius;
-        const ay = hubY + a.ay*hubRadius;
-        // Spoke to hub
-        ctx.beginPath();
-        ctx.moveTo(hubX, hubY);
-        ctx.lineTo(ax, ay);
-        ctx.strokeStyle = hubColor;
-        ctx.globalAlpha = 0.22;
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-        // Neighbor connections
-        for (let j = i+1; j < ordered.length; j++) {
-          const b = ordered[j];
-          const bx = hubX + b.ax*hubRadius;
-          const by = hubY + b.ay*hubRadius;
-          const dx = ax-bx, dy = ay-by;
-          if (Math.sqrt(dx*dx+dy*dy) < hubRadius*1.3) {
-            ctx.beginPath();
-            ctx.moveTo(ax, ay);
-            ctx.lineTo(bx, by);
-            ctx.strokeStyle = hubColor;
-            ctx.globalAlpha = 0.15;
-            ctx.lineWidth = 0.7;
-            ctx.stroke();
+      // === DRAW EACH SHAPE CLUSTER ===
+      clusters.forEach((cluster, ci) => {
+        const sd = cluster.def;
+        const cc = clusterColors[ci];
+        const centerX = zoneX + sd.cx*zoneW;
+        const centerY = zoneY + sd.cy*zoneH;
+        const r = sd.radius * Math.min(zoneW, zoneH);
+
+        // Draw edges between all points of this shape
+        for (let i = 0; i < sd.pts.length; i++) {
+          const a = sd.pts[i];
+          const ax = centerX + a.ax*r, ay = centerY + a.ay*r;
+          for (let j = i+1; j < sd.pts.length; j++) {
+            const b = sd.pts[j];
+            const bx = centerX + b.ax*r, by = centerY + b.ay*r;
+            const dx = ax-bx, dy = ay-by;
+            if (Math.sqrt(dx*dx+dy*dy) < r*1.6) {
+              ctx.beginPath();
+              ctx.moveTo(ax, ay);
+              ctx.lineTo(bx, by);
+              ctx.strokeStyle = cc.line;
+              ctx.globalAlpha = 0.18;
+              ctx.lineWidth = 0.7;
+              ctx.stroke();
+            }
           }
         }
-        ctx.globalAlpha = 1;
-      }
 
-      // Ordered particle dots
-      ordered.forEach(p => {
-        if (p.alpha < 0.8) p.alpha += 0.02;
-        const px = hubX + p.ax*hubRadius;
-        const py = hubY + p.ay*hubRadius;
+        // Draw nodes with gentle breathing
+        const t = Date.now()*0.001;
+        sd.pts.forEach((pt, pi) => {
+          const breathe = Math.sin(t*1.5 + pi*0.8 + ci*2) * 1.5;
+          const px = centerX + pt.ax*r + breathe;
+          const py = centerY + pt.ay*r + Math.cos(t*1.2 + pi)*1.2;
+
+          ctx.beginPath();
+          ctx.arc(px, py, 3.5, 0, Math.PI*2);
+          ctx.fillStyle = cc.node;
+          ctx.globalAlpha = 0.7;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        });
+
+        // Center dot
         ctx.beginPath();
-        ctx.arc(px, py, p.r, 0, Math.PI*2);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.alpha;
+        ctx.arc(centerX, centerY, 2.5, 0, Math.PI*2);
+        ctx.fillStyle = cc.node;
+        ctx.globalAlpha = 0.4;
         ctx.fill();
         ctx.globalAlpha = 1;
       });
-
-      // Hub center
-      ctx.beginPath();
-      ctx.arc(hubX, hubY, 5, 0, Math.PI*2);
-      ctx.fillStyle = hubColor;
-      ctx.globalAlpha = 0.6;
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(hubX, hubY, 2, 0, Math.PI*2);
-      ctx.fillStyle = '#fff';
-      ctx.globalAlpha = 0.7;
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(hubX, hubY, hubRadius+8, 0, Math.PI*2);
-      ctx.strokeStyle = hubColor;
-      ctx.globalAlpha = 0.06;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.globalAlpha = 1;
 
       ctx.restore();
       requestAnimationFrame(animate);
