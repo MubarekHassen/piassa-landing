@@ -1279,7 +1279,7 @@
     }
 
     function getSection() {
-      const el = document.querySelector('.how-header');
+      const el = document.querySelector('.how-it-works');
       if (!el) return null;
       return el.getBoundingClientRect();
     }
@@ -1287,10 +1287,10 @@
     function makeChaos() {
       return {
         rx: 0.20 + Math.random() * 0.60,
-        ry: 0.08 + Math.random() * 0.84,
-        vx: (Math.random()-0.5)*0.0012,
-        vy: (Math.random()-0.5)*0.0012,
-        r: Math.random()*2 + 2,
+        ry: 0.05 + Math.random() * 0.55,
+        vx: (Math.random()-0.5)*0.0015,
+        vy: (Math.random()-0.5)*0.0015,
+        r: Math.random()*3 + 3,
         phase: Math.random()*Math.PI*2
       };
     }
@@ -1327,11 +1327,6 @@
       if (!rect || rect.bottom < 0 || rect.top > h) { requestAnimationFrame(animate); return; }
 
       ctx.save();
-      const top = Math.max(0, rect.top);
-      const bot = Math.min(h, rect.bottom);
-      ctx.beginPath();
-      ctx.rect(rect.left, top, rect.width, bot - top);
-      ctx.clip();
 
       const sx = rect.left, sy = rect.top, sw = rect.width, sh = rect.height;
       const zoneX = sx + sw * 0.45;
@@ -1392,7 +1387,7 @@
         ctx.beginPath();
         ctx.arc(px, py, p.r, 0, Math.PI*2);
         ctx.fillStyle = '#a5b4fc';
-        ctx.globalAlpha = 0.6;
+        ctx.globalAlpha = 0.75;
         ctx.fill();
         ctx.globalAlpha = 1;
       });
@@ -1408,7 +1403,7 @@
             ctx.moveTo(sx+a.rx*sw, sy+a.ry*sh);
             ctx.lineTo(sx+b.rx*sw, sy+b.ry*sh);
             ctx.strokeStyle = '#a5b4fc';
-            ctx.globalAlpha = 0.18*(1-dist/(sh*0.25));
+            ctx.globalAlpha = 0.25*(1-dist/(sh*0.25));
             ctx.lineWidth = 0.5;
             ctx.setLineDash([2,5]);
             ctx.stroke();
@@ -1494,7 +1489,7 @@
             const breathe = Math.sin(t*1.2 + pi*0.8 + ci*2) * 1.2;
             const nx = sX + (uX - sX) * convergeEase + breathe * (1 - convergeEase*0.7);
             const ny = sY + (uY - sY) * convergeEase + Math.cos(t + pi)*0.8 * (1 - convergeEase*0.7);
-            const nodeSize = 3 + convergeEase * 1;
+            const nodeSize = 4.5 + convergeEase * 1.5;
 
             allNodes.push({ x: nx, y: ny, cc, nodeA, ci, pi });
 
@@ -1507,7 +1502,7 @@
           });
 
           // Draw edges within cluster (fade as converge)
-          const edgeAlpha = 0.3 * shapeAlpha * (1 - convergeEase * 0.6);
+          const edgeAlpha = 0.4 * shapeAlpha * (1 - convergeEase * 0.6);
           if (edgeAlpha > 0.01) {
             for (let i = 0; i < sd.pts.length; i++) {
               const a = sd.pts[i];
@@ -1524,7 +1519,7 @@
                   ctx.lineTo(bX, bY);
                   ctx.strokeStyle = cc.line;
                   ctx.globalAlpha = edgeAlpha;
-                  ctx.lineWidth = 0.6;
+                  ctx.lineWidth = 1;
                   ctx.stroke();
                 }
               }
@@ -1534,7 +1529,7 @@
 
         // Draw unified ring connections when converging
         if (convergeEase > 0.3) {
-          const ringAlpha = (convergeEase - 0.3) / 0.7 * 0.4 * shapeAlpha;
+          const ringAlpha = (convergeEase - 0.3) / 0.7 * 0.5 * shapeAlpha;
           // Connect adjacent nodes in the unified ring
           for (let i = 0; i < allNodes.length; i++) {
             const a = allNodes[i];
@@ -1544,7 +1539,7 @@
             ctx.lineTo(b.x, b.y);
             ctx.strokeStyle = '#818cf8';
             ctx.globalAlpha = ringAlpha;
-            ctx.lineWidth = 0.8;
+            ctx.lineWidth = 1.2;
             ctx.stroke();
           }
           // Spokes to center
@@ -1554,12 +1549,12 @@
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(zoneCX, zoneCY);
             ctx.strokeStyle = '#a5b4fc';
-            ctx.globalAlpha = ringAlpha * 0.4;
-            ctx.lineWidth = 0.5;
+            ctx.globalAlpha = ringAlpha * 0.5;
+            ctx.lineWidth = 0.7;
             ctx.stroke();
           }
           // Center glow
-          const glowR = 6 + Math.sin(t*1.5)*2;
+          const glowR = 8 + Math.sin(t*1.5)*3;
           ctx.beginPath();
           ctx.arc(zoneCX, zoneCY, glowR, 0, Math.PI*2);
           ctx.fillStyle = '#818cf8';
