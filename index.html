@@ -1118,7 +1118,7 @@
     });
   </script>
 
-  <!-- NETWORK ANIMATION — chaos to order, process header white space only -->
+  <!-- NETWORK ANIMATION — chaos to order with shape cycling, process header white space -->
   <canvas id="networkCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
   <script>
   (function() {
@@ -1126,23 +1126,78 @@
     const ctx = canvas.getContext('2d');
     let w, h;
 
-    // Chaos-to-order: scattered gray particles on left of white space,
-    // they get collected and travel to a structured constellation on the right
-
     const hubColor = '#6366f1';
-    const orderColors = ['#6366f1','#0284c7','#059669','#818cf8'];
+    const orderColors = ['#6366f1','#0284c7','#059669','#818cf8','#7c3aed'];
 
-    // Hexagonal constellation shape (relative to hub center, normalized 0-1)
-    const constellationShape = [];
-    for (let i = 0; i < 12; i++) {
-      const angle = (i / 12) * Math.PI * 2;
-      const ring = i < 6 ? 1 : 0.55;
-      constellationShape.push({ ax: Math.cos(angle) * ring, ay: Math.sin(angle) * ring });
-    }
+    // Multiple constellation shapes — each is an array of {ax, ay} normalized to radius 1
+    const shapes = {
+      hexagon: (() => {
+        const pts = [];
+        for (let i = 0; i < 6; i++) { const a = (i/6)*Math.PI*2; pts.push({ax:Math.cos(a), ay:Math.sin(a)}); }
+        for (let i = 0; i < 6; i++) { const a = (i/6)*Math.PI*2 + Math.PI/6; pts.push({ax:Math.cos(a)*0.5, ay:Math.sin(a)*0.5}); }
+        return pts;
+      })(),
+      triangle: (() => {
+        const pts = [];
+        // Outer triangle
+        for (let i = 0; i < 3; i++) { const a = (i/3)*Math.PI*2 - Math.PI/2; pts.push({ax:Math.cos(a), ay:Math.sin(a)}); }
+        // Inner inverted triangle
+        for (let i = 0; i < 3; i++) { const a = (i/3)*Math.PI*2 + Math.PI/6; pts.push({ax:Math.cos(a)*0.45, ay:Math.sin(a)*0.45}); }
+        // Edge midpoints
+        for (let i = 0; i < 3; i++) { const a = (i/3)*Math.PI*2 + Math.PI/6; pts.push({ax:Math.cos(a)*0.75, ay:Math.sin(a)*0.75}); }
+        // Center
+        pts.push({ax:0, ay:0});
+        return pts;
+      })(),
+      diamond: (() => {
+        const pts = [];
+        // 4 corners of diamond
+        pts.push({ax:0, ay:-1}, {ax:1, ay:0}, {ax:0, ay:1}, {ax:-1, ay:0});
+        // Inner diamond
+        pts.push({ax:0, ay:-0.45}, {ax:0.45, ay:0}, {ax:0, ay:0.45}, {ax:-0.45, ay:0});
+        // Midpoints of edges
+        pts.push({ax:0.55, ay:-0.55}, {ax:0.55, ay:0.55}, {ax:-0.55, ay:0.55}, {ax:-0.55, ay:-0.55});
+        return pts;
+      })(),
+      grid: (() => {
+        const pts = [];
+        for (let r = -1; r <= 1; r++) {
+          for (let c = -1; c <= 1; c++) {
+            pts.push({ax: c * 0.8, ay: r * 0.8});
+          }
+        }
+        // Extra points on edges
+        pts.push({ax:-0.4, ay:-0.4}, {ax:0.4, ay:0.4}, {ax:-0.4, ay:0.4});
+        return pts;
+      })(),
+      star: (() => {
+        const pts = [];
+        for (let i = 0; i < 5; i++) {
+          const a = (i/5)*Math.PI*2 - Math.PI/2;
+          pts.push({ax:Math.cos(a), ay:Math.sin(a)});
+          const b = a + Math.PI/5;
+          pts.push({ax:Math.cos(b)*0.42, ay:Math.sin(b)*0.42});
+        }
+        pts.push({ax:0, ay:0}); // center
+        pts.push({ax:0, ay:-0.55}); // inner accent
+        return pts;
+      })()
+    };
+
+    const shapeNames = Object.keys(shapes);
+    let currentShapeIdx = 0;
+    let currentShape = shapes[shapeNames[0]];
+    let nextShape = null;
+    let morphT = 0; // 0 = current shape, 1 = next shape
+    let morphing = false;
+    let shapeHoldTime = 0;
+    const SHAPE_HOLD_MS = 8000;   // hold each shape for 8s
+    const MORPH_DURATION = 2000;  // 2s to morph between shapes
 
     let chaosParticles = [];
     let travelers = [];
     let ordered = [];
+    let lastTimestamp = 0;
 
     function resize() {
       w = canvas.width = window.innerWidth;
@@ -1159,28 +1214,24 @@
     function init() {
       chaosParticles = [];
       ordered = [];
-      // Pre-fill constellation so it's not empty on load
-      for (let i = 0; i < 10; i++) {
-        const slot = constellationShape[i];
+      currentShapeIdx = 0;
+      currentShape = shapes[shapeNames[0]];
+      // Pre-fill ordered
+      for (let i = 0; i < Math.min(10, currentShape.length); i++) {
         ordered.push({
-          slot: i, ax: slot.ax, ay: slot.ay,
+          slot: i, ax: currentShape[i].ax, ay: currentShape[i].ay,
           r: 3, color: orderColors[i % orderColors.length], alpha: 0.8
         });
       }
-      // Spawn chaos particles — all in right-side white space (rx 0.48–0.68 of section)
-      for (let i = 0; i < 12; i++) {
-        chaosParticles.push(makeChaos());
-      }
+      for (let i = 0; i < 12; i++) chaosParticles.push(makeChaos());
     }
 
     function makeChaos() {
       return {
-        // Relative position within section — left portion of the white space (48-68%)
         rx: 0.48 + Math.random() * 0.20,
         ry: 0.08 + Math.random() * 0.84,
         vx: (Math.random() - 0.5) * 0.003,
         vy: (Math.random() - 0.5) * 0.003,
-        jitterX: 0, jitterY: 0,
         r: Math.random() * 3 + 3,
         color: '#94a3b8',
         phase: Math.random() * Math.PI * 2
@@ -1188,82 +1239,108 @@
     }
 
     function collectParticle() {
-      if (chaosParticles.length < 4) {
-        chaosParticles.push(makeChaos());
-        return;
-      }
+      if (chaosParticles.length < 4) { chaosParticles.push(makeChaos()); return; }
       const idx = Math.floor(Math.random() * chaosParticles.length);
       const p = chaosParticles.splice(idx, 1)[0];
-      const slot = ordered.length % constellationShape.length;
-      travelers.push({
-        startX: p.rx, startY: p.ry,
-        t: 0, slot, r: p.r, color: p.color
-      });
+      const slot = ordered.length % currentShape.length;
+      travelers.push({ startX: p.rx, startY: p.ry, t: 0, slot, r: p.r, color: p.color });
       chaosParticles.push(makeChaos());
     }
     setInterval(collectParticle, 1800);
 
-    function animate() {
+    function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+
+    // Get the current effective shape point (handles morphing between shapes)
+    function getShapePoint(slotIdx) {
+      const s = currentShape[slotIdx % currentShape.length];
+      if (!morphing || !nextShape) return s;
+      const n = nextShape[slotIdx % nextShape.length];
+      const e = easeInOut(morphT);
+      return { ax: s.ax + (n.ax - s.ax) * e, ay: s.ay + (n.ay - s.ay) * e };
+    }
+
+    function animate(timestamp) {
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const dt = timestamp - lastTimestamp;
+      lastTimestamp = timestamp;
+
       ctx.clearRect(0, 0, w, h);
       const rect = getSection();
-      if (!rect || rect.bottom < 0 || rect.top > h) {
-        requestAnimationFrame(animate);
-        return;
-      }
+      if (!rect || rect.bottom < 0 || rect.top > h) { requestAnimationFrame(animate); return; }
 
-      // Clip to how-header
-      const top = Math.max(0, rect.top);
-      const bot = Math.min(h, rect.bottom);
       ctx.save();
       ctx.beginPath();
-      ctx.rect(rect.left, top, rect.width, bot - top);
+      ctx.rect(rect.left, Math.max(0, rect.top), rect.width, Math.min(h, rect.bottom) - Math.max(0, rect.top));
       ctx.clip();
 
       const sx = rect.left, sy = rect.top, sw = rect.width, sh = rect.height;
-
-      // Hub center — right side of white space (85% across, vertically centered)
       const hubX = sx + sw * 0.85;
       const hubY = sy + sh * 0.5;
       const hubRadius = Math.min(sw * 0.12, sh * 0.35);
 
-      // === CHAOS PARTICLES (left portion of white space) ===
+      // Shape cycling logic
+      if (morphing) {
+        morphT += dt / MORPH_DURATION;
+        if (morphT >= 1) {
+          morphT = 0;
+          morphing = false;
+          currentShape = nextShape;
+          nextShape = null;
+          // Update ordered particles to new shape positions
+          ordered.forEach(p => {
+            const pt = currentShape[p.slot % currentShape.length];
+            p.ax = pt.ax; p.ay = pt.ay;
+          });
+          shapeHoldTime = 0;
+        } else {
+          // Smoothly move ordered particles during morph
+          ordered.forEach(p => {
+            const pt = getShapePoint(p.slot);
+            p.ax = pt.ax; p.ay = pt.ay;
+          });
+        }
+      } else {
+        shapeHoldTime += dt;
+        if (shapeHoldTime > SHAPE_HOLD_MS) {
+          morphing = true;
+          morphT = 0;
+          currentShapeIdx = (currentShapeIdx + 1) % shapeNames.length;
+          nextShape = shapes[shapeNames[currentShapeIdx]];
+        }
+      }
+
+      // === CHAOS PARTICLES ===
       chaosParticles.forEach(p => {
         p.phase += 0.04;
-        p.jitterX = Math.sin(p.phase * 1.7) * 0.008;
-        p.jitterY = Math.cos(p.phase * 2.3) * 0.006;
-        p.rx += p.vx + p.jitterX;
-        p.ry += p.vy + p.jitterY;
-        // Bounce within zone (48-68% horizontally)
+        p.rx += p.vx + Math.sin(p.phase * 1.7) * 0.008;
+        p.ry += p.vy + Math.cos(p.phase * 2.3) * 0.006;
         if (p.rx < 0.48 || p.rx > 0.68) p.vx *= -1;
         if (p.ry < 0.08 || p.ry > 0.92) p.vy *= -1;
         p.rx = Math.max(0.48, Math.min(0.68, p.rx));
         p.ry = Math.max(0.08, Math.min(0.92, p.ry));
 
-        const px = sx + p.rx * sw;
-        const py = sy + p.ry * sh;
-
         ctx.beginPath();
-        ctx.arc(px, py, p.r, 0, Math.PI*2);
+        ctx.arc(sx + p.rx * sw, sy + p.ry * sh, p.r, 0, Math.PI*2);
         ctx.fillStyle = p.color;
         ctx.globalAlpha = 0.55;
         ctx.fill();
         ctx.globalAlpha = 1;
       });
 
-      // Chaotic dashed connections
+      // Chaos connections (dashed)
       for (let i = 0; i < chaosParticles.length; i++) {
         for (let j = i+1; j < chaosParticles.length; j++) {
           const a = chaosParticles[i], b = chaosParticles[j];
-          const dx = (a.rx - b.rx) * sw, dy = (a.ry - b.ry) * sh;
-          const dist = Math.sqrt(dx*dx + dy*dy);
+          const dx = (a.rx-b.rx)*sw, dy = (a.ry-b.ry)*sh;
+          const dist = Math.sqrt(dx*dx+dy*dy);
           if (dist < sh * 0.22) {
             ctx.beginPath();
-            ctx.moveTo(sx + a.rx*sw, sy + a.ry*sh);
-            ctx.lineTo(sx + b.rx*sw, sy + b.ry*sh);
+            ctx.moveTo(sx+a.rx*sw, sy+a.ry*sh);
+            ctx.lineTo(sx+b.rx*sw, sy+b.ry*sh);
             ctx.strokeStyle = '#94a3b8';
-            ctx.globalAlpha = 0.15 * (1 - dist/(sh*0.22));
+            ctx.globalAlpha = 0.15*(1-dist/(sh*0.22));
             ctx.lineWidth = 0.5;
-            ctx.setLineDash([2, 4]);
+            ctx.setLineDash([2,4]);
             ctx.stroke();
             ctx.setLineDash([]);
             ctx.globalAlpha = 1;
@@ -1271,43 +1348,41 @@
         }
       }
 
-      // === TRAVELERS: chaos → constellation ===
-      for (let i = travelers.length - 1; i >= 0; i--) {
+      // === TRAVELERS ===
+      for (let i = travelers.length-1; i >= 0; i--) {
         const t = travelers[i];
         t.t += 0.006;
         if (t.t >= 1) {
-          const slot = constellationShape[t.slot % constellationShape.length];
+          const pt = getShapePoint(t.slot);
           if (ordered.length > 16) ordered.shift();
           ordered.push({
-            slot: t.slot, ax: slot.ax, ay: slot.ay,
+            slot: t.slot, ax: pt.ax, ay: pt.ay,
             r: t.r + 0.5, color: orderColors[t.slot % orderColors.length], alpha: 0
           });
           travelers.splice(i, 1);
           continue;
         }
 
-        const ease = t.t < 0.5 ? 4*t.t*t*t : 1 - Math.pow(-2*t.t+2,3)/2;
-        const destSlot = constellationShape[t.slot % constellationShape.length];
-        const destX = hubX + destSlot.ax * hubRadius;
-        const destY = hubY + destSlot.ay * hubRadius;
+        const ease = easeInOut(t.t);
+        const pt = getShapePoint(t.slot);
+        const destX = hubX + pt.ax * hubRadius;
+        const destY = hubY + pt.ay * hubRadius;
         const startX = sx + t.startX * sw;
         const startY = sy + t.startY * sh;
 
-        const px = startX + (destX - startX) * ease;
-        const py = startY + (destY - startY) * ease;
+        const px = startX + (destX-startX)*ease;
+        const py = startY + (destY-startY)*ease;
         const color = t.t > 0.5 ? orderColors[t.slot % orderColors.length] : '#94a3b8';
 
         ctx.beginPath();
-        ctx.arc(px, py, t.r * (1 + t.t * 0.3), 0, Math.PI*2);
+        ctx.arc(px, py, t.r*(1+t.t*0.3), 0, Math.PI*2);
         ctx.fillStyle = color;
-        ctx.globalAlpha = 0.6 + t.t * 0.3;
+        ctx.globalAlpha = 0.6+t.t*0.3;
         ctx.fill();
-        // Trail line
-        const trailEase = Math.max(0, ease - 0.04);
-        const tx = startX + (destX - startX) * trailEase;
-        const ty = startY + (destY - startY) * trailEase;
+        // Trail
+        const te = Math.max(0, ease-0.04);
         ctx.beginPath();
-        ctx.moveTo(tx, ty);
+        ctx.moveTo(startX+(destX-startX)*te, startY+(destY-startY)*te);
         ctx.lineTo(px, py);
         ctx.strokeStyle = color;
         ctx.globalAlpha = 0.3;
@@ -1317,11 +1392,11 @@
         ctx.globalAlpha = 1;
       }
 
-      // === ORDERED CONSTELLATION (right side of white space) ===
+      // === ORDERED CONSTELLATION ===
       for (let i = 0; i < ordered.length; i++) {
         const a = ordered[i];
-        const ax = hubX + a.ax * hubRadius;
-        const ay = hubY + a.ay * hubRadius;
+        const ax = hubX + a.ax*hubRadius;
+        const ay = hubY + a.ay*hubRadius;
         // Spoke to hub
         ctx.beginPath();
         ctx.moveTo(hubX, hubY);
@@ -1333,10 +1408,10 @@
         // Neighbor connections
         for (let j = i+1; j < ordered.length; j++) {
           const b = ordered[j];
-          const bx = hubX + b.ax * hubRadius;
-          const by = hubY + b.ay * hubRadius;
+          const bx = hubX + b.ax*hubRadius;
+          const by = hubY + b.ay*hubRadius;
           const dx = ax-bx, dy = ay-by;
-          if (Math.sqrt(dx*dx+dy*dy) < hubRadius * 1.3) {
+          if (Math.sqrt(dx*dx+dy*dy) < hubRadius*1.3) {
             ctx.beginPath();
             ctx.moveTo(ax, ay);
             ctx.lineTo(bx, by);
@@ -1349,11 +1424,11 @@
         ctx.globalAlpha = 1;
       }
 
-      // Ordered particles
+      // Ordered particle dots
       ordered.forEach(p => {
         if (p.alpha < 0.8) p.alpha += 0.02;
-        const px = hubX + p.ax * hubRadius;
-        const py = hubY + p.ay * hubRadius;
+        const px = hubX + p.ax*hubRadius;
+        const py = hubY + p.ay*hubRadius;
         ctx.beginPath();
         ctx.arc(px, py, p.r, 0, Math.PI*2);
         ctx.fillStyle = p.color;
@@ -1362,7 +1437,7 @@
         ctx.globalAlpha = 1;
       });
 
-      // Hub center dot
+      // Hub center
       ctx.beginPath();
       ctx.arc(hubX, hubY, 5, 0, Math.PI*2);
       ctx.fillStyle = hubColor;
@@ -1373,9 +1448,8 @@
       ctx.fillStyle = '#fff';
       ctx.globalAlpha = 0.7;
       ctx.fill();
-      // Outer ring
       ctx.beginPath();
-      ctx.arc(hubX, hubY, hubRadius + 8, 0, Math.PI*2);
+      ctx.arc(hubX, hubY, hubRadius+8, 0, Math.PI*2);
       ctx.strokeStyle = hubColor;
       ctx.globalAlpha = 0.06;
       ctx.lineWidth = 1;
