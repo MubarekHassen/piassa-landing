@@ -869,7 +869,7 @@
   <section class="how-it-works" id="how">
     <div class="how-header">
       <div class="section-tag reveal">Process</div>
-      <h2 class="section-title reveal reveal-delay-1">From chaos<br>to clarity.</h2>
+      <h2 class="section-title reveal reveal-delay-1">From chaos to clarity.</h2>
       <p class="section-subtitle reveal reveal-delay-2">A seamless workflow that turns your fragmented building data into prioritized, actionable intelligence.</p>
     </div>
     <div class="how-steps">
@@ -1224,46 +1224,53 @@
       { node: '#a78bfa', line: '#a78bfa' },
       { node: '#f472b6', line: '#f472b6' },
       { node: '#fbbf24', line: '#fbbf24' },
-      { node: '#2dd4bf', line: '#2dd4bf' },
     ];
 
+    // 6 scattered shapes that later converge to center
     const shapeDefs = [
-      // Hexagon — top-left
-      { cx: 0.22, cy: 0.22, radius: 0.14,
+      { cx: 0.18, cy: 0.18, radius: 0.12,
         pts: (() => { const p=[]; for(let i=0;i<6;i++){const a=(i/6)*Math.PI*2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
-      // Grid — top-right
-      { cx: 0.72, cy: 0.18, radius: 0.13,
-        pts: [{ax:-1,ay:-0.7},{ax:1,ay:-0.7},{ax:1,ay:0.7},{ax:-1,ay:0.7},{ax:0,ay:-0.7},{ax:0,ay:0.7},{ax:-1,ay:0},{ax:1,ay:0}] },
-      // Pentagon — middle-left
-      { cx: 0.15, cy: 0.55, radius: 0.12,
-        pts: (() => { const p=[]; for(let i=0;i<5;i++){const a=(i/5)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} p.push({ax:0,ay:0}); return p; })() },
-      // Triangle cluster — bottom-right
-      { cx: 0.78, cy: 0.75, radius: 0.12,
-        pts: (() => { const p=[]; for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2+Math.PI/6; p.push({ax:Math.cos(a)*0.45,ay:Math.sin(a)*0.45});} return p; })() },
-      // Diamond — middle-center
-      { cx: 0.48, cy: 0.45, radius: 0.11,
-        pts: [{ax:0,ay:-1},{ax:1,ay:0},{ax:0,ay:1},{ax:-1,ay:0},{ax:0.5,ay:-0.5},{ax:0.5,ay:0.5},{ax:-0.5,ay:0.5},{ax:-0.5,ay:-0.5}] },
-      // Octagon — bottom-left
-      { cx: 0.25, cy: 0.82, radius: 0.11,
+      { cx: 0.78, cy: 0.15, radius: 0.11,
+        pts: [{ax:-1,ay:-0.7},{ax:1,ay:-0.7},{ax:1,ay:0.7},{ax:-1,ay:0.7},{ax:0,ay:0}] },
+      { cx: 0.12, cy: 0.55, radius: 0.10,
+        pts: (() => { const p=[]; for(let i=0;i<5;i++){const a=(i/5)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
+      { cx: 0.82, cy: 0.58, radius: 0.10,
+        pts: (() => { const p=[]; for(let i=0;i<4;i++){const a=(i/4)*Math.PI*2 + Math.PI/4; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
+      { cx: 0.25, cy: 0.85, radius: 0.10,
+        pts: (() => { const p=[]; for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} p.push({ax:0,ay:0}); return p; })() },
+      { cx: 0.72, cy: 0.85, radius: 0.10,
         pts: (() => { const p=[]; for(let i=0;i<8;i++){const a=(i/8)*Math.PI*2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
-      // Star — top-center
-      { cx: 0.48, cy: 0.12, radius: 0.10,
-        pts: (() => { const p=[]; for(let i=0;i<5;i++){const a=(i/5)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)}); const b=(i/5+0.1)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(b)*0.4,ay:Math.sin(b)*0.4});} return p; })() },
     ];
 
-    const TOTAL_CHAOS = 22;
-    const COLLECT_INTERVAL = 650;
-    const ORDER_HOLD_MS = 5000;
-    const FADE_MS = 1400;
+    // Unified shape: large hexagonal network at center
+    const unifiedPts = [];
+    for (let ring = 0; ring < 3; ring++) {
+      const n = ring === 0 ? 1 : ring * 6;
+      const r = ring * 0.33;
+      if (ring === 0) { unifiedPts.push({ax:0, ay:0}); continue; }
+      for (let i = 0; i < n; i++) {
+        const a = (i/n)*Math.PI*2 - Math.PI/2;
+        unifiedPts.push({ax: Math.cos(a)*r, ay: Math.sin(a)*r});
+      }
+    }
+
+    const TOTAL_CHAOS = 20;
+    const COLLECT_INTERVAL = 500;
+    const ORDER_HOLD_MS = 2500;
+    const CONVERGE_MS = 2000;
+    const UNIFIED_HOLD_MS = 3000;
+    const FADE_MS = 1200;
 
     let clusters = [];
     let chaosParticles = [];
     let travelers = [];
-    let shapeAlpha = 0;         // shapes fade in as particles arrive
-    let phase = 'chaos';        // 'chaos' | 'ordered' | 'fading'
+    let shapeAlpha = 0;
+    // chaos → ordered → converging → unified → fading
+    let phase = 'chaos';
     let phaseTimer = 0;
     let collectTimer = 0;
     let arrivedCount = 0;
+    let convergeProgress = 0;
 
     function resize() {
       w = canvas.width = window.innerWidth;
@@ -1279,13 +1286,12 @@
 
     function makeChaos() {
       return {
-        rx: 0.25 + Math.random() * 0.50,
+        rx: 0.20 + Math.random() * 0.60,
         ry: 0.08 + Math.random() * 0.84,
-        vx: (Math.random()-0.5)*0.001,
-        vy: (Math.random()-0.5)*0.001,
-        r: Math.random()*2 + 2.5,
-        phase: Math.random()*Math.PI*2,
-        fadeAlpha: 1
+        vx: (Math.random()-0.5)*0.0012,
+        vy: (Math.random()-0.5)*0.0012,
+        r: Math.random()*2 + 2,
+        phase: Math.random()*Math.PI*2
       };
     }
 
@@ -1294,6 +1300,7 @@
       travelers = [];
       arrivedCount = 0;
       shapeAlpha = 0;
+      convergeProgress = 0;
       phase = 'chaos';
       phaseTimer = 0;
       collectTimer = 0;
@@ -1309,10 +1316,7 @@
       const ci = Math.floor(Math.random()*clusters.length);
       const cluster = clusters[ci];
       const slot = Math.floor(Math.random()*cluster.def.pts.length);
-      travelers.push({
-        startX: p.rx, startY: p.ry, t: 0,
-        clusterIdx: ci, slot, r: p.r
-      });
+      travelers.push({ startX: p.rx, startY: p.ry, t: 0, clusterIdx: ci, slot, r: p.r });
     }
 
     function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
@@ -1334,73 +1338,79 @@
       const zoneW = sw * 0.52;
       const zoneY = sy + sh * 0.05;
       const zoneH = sh * 0.9;
+      const zoneCX = zoneX + zoneW * 0.5;
+      const zoneCY = zoneY + zoneH * 0.48;
       const now = Date.now();
       const dt = 16;
 
-      // Phase logic
+      // Phase machine
       if (phase === 'chaos') {
         collectTimer += dt;
         if (collectTimer >= COLLECT_INTERVAL && chaosParticles.length > 0) {
           collectParticle();
           collectTimer = 0;
-          // Accelerate collection as fewer remain
-          if (chaosParticles.length < 6) collectParticle();
-          if (chaosParticles.length < 3) collectParticle();
+          if (chaosParticles.length < 5) collectParticle();
+          if (chaosParticles.length < 2) collectParticle();
         }
         if (chaosParticles.length === 0 && travelers.length === 0) {
-          phase = 'ordered';
-          phaseTimer = 0;
+          phase = 'ordered'; phaseTimer = 0;
         }
-        // Shape edges/nodes fade in proportionally
-        shapeAlpha = Math.min(1, arrivedCount / (TOTAL_CHAOS * 0.6));
+        shapeAlpha = Math.min(1, arrivedCount / (TOTAL_CHAOS * 0.5));
       } else if (phase === 'ordered') {
         shapeAlpha = 1;
         phaseTimer += dt;
-        if (phaseTimer >= ORDER_HOLD_MS) {
-          phase = 'fading';
-          phaseTimer = 0;
-        }
+        if (phaseTimer >= ORDER_HOLD_MS) { phase = 'converging'; phaseTimer = 0; convergeProgress = 0; }
+      } else if (phase === 'converging') {
+        shapeAlpha = 1;
+        phaseTimer += dt;
+        convergeProgress = Math.min(1, phaseTimer / CONVERGE_MS);
+        if (phaseTimer >= CONVERGE_MS) { phase = 'unified'; phaseTimer = 0; }
+      } else if (phase === 'unified') {
+        shapeAlpha = 1;
+        convergeProgress = 1;
+        phaseTimer += dt;
+        if (phaseTimer >= UNIFIED_HOLD_MS) { phase = 'fading'; phaseTimer = 0; }
       } else if (phase === 'fading') {
         phaseTimer += dt;
         shapeAlpha = Math.max(0, 1 - phaseTimer / FADE_MS);
-        if (phaseTimer >= FADE_MS) {
-          resetCycle();
-        }
+        if (phaseTimer >= FADE_MS) resetCycle();
       }
+
+      const t = now * 0.001;
+      const convergeEase = easeInOut(convergeProgress);
 
       // === CHAOS PARTICLES ===
       chaosParticles.forEach(p => {
-        p.phase += 0.03;
-        p.rx += p.vx + Math.sin(p.phase*1.7)*0.002;
-        p.ry += p.vy + Math.cos(p.phase*2.3)*0.002;
-        if (p.rx < 0.25 || p.rx > 0.75) p.vx *= -1;
+        p.phase += 0.025;
+        p.rx += p.vx + Math.sin(p.phase*1.7)*0.0015;
+        p.ry += p.vy + Math.cos(p.phase*2.3)*0.0015;
+        if (p.rx < 0.20 || p.rx > 0.80) p.vx *= -1;
         if (p.ry < 0.08 || p.ry > 0.92) p.vy *= -1;
-        p.rx = Math.max(0.25, Math.min(0.75, p.rx));
+        p.rx = Math.max(0.20, Math.min(0.80, p.rx));
         p.ry = Math.max(0.08, Math.min(0.92, p.ry));
-
         const px = sx + p.rx*sw, py = sy + p.ry*sh;
         ctx.beginPath();
         ctx.arc(px, py, p.r, 0, Math.PI*2);
         ctx.fillStyle = '#a5b4fc';
-        ctx.globalAlpha = 0.7;
+        ctx.globalAlpha = 0.6;
         ctx.fill();
         ctx.globalAlpha = 1;
       });
 
-      // Chaos dashed connections
+      // Chaos connections
       for (let i = 0; i < chaosParticles.length; i++) {
         for (let j = i+1; j < chaosParticles.length; j++) {
           const a = chaosParticles[i], b = chaosParticles[j];
           const dx = (a.rx-b.rx)*sw, dy = (a.ry-b.ry)*sh;
           const dist = Math.sqrt(dx*dx+dy*dy);
-          if (dist < sh*0.28) {
+          if (dist < sh*0.25) {
             ctx.beginPath();
             ctx.moveTo(sx+a.rx*sw, sy+a.ry*sh);
             ctx.lineTo(sx+b.rx*sw, sy+b.ry*sh);
             ctx.strokeStyle = '#a5b4fc';
-            ctx.globalAlpha = 0.25*(1-dist/(sh*0.22));
+            ctx.globalAlpha = 0.18*(1-dist/(sh*0.25));
             ctx.lineWidth = 0.5;
-            ctx.setLineDash([2,4]);
+            ctx.setLineDash([2,5]);
             ctx.stroke();
             ctx.setLineDash([]);
             ctx.globalAlpha = 1;
@@ -1411,7 +1421,7 @@
       // === TRAVELERS ===
       for (let i = travelers.length-1; i >= 0; i--) {
         const tr = travelers[i];
-        tr.t += 0.014;
+        tr.t += 0.016;
         const cluster = clusters[tr.clusterIdx];
         const sd = cluster.def;
         const pt = sd.pts[tr.slot % sd.pts.length];
@@ -1419,160 +1429,155 @@
         const destY = zoneY + sd.cy*zoneH + pt.ay*sd.radius*Math.min(zoneW,zoneH);
         const startX = sx + tr.startX*sw;
         const startY = sy + tr.startY*sh;
-
         if (tr.t >= 1) {
-          // Arrived — light up target node
-          cluster.nodeAlpha[tr.slot % sd.pts.length] = Math.min(1,
-            cluster.nodeAlpha[tr.slot % sd.pts.length] + 0.4);
+          cluster.nodeAlpha[tr.slot % sd.pts.length] = Math.min(1, cluster.nodeAlpha[tr.slot % sd.pts.length] + 0.5);
           arrivedCount++;
           travelers.splice(i, 1);
           continue;
         }
-
         const ease = easeInOut(tr.t);
         const px = startX + (destX-startX)*ease;
         const py = startY + (destY-startY)*ease;
         const cc = clusterColors[tr.clusterIdx % clusterColors.length];
-        // Color transition: grey → cluster color
-        const colorBlend = Math.min(1, tr.t * 2);
-        const color = colorBlend > 0.5 ? cc.node : '#a5b4fc';
-
+        const color = tr.t > 0.4 ? cc.node : '#a5b4fc';
         ctx.beginPath();
-        ctx.arc(px, py, tr.r * (1 + tr.t*0.4), 0, Math.PI*2);
+        ctx.arc(px, py, tr.r*(1+tr.t*0.3), 0, Math.PI*2);
         ctx.fillStyle = color;
-        ctx.globalAlpha = 0.6 + tr.t*0.4;
+        ctx.globalAlpha = 0.5 + tr.t*0.5;
         ctx.fill();
-
-        // Glow at destination when close
-        if (tr.t > 0.7) {
-          ctx.beginPath();
-          ctx.arc(destX, destY, 8*(tr.t-0.7)/0.3, 0, Math.PI*2);
-          ctx.fillStyle = cc.node;
-          ctx.globalAlpha = 0.25*(tr.t-0.7)/0.3;
-          ctx.fill();
-        }
-
-        // Trail line
-        const te = Math.max(0, ease-0.06);
+        // Trail
+        const te = Math.max(0, ease-0.08);
         ctx.beginPath();
         ctx.moveTo(startX+(destX-startX)*te, startY+(destY-startY)*te);
         ctx.lineTo(px, py);
         ctx.strokeStyle = color;
-        ctx.globalAlpha = 0.2;
+        ctx.globalAlpha = 0.15;
         ctx.lineWidth = 1;
-        ctx.lineCap = 'round';
         ctx.stroke();
         ctx.globalAlpha = 1;
       }
 
-      // === DRAW SHAPE CLUSTERS ===
+      // === DRAW SHAPES (scattered or converging) ===
       if (shapeAlpha > 0.01) {
-        const t = now * 0.001;
+        // Compute unified ring radius
+        const uniR = Math.min(zoneW, zoneH) * 0.32;
 
-        // Inter-cluster connection lines (subtle links between nearby clusters)
-        for (let i = 0; i < clusters.length; i++) {
-          for (let j = i+1; j < clusters.length; j++) {
-            const a = clusters[i].def, b = clusters[j].def;
-            const ax = zoneX + a.cx*zoneW, ay = zoneY + a.cy*zoneH;
-            const bx = zoneX + b.cx*zoneW, by = zoneY + b.cy*zoneH;
-            const dist = Math.sqrt((ax-bx)**2 + (ay-by)**2);
-            if (dist < zoneW * 0.45) {
-              // Animated dash offset
-              ctx.save();
-              ctx.beginPath();
-              ctx.moveTo(ax, ay);
-              ctx.lineTo(bx, by);
-              ctx.strokeStyle = '#a5b4fc';
-              ctx.globalAlpha = 0.08 * shapeAlpha;
-              ctx.lineWidth = 0.5;
-              ctx.setLineDash([3, 8]);
-              ctx.lineDashOffset = -t * 12;
-              ctx.stroke();
-              ctx.setLineDash([]);
-              ctx.restore();
-            }
-          }
-        }
-
+        // Build all node positions (scattered + unified targets)
+        let allNodes = [];
         clusters.forEach((cluster, ci) => {
           const sd = cluster.def;
           const cc = clusterColors[ci % clusterColors.length];
-          const centerX = zoneX + sd.cx*zoneW;
-          const centerY = zoneY + sd.cy*zoneH;
+          const scatterCX = zoneX + sd.cx*zoneW;
+          const scatterCY = zoneY + sd.cy*zoneH;
           const r = sd.radius * Math.min(zoneW, zoneH);
 
-          // Edges — fade in with shapeAlpha
-          for (let i = 0; i < sd.pts.length; i++) {
-            const a = sd.pts[i];
-            const ax = centerX + a.ax*r, ay = centerY + a.ay*r;
-            for (let j = i+1; j < sd.pts.length; j++) {
-              const b = sd.pts[j];
-              const bx = centerX + b.ax*r, by = centerY + b.ay*r;
-              const dx = ax-bx, dy = ay-by;
-              if (Math.sqrt(dx*dx+dy*dy) < r*1.6) {
-                ctx.beginPath();
-                ctx.moveTo(ax, ay);
-                ctx.lineTo(bx, by);
-                ctx.strokeStyle = cc.line;
-                ctx.globalAlpha = 0.3 * shapeAlpha;
-                ctx.lineWidth = 0.7;
-                ctx.stroke();
-              }
-            }
-          }
+          // Unified positions: distribute this cluster's nodes on the big ring
+          const totalAllPts = shapeDefs.reduce((s,d) => s+d.pts.length, 0);
+          let globalOffset = 0;
+          for (let k = 0; k < ci; k++) globalOffset += shapeDefs[k].pts.length;
 
-          // Nodes — each fades in individually as particles arrive
           sd.pts.forEach((pt, pi) => {
-            // Gradually increase nodeAlpha
-            const targetA = shapeAlpha * 0.7;
-            if (cluster.nodeAlpha[pi] < targetA) cluster.nodeAlpha[pi] += 0.006;
+            const targetA = shapeAlpha * 0.8;
+            if (cluster.nodeAlpha[pi] < targetA) cluster.nodeAlpha[pi] += 0.008;
             const nodeA = Math.min(1, cluster.nodeAlpha[pi]);
             if (nodeA < 0.01) return;
 
-            const breathe = Math.sin(t*1.5 + pi*0.8 + ci*2) * 1.5;
-            const px = centerX + pt.ax*r + breathe;
-            const py = centerY + pt.ay*r + Math.cos(t*1.2 + pi)*1.2;
+            // Scattered position
+            const sX = scatterCX + pt.ax*r;
+            const sY = scatterCY + pt.ay*r;
+            // Unified position on big ring
+            const uniAngle = ((globalOffset + pi) / totalAllPts) * Math.PI * 2 - Math.PI/2;
+            const uniDist = (pi === 0 && sd.pts.length > 4) ? uniR*0.4 : uniR;
+            const uX = zoneCX + Math.cos(uniAngle) * uniDist;
+            const uY = zoneCY + Math.sin(uniAngle) * uniDist;
+            // Interpolate
+            const breathe = Math.sin(t*1.2 + pi*0.8 + ci*2) * 1.2;
+            const nx = sX + (uX - sX) * convergeEase + breathe * (1 - convergeEase*0.7);
+            const ny = sY + (uY - sY) * convergeEase + Math.cos(t + pi)*0.8 * (1 - convergeEase*0.7);
+            const nodeSize = 3 + convergeEase * 1;
 
-            // Pulse ring effect — sequential light-up
-            const pulsePhase = (t * 0.8 + ci * 1.2 + pi * 0.5) % 4;
-            if (pulsePhase < 1 && nodeA > 0.3) {
-              const pulseR = 3.5 + pulsePhase * 8;
-              ctx.beginPath();
-              ctx.arc(px, py, pulseR, 0, Math.PI*2);
-              ctx.strokeStyle = cc.node;
-              ctx.globalAlpha = (1 - pulsePhase) * 0.25 * shapeAlpha;
-              ctx.lineWidth = 1;
-              ctx.stroke();
-            }
+            allNodes.push({ x: nx, y: ny, cc, nodeA, ci, pi });
 
             ctx.beginPath();
-            ctx.arc(px, py, 3.5, 0, Math.PI*2);
+            ctx.arc(nx, ny, nodeSize, 0, Math.PI*2);
             ctx.fillStyle = cc.node;
             ctx.globalAlpha = nodeA * shapeAlpha;
             ctx.fill();
             ctx.globalAlpha = 1;
           });
 
-          // Center dot with slow pulse
-          const centerPulse = 2.5 + Math.sin(t * 1.2 + ci) * 0.8;
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, centerPulse, 0, Math.PI*2);
-          ctx.fillStyle = cc.node;
-          ctx.globalAlpha = 0.35 * shapeAlpha;
-          ctx.fill();
-          ctx.globalAlpha = 1;
+          // Draw edges within cluster (fade as converge)
+          const edgeAlpha = 0.3 * shapeAlpha * (1 - convergeEase * 0.6);
+          if (edgeAlpha > 0.01) {
+            for (let i = 0; i < sd.pts.length; i++) {
+              const a = sd.pts[i];
+              const aX = scatterCX + a.ax*r + (zoneCX + Math.cos(((globalOffset+i)/totalAllPts)*Math.PI*2 - Math.PI/2)*uniR - (scatterCX + a.ax*r)) * convergeEase;
+              const aY = scatterCY + a.ay*r + (zoneCY + Math.sin(((globalOffset+i)/totalAllPts)*Math.PI*2 - Math.PI/2)*uniR - (scatterCY + a.ay*r)) * convergeEase;
+              for (let j = i+1; j < sd.pts.length; j++) {
+                const b = sd.pts[j];
+                const bX = scatterCX + b.ax*r + (zoneCX + Math.cos(((globalOffset+j)/totalAllPts)*Math.PI*2 - Math.PI/2)*uniR - (scatterCX + b.ax*r)) * convergeEase;
+                const bY = scatterCY + b.ay*r + (zoneCY + Math.sin(((globalOffset+j)/totalAllPts)*Math.PI*2 - Math.PI/2)*uniR - (scatterCY + b.ay*r)) * convergeEase;
+                const dx = aX-bX, dy = aY-bY;
+                if (Math.sqrt(dx*dx+dy*dy) < r*1.8 || convergeEase > 0.5) {
+                  ctx.beginPath();
+                  ctx.moveTo(aX, aY);
+                  ctx.lineTo(bX, bY);
+                  ctx.strokeStyle = cc.line;
+                  ctx.globalAlpha = edgeAlpha;
+                  ctx.lineWidth = 0.6;
+                  ctx.stroke();
+                }
+              }
+            }
+          }
         });
 
-        // Ambient floating micro-dots (subtle background activity)
-        for (let i = 0; i < 12; i++) {
-          const fx = zoneX + ((Math.sin(t*0.3 + i*2.1) + 1)/2) * zoneW;
-          const fy = zoneY + ((Math.cos(t*0.25 + i*1.7) + 1)/2) * zoneH;
-          const flicker = (Math.sin(t*2 + i*3.7) + 1) / 2;
+        // Draw unified ring connections when converging
+        if (convergeEase > 0.3) {
+          const ringAlpha = (convergeEase - 0.3) / 0.7 * 0.4 * shapeAlpha;
+          // Connect adjacent nodes in the unified ring
+          for (let i = 0; i < allNodes.length; i++) {
+            const a = allNodes[i];
+            const b = allNodes[(i+1) % allNodes.length];
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = '#818cf8';
+            ctx.globalAlpha = ringAlpha;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+          // Spokes to center
+          for (let i = 0; i < allNodes.length; i += 3) {
+            const a = allNodes[i];
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(zoneCX, zoneCY);
+            ctx.strokeStyle = '#a5b4fc';
+            ctx.globalAlpha = ringAlpha * 0.4;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+          // Center glow
+          const glowR = 6 + Math.sin(t*1.5)*2;
           ctx.beginPath();
-          ctx.arc(fx, fy, 1.2, 0, Math.PI*2);
-          ctx.fillStyle = '#a5b4fc';
-          ctx.globalAlpha = flicker * 0.2 * shapeAlpha;
+          ctx.arc(zoneCX, zoneCY, glowR, 0, Math.PI*2);
+          ctx.fillStyle = '#818cf8';
+          ctx.globalAlpha = ringAlpha * 0.6;
           ctx.fill();
+          // Outer pulse ring
+          if (convergeEase > 0.8) {
+            const pulseT = (t * 0.6) % 2;
+            if (pulseT < 1.5) {
+              const pr = uniR * (0.6 + pulseT * 0.4);
+              ctx.beginPath();
+              ctx.arc(zoneCX, zoneCY, pr, 0, Math.PI*2);
+              ctx.strokeStyle = '#818cf8';
+              ctx.globalAlpha = (1.5 - pulseT) / 1.5 * 0.2 * shapeAlpha;
+              ctx.lineWidth = 1.5;
+              ctx.stroke();
+            }
+          }
         }
         ctx.globalAlpha = 1;
       }
