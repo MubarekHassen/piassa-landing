@@ -1118,107 +1118,85 @@
     });
   </script>
 
-  <!-- NETWORK ANIMATION — chaos to order, process section only -->
+  <!-- NETWORK ANIMATION — 5 nodes, chaos to order, process header white space only -->
   <canvas id="networkCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
   <script>
   (function() {
     const canvas = document.getElementById('networkCanvas');
     const ctx = canvas.getContext('2d');
     let w, h;
-    let sectionRect = null; // the how-it-works bounding box in viewport coords
 
-    // The concept: LEFT side = chaos (scattered gray dots jittering),
-    // CENTER = a funnel/convergence zone, RIGHT side = organized constellation
-    // Particles spawn on the left in chaos, flow right, and lock into a structured shape
+    // 5 nodes that cycle between chaos (scattered, gray, jittery) and order (structured, colored, connected)
+    const NODE_COUNT = 5;
+    const colors = ['#6366f1','#0284c7','#059669','#818cf8','#7c3aed'];
+    const chaosColor = '#94a3b8';
 
-    const hubColor = '#6366f1';
-    const orderColors = ['#6366f1','#0284c7','#059669','#818cf8'];
-
-    // Structured constellation points (relative to hub center, normalized 0-1)
-    // Forms a hexagonal/molecular structure
-    const constellationShape = [];
-    for (let i = 0; i < 12; i++) {
-      const angle = (i / 12) * Math.PI * 2;
-      const ring = i < 6 ? 1 : 0.55;
-      constellationShape.push({ ax: Math.cos(angle) * ring, ay: Math.sin(angle) * ring });
+    // Ordered positions: a clean pentagon shape, positioned in right half of white space
+    // Coordinates relative to animation zone (0-1)
+    function getOrderedPositions(cx, cy, radius) {
+      const pts = [];
+      for (let i = 0; i < NODE_COUNT; i++) {
+        const angle = (i / NODE_COUNT) * Math.PI * 2 - Math.PI / 2;
+        pts.push({ x: cx + Math.cos(angle) * radius, y: cy + Math.sin(angle) * radius });
+      }
+      return pts;
     }
 
-    let chaosParticles = []; // left-side chaotic dots
-    let travelers = [];      // particles mid-journey from chaos to order
-    let ordered = [];        // particles that have arrived and locked in
+    // Each node has a chaos position (random, jittery) and an order position (pentagon slot)
+    let nodes = [];
+    let phase = 'chaos';    // 'chaos' | 'gathering' | 'order' | 'dispersing'
+    let phaseT = 0;         // 0-1 progress through current phase
+    const CHAOS_DURATION = 4000;    // ms in chaos
+    const GATHER_DURATION = 2000;   // ms transitioning to order
+    const ORDER_DURATION = 3000;    // ms holding order
+    const DISPERSE_DURATION = 1500; // ms dispersing back to chaos
+    let lastTime = 0;
 
     function resize() {
       w = canvas.width = window.innerWidth;
       h = canvas.height = window.innerHeight;
-      init();
     }
 
     function getSection() {
-      // Only the header area (white space above the photo cards)
       const el = document.querySelector('.how-header');
       if (!el) return null;
       return el.getBoundingClientRect();
     }
 
-    function init() {
-      chaosParticles = [];
-      ordered = [];
-      // Pre-fill some ordered particles so it doesn't start empty
-      for (let i = 0; i < 10; i++) {
-        const slot = constellationShape[i];
-        ordered.push({
-          slot: i,
-          ax: slot.ax, ay: slot.ay,
-          r: 2.5,
-          color: orderColors[i % orderColors.length],
-          alpha: 0.8
+    function initNodes(rect) {
+      const sx = rect.left, sy = rect.top, sw = rect.width, sh = rect.height;
+      // Animation zone: right 45% of the header, centered vertically
+      const zoneX = sx + sw * 0.55;
+      const zoneW = sw * 0.42;
+      const zoneY = sy + sh * 0.1;
+      const zoneH = sh * 0.8;
+
+      nodes = [];
+      for (let i = 0; i < NODE_COUNT; i++) {
+        nodes.push({
+          // Chaos position (scattered randomly in the zone)
+          cx: zoneX + Math.random() * zoneW,
+          cy: zoneY + Math.random() * zoneH,
+          // Current drawn position
+          x: zoneX + Math.random() * zoneW,
+          y: zoneY + Math.random() * zoneH,
+          // Velocity for chaos jitter
+          vx: (Math.random() - 0.5) * 1.2,
+          vy: (Math.random() - 0.5) * 1.2,
+          r: 6,
+          color: colors[i],
+          phase: Math.random() * Math.PI * 2
         });
       }
-      // Spawn chaos particles
-      for (let i = 0; i < 18; i++) {
-        chaosParticles.push(makeChaos());
-      }
     }
 
-    function makeChaos() {
-      return {
-        // Position relative to section (0-1), constrained to left 35%
-        rx: Math.random() * 0.3,
-        ry: Math.random(),
-        vx: (Math.random() - 0.5) * 0.003,
-        vy: (Math.random() - 0.5) * 0.003,
-        jitterX: 0, jitterY: 0,
-        r: Math.random() * 3 + 3,
-        color: '#94a3b8',
-        phase: Math.random() * Math.PI * 2
-      };
-    }
+    let initialized = false;
 
-    // Every few seconds, one chaos particle "gets collected" — travels to the constellation
-    function collectParticle() {
-      if (chaosParticles.length < 4) {
-        // Replenish chaos side
-        chaosParticles.push(makeChaos());
-        return;
-      }
-      // Pick a random chaos particle
-      const idx = Math.floor(Math.random() * chaosParticles.length);
-      const p = chaosParticles.splice(idx, 1)[0];
-      // Find an open slot or cycle
-      const slot = ordered.length % constellationShape.length;
-      travelers.push({
-        startX: p.rx, startY: p.ry,
-        t: 0, // 0 to 1 progress
-        slot,
-        r: p.r,
-        color: p.color
-      });
-      // Add replacement chaos particle
-      chaosParticles.push(makeChaos());
-    }
-    setInterval(collectParticle, 1800);
+    function animate(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const dt = timestamp - lastTime;
+      lastTime = timestamp;
 
-    function animate() {
       ctx.clearRect(0, 0, w, h);
       const rect = getSection();
       if (!rect || rect.bottom < 0 || rect.top > h) {
@@ -1226,64 +1204,126 @@
         return;
       }
 
-      // Clip to section
-      const top = Math.max(0, rect.top);
-      const bot = Math.min(h, rect.bottom);
+      if (!initialized || nodes.length === 0) {
+        initNodes(rect);
+        initialized = true;
+      }
+
+      // Clip to how-header only
       ctx.save();
       ctx.beginPath();
-      ctx.rect(0, top, w, bot - top);
+      ctx.rect(rect.left, Math.max(0, rect.top), rect.width, Math.min(h, rect.bottom) - Math.max(0, rect.top));
       ctx.clip();
 
-      const sx = rect.left;
-      const sy = rect.top;
-      const sw = rect.width;
-      const sh = rect.height;
+      const sx = rect.left, sy = rect.top, sw = rect.width, sh = rect.height;
 
-      // Hub center (right side, 75% across)
-      const hubX = sx + sw * 0.78;
-      const hubY = sy + sh * 0.5;
-      const hubRadius = Math.min(sw, sh) * 0.22;
+      // Animation zone bounds
+      const zoneX = sx + sw * 0.55;
+      const zoneW = sw * 0.42;
+      const zoneY = sy + sh * 0.1;
+      const zoneH = sh * 0.8;
+      const centerX = zoneX + zoneW * 0.5;
+      const centerY = zoneY + zoneH * 0.5;
+      const pentRadius = Math.min(zoneW, zoneH) * 0.32;
 
-      // === LEFT SIDE: CHAOS ===
-      chaosParticles.forEach(p => {
-        // Jittery motion
-        p.phase += 0.04;
-        p.jitterX = Math.sin(p.phase * 1.7) * 0.008;
-        p.jitterY = Math.cos(p.phase * 2.3) * 0.006;
-        p.rx += p.vx + p.jitterX;
-        p.ry += p.vy + p.jitterY;
-        // Bounce within left zone
-        if (p.rx < 0.02 || p.rx > 0.32) p.vx *= -1;
-        if (p.ry < 0.05 || p.ry > 0.95) p.vy *= -1;
-        p.rx = Math.max(0.02, Math.min(0.32, p.rx));
-        p.ry = Math.max(0.05, Math.min(0.95, p.ry));
+      const orderedPos = getOrderedPositions(centerX, centerY, pentRadius);
 
-        const px = sx + p.rx * sw;
-        const py = sy + p.ry * sh;
+      // Phase timing
+      const phaseDuration = phase === 'chaos' ? CHAOS_DURATION : phase === 'gathering' ? GATHER_DURATION : phase === 'order' ? ORDER_DURATION : DISPERSE_DURATION;
+      phaseT += dt / phaseDuration;
+      if (phaseT >= 1) {
+        phaseT = 0;
+        if (phase === 'chaos') {
+          phase = 'gathering';
+          // Snapshot current chaos positions as start of gathering
+          nodes.forEach(n => { n.gatherStartX = n.x; n.gatherStartY = n.y; });
+        } else if (phase === 'gathering') {
+          phase = 'order';
+          // Snap to ordered positions
+          nodes.forEach((n, i) => { n.x = orderedPos[i].x; n.y = orderedPos[i].y; });
+        } else if (phase === 'order') {
+          phase = 'dispersing';
+          // Set new random chaos targets
+          nodes.forEach(n => {
+            n.cx = zoneX + Math.random() * zoneW;
+            n.cy = zoneY + Math.random() * zoneH;
+            n.disperseStartX = n.x;
+            n.disperseStartY = n.y;
+          });
+        } else {
+          phase = 'chaos';
+          nodes.forEach(n => {
+            n.x = n.cx; n.y = n.cy;
+            n.vx = (Math.random() - 0.5) * 1.2;
+            n.vy = (Math.random() - 0.5) * 1.2;
+          });
+        }
+      }
 
-        // Draw — gray, jittery, unconnected
-        ctx.beginPath();
-        ctx.arc(px, py, p.r, 0, Math.PI*2);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = 0.65;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      });
+      // Easing
+      function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
 
-      // Chaotic lines between nearby chaos particles (messy, dashed)
-      for (let i = 0; i < chaosParticles.length; i++) {
-        for (let j = i+1; j < chaosParticles.length; j++) {
-          const a = chaosParticles[i], b = chaosParticles[j];
-          const dx = (a.rx - b.rx) * sw, dy = (a.ry - b.ry) * sh;
+      // Update positions based on phase
+      if (phase === 'chaos') {
+        nodes.forEach(n => {
+          n.phase += 0.03;
+          n.x += n.vx + Math.sin(n.phase * 1.7) * 0.5;
+          n.y += n.vy + Math.cos(n.phase * 2.3) * 0.4;
+          // Bounce within zone
+          if (n.x < zoneX + 10 || n.x > zoneX + zoneW - 10) n.vx *= -1;
+          if (n.y < zoneY + 10 || n.y > zoneY + zoneH - 10) n.vy *= -1;
+          n.x = Math.max(zoneX + 10, Math.min(zoneX + zoneW - 10, n.x));
+          n.y = Math.max(zoneY + 10, Math.min(zoneY + zoneH - 10, n.y));
+        });
+      } else if (phase === 'gathering') {
+        const ease = easeInOut(phaseT);
+        nodes.forEach((n, i) => {
+          n.x = n.gatherStartX + (orderedPos[i].x - n.gatherStartX) * ease;
+          n.y = n.gatherStartY + (orderedPos[i].y - n.gatherStartY) * ease;
+        });
+      } else if (phase === 'order') {
+        // Gentle breathing pulse
+        nodes.forEach((n, i) => {
+          const breathe = Math.sin(timestamp * 0.002 + i) * 2;
+          n.x = orderedPos[i].x + breathe;
+          n.y = orderedPos[i].y + Math.cos(timestamp * 0.002 + i) * 1.5;
+        });
+      } else if (phase === 'dispersing') {
+        const ease = easeInOut(phaseT);
+        nodes.forEach(n => {
+          n.x = n.disperseStartX + (n.cx - n.disperseStartX) * ease;
+          n.y = n.disperseStartY + (n.cy - n.disperseStartY) * ease;
+        });
+      }
+
+      // Draw connections
+      const orderAmount = phase === 'chaos' ? 0 : phase === 'gathering' ? easeInOut(phaseT) : phase === 'order' ? 1 : 1 - easeInOut(phaseT);
+
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i], b = nodes[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
           const dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist < sh * 0.25) {
+          const maxDist = phase === 'chaos' || phase === 'dispersing' ? pentRadius * 1.5 : pentRadius * 2.5;
+
+          if (dist < maxDist) {
             ctx.beginPath();
-            ctx.moveTo(sx + a.rx*sw, sy + a.ry*sh);
-            ctx.lineTo(sx + b.rx*sw, sy + b.ry*sh);
-            ctx.strokeStyle = '#94a3b8';
-            ctx.globalAlpha = 0.18 * (1 - dist/(sh*0.25));
-            ctx.lineWidth = 0.5;
-            ctx.setLineDash([2, 4]); // dashed = messy
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+
+            if (orderAmount > 0.3) {
+              // Ordered: solid colored lines
+              ctx.strokeStyle = '#6366f1';
+              ctx.globalAlpha = 0.25 * orderAmount * (1 - dist/maxDist);
+              ctx.lineWidth = 1.2;
+              ctx.setLineDash([]);
+            } else {
+              // Chaotic: dashed gray lines
+              ctx.strokeStyle = chaosColor;
+              ctx.globalAlpha = 0.15 * (1 - dist/maxDist);
+              ctx.lineWidth = 0.8;
+              ctx.setLineDash([3, 5]);
+            }
             ctx.stroke();
             ctx.setLineDash([]);
             ctx.globalAlpha = 1;
@@ -1291,125 +1331,40 @@
         }
       }
 
-      // === TRAVELERS: chaos → order ===
-      for (let i = travelers.length - 1; i >= 0; i--) {
-        const t = travelers[i];
-        t.t += 0.006;
-        if (t.t >= 1) {
-          // Arrived — add to ordered
-          const slot = constellationShape[t.slot % constellationShape.length];
-          if (ordered.length > 16) ordered.shift(); // cycle old ones out
-          ordered.push({
-            slot: t.slot,
-            ax: slot.ax, ay: slot.ay,
-            r: t.r + 0.5,
-            color: orderColors[t.slot % orderColors.length],
-            alpha: 0
-          });
-          travelers.splice(i, 1);
-          continue;
+      // Draw nodes
+      nodes.forEach((n, i) => {
+        // Color lerp: gray in chaos, vibrant in order
+        const nodeColor = orderAmount > 0.5 ? n.color : chaosColor;
+        const nodeAlpha = 0.5 + orderAmount * 0.35;
+        const nodeR = n.r * (1 + orderAmount * 0.3);
+
+        // Glow in ordered state
+        if (orderAmount > 0.5) {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, nodeR + 6, 0, Math.PI * 2);
+          const glow = ctx.createRadialGradient(n.x, n.y, nodeR, n.x, n.y, nodeR + 6);
+          glow.addColorStop(0, n.color);
+          glow.addColorStop(1, 'transparent');
+          ctx.fillStyle = glow;
+          ctx.globalAlpha = 0.15 * orderAmount;
+          ctx.fill();
         }
 
-        // Cubic ease-in-out for smooth journey
-        const ease = t.t < 0.5 ? 4*t.t*t*t : 1 - Math.pow(-2*t.t+2,3)/2;
-        const destSlot = constellationShape[t.slot % constellationShape.length];
-        const destX = hubX + destSlot.ax * hubRadius;
-        const destY = hubY + destSlot.ay * hubRadius;
-        const startX = sx + t.startX * sw;
-        const startY = sy + t.startY * sh;
-
-        const px = startX + (destX - startX) * ease;
-        const py = startY + (destY - startY) * ease;
-
-        // Color transitions from gray to vibrant
-        const color = t.t > 0.5 ? orderColors[t.slot % orderColors.length] : '#94a3b8';
-
-        // Draw traveling particle
+        // Node dot
         ctx.beginPath();
-        ctx.arc(px, py, t.r * (1 + t.t * 0.3), 0, Math.PI*2);
-        ctx.fillStyle = color;
-        ctx.globalAlpha = 0.6 + t.t * 0.3;
+        ctx.arc(n.x, n.y, nodeR, 0, Math.PI * 2);
+        ctx.fillStyle = nodeColor;
+        ctx.globalAlpha = nodeAlpha;
         ctx.fill();
-        // Trail
-        const trailEase = Math.max(0, ease - 0.04);
-        const tx = startX + (destX - startX) * trailEase;
-        const ty = startY + (destY - startY) * trailEase;
-        ctx.beginPath();
-        ctx.moveTo(tx, ty);
-        ctx.lineTo(px, py);
-        ctx.strokeStyle = color;
-        ctx.globalAlpha = 0.3;
-        ctx.lineWidth = 1.5;
-        ctx.lineCap = 'round';
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-      }
 
-      // === RIGHT SIDE: ORDERED CONSTELLATION ===
-      // Draw connections (clean, solid lines = structure)
-      for (let i = 0; i < ordered.length; i++) {
-        const a = ordered[i];
-        const ax = hubX + a.ax * hubRadius;
-        const ay = hubY + a.ay * hubRadius;
-        // Connect to hub center
+        // White inner dot
         ctx.beginPath();
-        ctx.moveTo(hubX, hubY);
-        ctx.lineTo(ax, ay);
-        ctx.strokeStyle = hubColor;
-        ctx.globalAlpha = 0.22;
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-        // Connect to neighbors
-        for (let j = i+1; j < ordered.length; j++) {
-          const b = ordered[j];
-          const bx = hubX + b.ax * hubRadius;
-          const by = hubY + b.ay * hubRadius;
-          const dx = ax-bx, dy = ay-by;
-          if (Math.sqrt(dx*dx+dy*dy) < hubRadius * 1.3) {
-            ctx.beginPath();
-            ctx.moveTo(ax, ay);
-            ctx.lineTo(bx, by);
-            ctx.strokeStyle = hubColor;
-            ctx.globalAlpha = 0.15;
-            ctx.lineWidth = 0.7;
-            ctx.stroke();
-          }
-        }
-        ctx.globalAlpha = 1;
-      }
-
-      // Draw ordered particles
-      ordered.forEach(p => {
-        if (p.alpha < 0.8) p.alpha += 0.02; // fade in
-        const px = hubX + p.ax * hubRadius;
-        const py = hubY + p.ay * hubRadius;
-        ctx.beginPath();
-        ctx.arc(px, py, p.r, 0, Math.PI*2);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.alpha;
+        ctx.arc(n.x, n.y, nodeR * 0.35, 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.globalAlpha = 0.6;
         ctx.fill();
         ctx.globalAlpha = 1;
       });
-
-      // Hub center
-      ctx.beginPath();
-      ctx.arc(hubX, hubY, 5, 0, Math.PI*2);
-      ctx.fillStyle = hubColor;
-      ctx.globalAlpha = 0.6;
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(hubX, hubY, 2, 0, Math.PI*2);
-      ctx.fillStyle = '#fff';
-      ctx.globalAlpha = 0.7;
-      ctx.fill();
-      // Outer ring
-      ctx.beginPath();
-      ctx.arc(hubX, hubY, hubRadius + 8, 0, Math.PI*2);
-      ctx.strokeStyle = hubColor;
-      ctx.globalAlpha = 0.06;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.globalAlpha = 1;
 
       ctx.restore();
       requestAnimationFrame(animate);
