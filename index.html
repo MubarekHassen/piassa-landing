@@ -1271,6 +1271,7 @@
     let collectTimer = 0;
     let arrivedCount = 0;
     let convergeProgress = 0;
+    let lastFrameTime = 0;
 
     function resize() {
       w = canvas.width = window.innerWidth;
@@ -1321,7 +1322,11 @@
 
     function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
 
-    function animate() {
+    function animate(timestamp) {
+      if (!lastFrameTime) lastFrameTime = timestamp;
+      const dt = Math.min(timestamp - lastFrameTime, 100); // cap at 100ms to prevent jumps
+      lastFrameTime = timestamp;
+
       ctx.clearRect(0, 0, w, h);
       const rect = getSection();
       if (!rect || rect.bottom < 0 || rect.top > h) { requestAnimationFrame(animate); return; }
@@ -1336,7 +1341,6 @@
       const zoneCX = zoneX + zoneW * 0.5;
       const zoneCY = zoneY + zoneH * 0.50;
       const now = Date.now();
-      const dt = 16;
 
       // Phase machine
       if (phase === 'chaos') {
@@ -1417,7 +1421,7 @@
       // === TRAVELERS ===
       for (let i = travelers.length-1; i >= 0; i--) {
         const tr = travelers[i];
-        tr.t += 0.016;
+        tr.t += dt * 0.001;
         const cluster = clusters[tr.clusterIdx];
         const sd = cluster.def;
         const pt = sd.pts[tr.slot % sd.pts.length];
