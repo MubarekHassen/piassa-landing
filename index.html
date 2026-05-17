@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
 
     :root {
       --bg: #ffffff;
@@ -916,6 +917,33 @@
     </div>
   </div>
 
+  <!-- CAPABILITIES -->
+  <section class="capabilities" id="capabilities">
+    <div class="capabilities-bg"></div>
+    <div class="capabilities-header">
+      <div class="section-tag reveal">Platform</div>
+      <h2 class="section-title reveal reveal-delay-1">One platform.<br>Total building intelligence.</h2>
+      <p class="section-subtitle reveal reveal-delay-2">From field inspection to portfolio analytics — piassa.ai unifies every layer of building operations into a single source of truth.</p>
+    </div>
+    <div class="capabilities-grid">
+      <div class="cap-card reveal">
+        <div class="cap-icon blue">◎</div>
+        <h3>Asset Intelligence</h3>
+        <p>Comprehensive condition data for HVAC, electrical, plumbing, roofing, and structural systems — captured in the field and structured for analysis in real time.</p>
+      </div>
+      <div class="cap-card reveal reveal-delay-1">
+        <div class="cap-icon purple">⬡</div>
+        <h3>Predictive Operations</h3>
+        <p>AI-driven maintenance prioritization that turns reactive spend into proactive strategy. Know what breaks before it breaks.</p>
+      </div>
+      <div class="cap-card reveal reveal-delay-2">
+        <div class="cap-icon green">◈</div>
+        <h3>Portfolio Analytics</h3>
+        <p>Institutional-grade reporting across your entire portfolio — auditable and built for capital partners and property management platforms.</p>
+      </div>
+    </div>
+  </section>
+
   <div class="trust-bar">
     <div class="trust-label">Trusted by institutional operators</div>
     <div class="asset-class-section">
@@ -946,33 +974,6 @@
       </div>
     </div>
   </div>
-
-  <!-- CAPABILITIES -->
-  <section class="capabilities" id="capabilities">
-    <div class="capabilities-bg"></div>
-    <div class="capabilities-header">
-      <div class="section-tag reveal">Platform</div>
-      <h2 class="section-title reveal reveal-delay-1">One platform.<br>Total building intelligence.</h2>
-      <p class="section-subtitle reveal reveal-delay-2">From field inspection to portfolio analytics — piassa.ai unifies every layer of building operations into a single source of truth.</p>
-    </div>
-    <div class="capabilities-grid">
-      <div class="cap-card reveal">
-        <div class="cap-icon blue">◎</div>
-        <h3>Asset Intelligence</h3>
-        <p>Comprehensive condition data for HVAC, electrical, plumbing, roofing, and structural systems — captured in the field and structured for analysis in real time.</p>
-      </div>
-      <div class="cap-card reveal reveal-delay-1">
-        <div class="cap-icon purple">⬡</div>
-        <h3>Predictive Operations</h3>
-        <p>AI-driven maintenance prioritization that turns reactive spend into proactive strategy. Know what breaks before it breaks.</p>
-      </div>
-      <div class="cap-card reveal reveal-delay-2">
-        <div class="cap-icon green">◈</div>
-        <h3>Portfolio Analytics</h3>
-        <p>Institutional-grade reporting across your entire portfolio — auditable and built for capital partners and property management platforms.</p>
-      </div>
-    </div>
-  </section>
 
   <!-- METRICS / RESULTS -->
   <section class="metrics" id="results">
@@ -1192,7 +1193,7 @@
     });
   </script>
 
-  <!-- NETWORK ANIMATION — multiple organized shapes, process header white space -->
+  <!-- NETWORK ANIMATION — chaos-to-order cycle in process header white space -->
   <canvas id="networkCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
   <script>
   (function() {
@@ -1200,44 +1201,42 @@
     const ctx = canvas.getContext('2d');
     let w, h;
 
-    // Colors for each shape cluster
     const clusterColors = [
-      { node: '#6366f1', line: '#6366f1' },  // indigo - hexagon
-      { node: '#0284c7', line: '#0284c7' },  // blue - rectangle
-      { node: '#059669', line: '#059669' },  // green - pentagon
-      { node: '#7c3aed', line: '#7c3aed' },  // violet - triangle
+      { node: '#6366f1', line: '#6366f1' },
+      { node: '#0284c7', line: '#0284c7' },
+      { node: '#059669', line: '#059669' },
+      { node: '#7c3aed', line: '#7c3aed' },
     ];
 
-    // 4 shapes, each with their own center position (relative to white zone)
-    // All coordinates normalized 0-1 relative to shape center
     const shapeDefs = [
-      { // Hexagon — top-left of ordered zone
-        cx: 0.3, cy: 0.28, radius: 0.18,
-        pts: (() => { const p=[]; for(let i=0;i<6;i++){const a=(i/6)*Math.PI*2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })()
-      },
-      { // Rectangle — top-right
-        cx: 0.72, cy: 0.25, radius: 0.16,
-        pts: [{ax:-1,ay:-0.7},{ax:1,ay:-0.7},{ax:1,ay:0.7},{ax:-1,ay:0.7},{ax:0,ay:-0.7},{ax:0,ay:0.7},{ax:-1,ay:0},{ax:1,ay:0}]
-      },
-      { // Pentagon — bottom-left
-        cx: 0.25, cy: 0.75, radius: 0.15,
-        pts: (() => { const p=[]; for(let i=0;i<5;i++){const a=(i/5)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} p.push({ax:0,ay:0}); return p; })()
-      },
-      { // Triangle — bottom-right
-        cx: 0.7, cy: 0.78, radius: 0.14,
-        pts: (() => { const p=[]; for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2+Math.PI/6; p.push({ax:Math.cos(a)*0.45,ay:Math.sin(a)*0.45});} return p; })()
-      }
+      { cx: 0.3, cy: 0.28, radius: 0.18,
+        pts: (() => { const p=[]; for(let i=0;i<6;i++){const a=(i/6)*Math.PI*2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
+      { cx: 0.72, cy: 0.25, radius: 0.16,
+        pts: [{ax:-1,ay:-0.7},{ax:1,ay:-0.7},{ax:1,ay:0.7},{ax:-1,ay:0.7},{ax:0,ay:-0.7},{ax:0,ay:0.7},{ax:-1,ay:0},{ax:1,ay:0}] },
+      { cx: 0.25, cy: 0.75, radius: 0.15,
+        pts: (() => { const p=[]; for(let i=0;i<5;i++){const a=(i/5)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} p.push({ax:0,ay:0}); return p; })() },
+      { cx: 0.7, cy: 0.78, radius: 0.14,
+        pts: (() => { const p=[]; for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2+Math.PI/6; p.push({ax:Math.cos(a)*0.45,ay:Math.sin(a)*0.45});} return p; })() }
     ];
 
-    // Each shape cluster has its own ordered particles
+    const TOTAL_CHAOS = 18;
+    const COLLECT_INTERVAL = 1400;
+    const ORDER_HOLD_MS = 5000;
+    const FADE_MS = 1500;
+
     let clusters = [];
     let chaosParticles = [];
     let travelers = [];
+    let shapeAlpha = 0;         // shapes fade in as particles arrive
+    let phase = 'chaos';        // 'chaos' | 'ordered' | 'fading'
+    let phaseTimer = 0;
+    let collectTimer = 0;
+    let arrivedCount = 0;
 
     function resize() {
       w = canvas.width = window.innerWidth;
       h = canvas.height = window.innerHeight;
-      init();
+      resetCycle();
     }
 
     function getSection() {
@@ -1246,39 +1245,33 @@
       return el.getBoundingClientRect();
     }
 
-    function init() {
-      chaosParticles = [];
-      travelers = [];
-      clusters = shapeDefs.map((sd, ci) => {
-        const particles = [];
-        // Pre-fill each shape
-        for (let i = 0; i < sd.pts.length; i++) {
-          particles.push({
-            slot: i, ax: sd.pts[i].ax, ay: sd.pts[i].ay,
-            r: 3, alpha: 0.75
-          });
-        }
-        return { def: sd, particles, colorIdx: ci };
-      });
-      // Chaos particles in the left 40% of white space
-      for (let i = 0; i < 10; i++) chaosParticles.push(makeChaos());
-    }
-
     function makeChaos() {
       return {
-        rx: 0.42 + Math.random() * 0.16,
-        ry: 0.1 + Math.random() * 0.8,
-        vx: (Math.random()-0.5)*0.002,
-        vy: (Math.random()-0.5)*0.002,
-        r: Math.random()*2.5 + 2.5,
-        color: '#94a3b8',
-        phase: Math.random()*Math.PI*2
+        rx: 0.35 + Math.random() * 0.30,
+        ry: 0.08 + Math.random() * 0.84,
+        vx: (Math.random()-0.5)*0.0015,
+        vy: (Math.random()-0.5)*0.0015,
+        r: Math.random()*2 + 2.5,
+        phase: Math.random()*Math.PI*2,
+        fadeAlpha: 1
       };
     }
 
-    // Collect a chaos particle and send it to a random shape
+    function resetCycle() {
+      chaosParticles = [];
+      travelers = [];
+      arrivedCount = 0;
+      shapeAlpha = 0;
+      phase = 'chaos';
+      phaseTimer = 0;
+      collectTimer = 0;
+      clusters = shapeDefs.map((sd, ci) => ({ def: sd, colorIdx: ci, nodeAlpha: [] }));
+      clusters.forEach(c => c.def.pts.forEach(() => c.nodeAlpha.push(0)));
+      for (let i = 0; i < TOTAL_CHAOS; i++) chaosParticles.push(makeChaos());
+    }
+
     function collectParticle() {
-      if (chaosParticles.length < 3) { chaosParticles.push(makeChaos()); return; }
+      if (chaosParticles.length === 0) return;
       const idx = Math.floor(Math.random()*chaosParticles.length);
       const p = chaosParticles.splice(idx, 1)[0];
       const ci = Math.floor(Math.random()*clusters.length);
@@ -1286,11 +1279,9 @@
       const slot = Math.floor(Math.random()*cluster.def.pts.length);
       travelers.push({
         startX: p.rx, startY: p.ry, t: 0,
-        clusterIdx: ci, slot, r: p.r, color: p.color
+        clusterIdx: ci, slot, r: p.r
       });
-      chaosParticles.push(makeChaos());
     }
-    setInterval(collectParticle, 2200);
 
     function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
 
@@ -1307,27 +1298,59 @@
       ctx.clip();
 
       const sx = rect.left, sy = rect.top, sw = rect.width, sh = rect.height;
-      // The white zone is the right ~55% of header
       const zoneX = sx + sw * 0.45;
       const zoneW = sw * 0.52;
       const zoneY = sy + sh * 0.05;
       const zoneH = sh * 0.9;
+      const now = Date.now();
+      const dt = 16;
+
+      // Phase logic
+      if (phase === 'chaos') {
+        collectTimer += dt;
+        if (collectTimer >= COLLECT_INTERVAL && chaosParticles.length > 0) {
+          collectParticle();
+          collectTimer = 0;
+          // Accelerate collection as fewer remain
+          if (chaosParticles.length < 6) collectParticle();
+          if (chaosParticles.length < 3) collectParticle();
+        }
+        if (chaosParticles.length === 0 && travelers.length === 0) {
+          phase = 'ordered';
+          phaseTimer = 0;
+        }
+        // Shape edges/nodes fade in proportionally
+        shapeAlpha = Math.min(1, arrivedCount / (TOTAL_CHAOS * 0.6));
+      } else if (phase === 'ordered') {
+        shapeAlpha = 1;
+        phaseTimer += dt;
+        if (phaseTimer >= ORDER_HOLD_MS) {
+          phase = 'fading';
+          phaseTimer = 0;
+        }
+      } else if (phase === 'fading') {
+        phaseTimer += dt;
+        shapeAlpha = Math.max(0, 1 - phaseTimer / FADE_MS);
+        if (phaseTimer >= FADE_MS) {
+          resetCycle();
+        }
+      }
 
       // === CHAOS PARTICLES ===
       chaosParticles.forEach(p => {
-        p.phase += 0.04;
-        p.rx += p.vx + Math.sin(p.phase*1.7)*0.006;
-        p.ry += p.vy + Math.cos(p.phase*2.3)*0.005;
-        if (p.rx < 0.42 || p.rx > 0.58) p.vx *= -1;
-        if (p.ry < 0.1 || p.ry > 0.9) p.vy *= -1;
-        p.rx = Math.max(0.42, Math.min(0.58, p.rx));
-        p.ry = Math.max(0.1, Math.min(0.9, p.ry));
+        p.phase += 0.03;
+        p.rx += p.vx + Math.sin(p.phase*1.7)*0.004;
+        p.ry += p.vy + Math.cos(p.phase*2.3)*0.003;
+        if (p.rx < 0.35 || p.rx > 0.65) p.vx *= -1;
+        if (p.ry < 0.08 || p.ry > 0.92) p.vy *= -1;
+        p.rx = Math.max(0.35, Math.min(0.65, p.rx));
+        p.ry = Math.max(0.08, Math.min(0.92, p.ry));
 
         const px = sx + p.rx*sw, py = sy + p.ry*sh;
         ctx.beginPath();
         ctx.arc(px, py, p.r, 0, Math.PI*2);
         ctx.fillStyle = '#94a3b8';
-        ctx.globalAlpha = 0.45;
+        ctx.globalAlpha = 0.5;
         ctx.fill();
         ctx.globalAlpha = 1;
       });
@@ -1338,12 +1361,12 @@
           const a = chaosParticles[i], b = chaosParticles[j];
           const dx = (a.rx-b.rx)*sw, dy = (a.ry-b.ry)*sh;
           const dist = Math.sqrt(dx*dx+dy*dy);
-          if (dist < sh*0.2) {
+          if (dist < sh*0.22) {
             ctx.beginPath();
             ctx.moveTo(sx+a.rx*sw, sy+a.ry*sh);
             ctx.lineTo(sx+b.rx*sw, sy+b.ry*sh);
             ctx.strokeStyle = '#94a3b8';
-            ctx.globalAlpha = 0.12*(1-dist/(sh*0.2));
+            ctx.globalAlpha = 0.15*(1-dist/(sh*0.22));
             ctx.lineWidth = 0.5;
             ctx.setLineDash([2,4]);
             ctx.stroke();
@@ -1355,96 +1378,120 @@
 
       // === TRAVELERS ===
       for (let i = travelers.length-1; i >= 0; i--) {
-        const t = travelers[i];
-        t.t += 0.005;
-        const cluster = clusters[t.clusterIdx];
+        const tr = travelers[i];
+        tr.t += 0.006;
+        const cluster = clusters[tr.clusterIdx];
         const sd = cluster.def;
-        const pt = sd.pts[t.slot % sd.pts.length];
+        const pt = sd.pts[tr.slot % sd.pts.length];
         const destX = zoneX + sd.cx*zoneW + pt.ax*sd.radius*Math.min(zoneW,zoneH);
         const destY = zoneY + sd.cy*zoneH + pt.ay*sd.radius*Math.min(zoneW,zoneH);
-        const startX = sx + t.startX*sw;
-        const startY = sy + t.startY*sh;
+        const startX = sx + tr.startX*sw;
+        const startY = sy + tr.startY*sh;
 
-        if (t.t >= 1) {
+        if (tr.t >= 1) {
+          // Arrived — light up target node
+          cluster.nodeAlpha[tr.slot % sd.pts.length] = Math.min(1,
+            cluster.nodeAlpha[tr.slot % sd.pts.length] + 0.4);
+          arrivedCount++;
           travelers.splice(i, 1);
           continue;
         }
 
-        const ease = easeInOut(t.t);
+        const ease = easeInOut(tr.t);
         const px = startX + (destX-startX)*ease;
         const py = startY + (destY-startY)*ease;
-        const cc = clusterColors[t.clusterIdx];
-        const color = t.t > 0.5 ? cc.node : '#94a3b8';
+        const cc = clusterColors[tr.clusterIdx];
+        // Color transition: grey → cluster color
+        const colorBlend = Math.min(1, tr.t * 2);
+        const color = colorBlend > 0.5 ? cc.node : '#94a3b8';
 
         ctx.beginPath();
-        ctx.arc(px, py, t.r*(1+t.t*0.3), 0, Math.PI*2);
+        ctx.arc(px, py, tr.r * (1 + tr.t*0.4), 0, Math.PI*2);
         ctx.fillStyle = color;
-        ctx.globalAlpha = 0.5+t.t*0.4;
+        ctx.globalAlpha = 0.4 + tr.t*0.5;
         ctx.fill();
-        // Trail
-        const te = Math.max(0, ease-0.05);
+
+        // Glow at destination when close
+        if (tr.t > 0.7) {
+          ctx.beginPath();
+          ctx.arc(destX, destY, 8*(tr.t-0.7)/0.3, 0, Math.PI*2);
+          ctx.fillStyle = cc.node;
+          ctx.globalAlpha = 0.12*(tr.t-0.7)/0.3;
+          ctx.fill();
+        }
+
+        // Trail line
+        const te = Math.max(0, ease-0.06);
         ctx.beginPath();
         ctx.moveTo(startX+(destX-startX)*te, startY+(destY-startY)*te);
         ctx.lineTo(px, py);
         ctx.strokeStyle = color;
-        ctx.globalAlpha = 0.25;
-        ctx.lineWidth = 1.2;
+        ctx.globalAlpha = 0.2;
+        ctx.lineWidth = 1;
         ctx.lineCap = 'round';
         ctx.stroke();
         ctx.globalAlpha = 1;
       }
 
-      // === DRAW EACH SHAPE CLUSTER ===
-      clusters.forEach((cluster, ci) => {
-        const sd = cluster.def;
-        const cc = clusterColors[ci];
-        const centerX = zoneX + sd.cx*zoneW;
-        const centerY = zoneY + sd.cy*zoneH;
-        const r = sd.radius * Math.min(zoneW, zoneH);
+      // === DRAW SHAPE CLUSTERS ===
+      if (shapeAlpha > 0.01) {
+        clusters.forEach((cluster, ci) => {
+          const sd = cluster.def;
+          const cc = clusterColors[ci];
+          const centerX = zoneX + sd.cx*zoneW;
+          const centerY = zoneY + sd.cy*zoneH;
+          const r = sd.radius * Math.min(zoneW, zoneH);
+          const t = now * 0.001;
 
-        // Draw edges between all points of this shape
-        for (let i = 0; i < sd.pts.length; i++) {
-          const a = sd.pts[i];
-          const ax = centerX + a.ax*r, ay = centerY + a.ay*r;
-          for (let j = i+1; j < sd.pts.length; j++) {
-            const b = sd.pts[j];
-            const bx = centerX + b.ax*r, by = centerY + b.ay*r;
-            const dx = ax-bx, dy = ay-by;
-            if (Math.sqrt(dx*dx+dy*dy) < r*1.6) {
-              ctx.beginPath();
-              ctx.moveTo(ax, ay);
-              ctx.lineTo(bx, by);
-              ctx.strokeStyle = cc.line;
-              ctx.globalAlpha = 0.18;
-              ctx.lineWidth = 0.7;
-              ctx.stroke();
+          // Edges — fade in with shapeAlpha
+          for (let i = 0; i < sd.pts.length; i++) {
+            const a = sd.pts[i];
+            const ax = centerX + a.ax*r, ay = centerY + a.ay*r;
+            for (let j = i+1; j < sd.pts.length; j++) {
+              const b = sd.pts[j];
+              const bx = centerX + b.ax*r, by = centerY + b.ay*r;
+              const dx = ax-bx, dy = ay-by;
+              if (Math.sqrt(dx*dx+dy*dy) < r*1.6) {
+                ctx.beginPath();
+                ctx.moveTo(ax, ay);
+                ctx.lineTo(bx, by);
+                ctx.strokeStyle = cc.line;
+                ctx.globalAlpha = 0.15 * shapeAlpha;
+                ctx.lineWidth = 0.7;
+                ctx.stroke();
+              }
             }
           }
-        }
 
-        // Draw nodes with gentle breathing
-        const t = Date.now()*0.001;
-        sd.pts.forEach((pt, pi) => {
-          const breathe = Math.sin(t*1.5 + pi*0.8 + ci*2) * 1.5;
-          const px = centerX + pt.ax*r + breathe;
-          const py = centerY + pt.ay*r + Math.cos(t*1.2 + pi)*1.2;
+          // Nodes — each fades in individually as particles arrive
+          sd.pts.forEach((pt, pi) => {
+            // Gradually increase nodeAlpha
+            const targetA = shapeAlpha * 0.7;
+            if (cluster.nodeAlpha[pi] < targetA) cluster.nodeAlpha[pi] += 0.008;
+            const nodeA = Math.min(1, cluster.nodeAlpha[pi]);
+            if (nodeA < 0.01) return;
 
+            const breathe = Math.sin(t*1.5 + pi*0.8 + ci*2) * 1.5;
+            const px = centerX + pt.ax*r + breathe;
+            const py = centerY + pt.ay*r + Math.cos(t*1.2 + pi)*1.2;
+
+            ctx.beginPath();
+            ctx.arc(px, py, 3.5, 0, Math.PI*2);
+            ctx.fillStyle = cc.node;
+            ctx.globalAlpha = nodeA * shapeAlpha;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+          });
+
+          // Center dot
           ctx.beginPath();
-          ctx.arc(px, py, 3.5, 0, Math.PI*2);
+          ctx.arc(centerX, centerY, 2.5, 0, Math.PI*2);
           ctx.fillStyle = cc.node;
-          ctx.globalAlpha = 0.7;
+          ctx.globalAlpha = 0.35 * shapeAlpha;
           ctx.fill();
           ctx.globalAlpha = 1;
         });
-
-        // Center dot
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, 2.5, 0, Math.PI*2);
-        ctx.fillStyle = cc.node;
-        ctx.globalAlpha = 0.4;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      });
+      }
 
       ctx.restore();
       requestAnimationFrame(animate);
