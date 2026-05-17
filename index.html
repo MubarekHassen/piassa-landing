@@ -1219,10 +1219,10 @@
         pts: (() => { const p=[]; for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2+Math.PI/6; p.push({ax:Math.cos(a)*0.45,ay:Math.sin(a)*0.45});} return p; })() }
     ];
 
-    const TOTAL_CHAOS = 18;
-    const COLLECT_INTERVAL = 1400;
-    const ORDER_HOLD_MS = 5000;
-    const FADE_MS = 1500;
+    const TOTAL_CHAOS = 14;
+    const COLLECT_INTERVAL = 600;
+    const ORDER_HOLD_MS = 4000;
+    const FADE_MS = 1200;
 
     let clusters = [];
     let chaosParticles = [];
@@ -1379,7 +1379,7 @@
       // === TRAVELERS ===
       for (let i = travelers.length-1; i >= 0; i--) {
         const tr = travelers[i];
-        tr.t += 0.006;
+        tr.t += 0.012;
         const cluster = clusters[tr.clusterIdx];
         const sd = cluster.def;
         const pt = sd.pts[tr.slot % sd.pts.length];
