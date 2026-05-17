@@ -1116,7 +1116,7 @@
     });
   </script>
 
-  <!-- NETWORK ANIMATION — data flowing between building nodes -->
+  <!-- NETWORK ANIMATION — only over white-background sections -->
   <canvas id="networkCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;opacity:0.8;"></canvas>
   <script>
   (function() {
@@ -1126,54 +1126,104 @@
     const colors = ['#6366f1','#0284c7','#059669','#818cf8','#7c3aed'];
     let nodes = [], packets = [], pulses = [];
 
+    // White-background sections where animation should appear
+    const whiteSections = () => [
+      document.querySelector('.how-it-works'),
+      document.querySelector('.trust-bar'),
+      document.querySelector('.capabilities')
+    ].filter(Boolean);
+
     function resize() {
       w = canvas.width = window.innerWidth;
       h = canvas.height = window.innerHeight;
       initNodes();
     }
 
+    function getVisibleRanges() {
+      const ranges = [];
+      whiteSections().forEach(el => {
+        const rect = el.getBoundingClientRect();
+        // Only include if visible in viewport
+        if (rect.bottom > 0 && rect.top < h) {
+          ranges.push({ top: Math.max(0, rect.top), bottom: Math.min(h, rect.bottom) });
+        }
+      });
+      return ranges;
+    }
+
     function initNodes() {
       nodes = [];
-      const cols = w > 768 ? 4 : 3;
-      const rows = 3;
-      const padX = w * 0.08;
-      const padY = h * 0.12;
-      const cellW = (w - padX * 2) / (cols - 1);
-      const cellH = (h - padY * 2) / (rows - 1);
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          nodes.push({
-            x: padX + c * cellW + (Math.random() - 0.5) * cellW * 0.25,
-            y: padY + r * cellH + (Math.random() - 0.5) * cellH * 0.2,
-            r: Math.random() * 2.5 + 4,
-            color: colors[(r * cols + c) % colors.length]
-          });
+      // Place nodes across full page width, distributed across the white sections
+      // Use document-relative positions — we'll convert to viewport in animate()
+      const sections = whiteSections();
+      if (!sections.length) return;
+      const cols = w > 768 ? 5 : 3;
+      sections.forEach((el, si) => {
+        const rect = el.getBoundingClientRect();
+        const scrollY = window.scrollY;
+        const absTop = rect.top + scrollY;
+        const absBot = rect.bottom + scrollY;
+        const sectionH = absBot - absTop;
+        const rows = Math.max(2, Math.round(sectionH / 200));
+        const padX = w * 0.06;
+        const padY = sectionH * 0.15;
+        const cellW = (w - padX*2) / (cols - 1);
+        const cellH = (sectionH - padY*2) / Math.max(1, rows - 1);
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            nodes.push({
+              absY: absTop + padY + r * cellH + (Math.random()-0.5) * cellH * 0.3,
+              x: padX + c * cellW + (Math.random()-0.5) * cellW * 0.2,
+              r: Math.random() * 2 + 3.5,
+              color: colors[(si * cols + r * cols + c) % colors.length],
+              section: si
+            });
+          }
         }
-      }
+      });
+    }
+
+    function getNodeScreenY(node) {
+      return node.absY - window.scrollY;
+    }
+
+    function isVisible(y) {
+      const ranges = getVisibleRanges();
+      return ranges.some(r => y >= r.top - 10 && y <= r.bottom + 10);
     }
 
     function spawnPacket() {
       if (nodes.length < 2) return;
+      // Prefer connections between nodes in same or adjacent sections
       const from = Math.floor(Math.random() * nodes.length);
-      let to = Math.floor(Math.random() * nodes.length);
-      while (to === from) to = Math.floor(Math.random() * nodes.length);
+      let to;
+      const nearby = nodes.filter((n, i) => i !== from && Math.abs(n.section - nodes[from].section) <= 1);
+      if (nearby.length > 0) {
+        const target = nearby[Math.floor(Math.random() * nearby.length)];
+        to = nodes.indexOf(target);
+      } else {
+        to = Math.floor(Math.random() * nodes.length);
+        while (to === from) to = Math.floor(Math.random() * nodes.length);
+      }
       const src = nodes[from], dst = nodes[to];
-      const dx = dst.x - src.x, dy = dst.y - src.y;
+      const srcY = getNodeScreenY(src), dstY = getNodeScreenY(dst);
+      const dx = dst.x - src.x, dy = dstY - srcY;
       const dist = Math.sqrt(dx*dx + dy*dy);
-      const offset = (Math.random() - 0.5) * dist * 0.35;
+      if (dist < 20) return;
+      const offset = (Math.random() - 0.5) * dist * 0.3;
       const cx = (src.x + dst.x)/2 + (-dy/dist) * offset;
-      const cy = (src.y + dst.y)/2 + (dx/dist) * offset;
+      const cy = (srcY + dstY)/2 + (dx/dist) * offset;
       packets.push({
         from, to, t: 0,
-        speed: 0.005 + Math.random() * 0.005,
-        cx, cy,
+        speed: 0.006 + Math.random() * 0.005,
+        cx, cy, cxRel: offset,
         color: colors[Math.floor(Math.random() * colors.length)],
-        size: Math.random() * 1.8 + 2.2
+        size: Math.random() * 1.5 + 2
       });
     }
 
-    setInterval(spawnPacket, 280);
-    for (let i = 0; i < 15; i++) setTimeout(spawnPacket, i * 60);
+    setInterval(spawnPacket, 320);
+    for (let i = 0; i < 10; i++) setTimeout(spawnPacket, i * 100);
 
     function bezier(ax, ay, bx, by, cx, cy, t) {
       const u = 1-t;
@@ -1182,50 +1232,70 @@
 
     function animate() {
       ctx.clearRect(0, 0, w, h);
+      const ranges = getVisibleRanges();
+      if (!ranges.length) { requestAnimationFrame(animate); return; }
 
-      // Faint structural lines between nearby nodes
+      // Clip to white sections only
+      ctx.save();
+      ctx.beginPath();
+      ranges.forEach(r => { ctx.rect(0, r.top, w, r.bottom - r.top); });
+      ctx.clip();
+
+      // Faint structural lines
       for (let i = 0; i < nodes.length; i++) {
+        const iy = getNodeScreenY(nodes[i]);
+        if (!isVisible(iy)) continue;
         for (let j = i+1; j < nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+          if (Math.abs(nodes[i].section - nodes[j].section) > 1) continue;
+          const jy = getNodeScreenY(nodes[j]);
+          const dx = nodes[i].x - nodes[j].x, dy = iy - jy;
           const dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist < w * 0.38) {
+          if (dist < 280) {
             ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = 'rgba(99,102,241,0.07)';
+            ctx.moveTo(nodes[i].x, iy);
+            ctx.lineTo(nodes[j].x, jy);
+            ctx.strokeStyle = `rgba(99,102,241,${0.06 * (1 - dist/280)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
       }
 
-      // Active packet paths (curved)
-      packets.forEach(p => {
-        const src = nodes[p.from], dst = nodes[p.to];
-        ctx.beginPath();
-        ctx.moveTo(src.x, src.y);
-        ctx.quadraticCurveTo(p.cx, p.cy, dst.x, dst.y);
-        ctx.strokeStyle = p.color;
-        ctx.globalAlpha = 0.18;
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-      });
-
-      // Update packets
+      // Packet paths and movement
       for (let i = packets.length-1; i >= 0; i--) {
         const p = packets[i];
         p.t += p.speed;
         if (p.t >= 1) {
           const dst = nodes[p.to];
-          pulses.push({ x: dst.x, y: dst.y, r: dst.r, maxR: 28, alpha: 0.55, color: p.color });
+          const dy = getNodeScreenY(dst);
+          if (isVisible(dy)) {
+            pulses.push({ x: dst.x, y: dy, r: dst.r, alpha: 0.5, color: p.color });
+          }
           packets.splice(i, 1);
           continue;
         }
         const src = nodes[p.from], dst = nodes[p.to];
-        const pos = bezier(src.x, src.y, p.cx, p.cy, dst.x, dst.y, p.t);
+        const srcY = getNodeScreenY(src), dstY = getNodeScreenY(dst);
+        // Recalculate control point relative to current scroll
+        const dx = dst.x - src.x, dy = dstY - srcY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const cx = (src.x + dst.x)/2 + (dist > 0 ? (-dy/dist) * p.cxRel : 0);
+        const cy = (srcY + dstY)/2 + (dist > 0 ? (dx/dist) * p.cxRel : 0);
+
+        const pos = bezier(src.x, srcY, cx, cy, dst.x, dstY, p.t);
+        const trail = bezier(src.x, srcY, cx, cy, dst.x, dstY, Math.max(0, p.t - 0.06));
+
+        // Path line
+        ctx.beginPath();
+        ctx.moveTo(src.x, srcY);
+        ctx.quadraticCurveTo(cx, cy, dst.x, dstY);
+        ctx.strokeStyle = p.color;
+        ctx.globalAlpha = 0.12;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
         // Trail
-        const trail = bezier(src.x, src.y, p.cx, p.cy, dst.x, dst.y, Math.max(0, p.t - 0.06));
         ctx.beginPath();
         ctx.moveTo(trail.x, trail.y);
         ctx.lineTo(pos.x, pos.y);
@@ -1235,26 +1305,27 @@
         ctx.lineCap = 'round';
         ctx.stroke();
         ctx.globalAlpha = 1;
-        // Packet dot
+
+        // Dot
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, p.size, 0, Math.PI*2);
         ctx.fillStyle = p.color;
-        ctx.globalAlpha = 0.95;
+        ctx.globalAlpha = 0.9;
         ctx.fill();
         // Glow
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, p.size * 2.8, 0, Math.PI*2);
+        ctx.arc(pos.x, pos.y, p.size * 2.5, 0, Math.PI*2);
         ctx.fillStyle = p.color;
-        ctx.globalAlpha = 0.12;
+        ctx.globalAlpha = 0.1;
         ctx.fill();
         ctx.globalAlpha = 1;
       }
 
-      // Arrival pulses
+      // Pulses
       for (let i = pulses.length-1; i >= 0; i--) {
         const p = pulses[i];
         p.r += 0.7;
-        p.alpha -= 0.012;
+        p.alpha -= 0.013;
         if (p.alpha <= 0) { pulses.splice(i, 1); continue; }
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
@@ -1265,34 +1336,42 @@
         ctx.globalAlpha = 1;
       }
 
-      // Building nodes
+      // Nodes
       nodes.forEach(n => {
-        // Ambient glow
+        const ny = getNodeScreenY(n);
+        if (!isVisible(ny)) return;
+        // Glow
         ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r * 2.5, 0, Math.PI*2);
+        ctx.arc(n.x, ny, n.r * 2.2, 0, Math.PI*2);
         ctx.fillStyle = n.color;
         ctx.globalAlpha = 0.06;
         ctx.fill();
         // Core
         ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
+        ctx.arc(n.x, ny, n.r, 0, Math.PI*2);
         ctx.fillStyle = n.color;
-        ctx.globalAlpha = 0.65;
+        ctx.globalAlpha = 0.6;
         ctx.fill();
-        // Bright center
+        // Center
         ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r * 0.45, 0, Math.PI*2);
-        ctx.fillStyle = '#ffffff';
-        ctx.globalAlpha = 0.55;
+        ctx.arc(n.x, ny, n.r * 0.4, 0, Math.PI*2);
+        ctx.fillStyle = '#fff';
+        ctx.globalAlpha = 0.5;
         ctx.fill();
         ctx.globalAlpha = 1;
       });
 
+      ctx.restore();
       requestAnimationFrame(animate);
     }
 
     window.addEventListener('resize', resize);
     resize();
+    // Re-init nodes when user scrolls (for absolute positions)
+    let resizeTimer;
+    window.addEventListener('scroll', () => {
+      // Nodes use absolute Y so no re-init needed, just redraw
+    });
     animate();
   })();
   </script>
