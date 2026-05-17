@@ -1202,10 +1202,10 @@
     let w, h;
 
     const clusterColors = [
-      { node: '#6366f1', line: '#6366f1' },
-      { node: '#0284c7', line: '#0284c7' },
-      { node: '#059669', line: '#059669' },
-      { node: '#7c3aed', line: '#7c3aed' },
+      { node: '#818cf8', line: '#818cf8' },
+      { node: '#38bdf8', line: '#38bdf8' },
+      { node: '#34d399', line: '#34d399' },
+      { node: '#a78bfa', line: '#a78bfa' },
     ];
 
     const shapeDefs = [
@@ -1219,10 +1219,10 @@
         pts: (() => { const p=[]; for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2+Math.PI/6; p.push({ax:Math.cos(a)*0.45,ay:Math.sin(a)*0.45});} return p; })() }
     ];
 
-    const TOTAL_CHAOS = 14;
-    const COLLECT_INTERVAL = 600;
-    const ORDER_HOLD_MS = 4000;
-    const FADE_MS = 1200;
+    const TOTAL_CHAOS = 10;
+    const COLLECT_INTERVAL = 300;
+    const ORDER_HOLD_MS = 3000;
+    const FADE_MS = 800;
 
     let clusters = [];
     let chaosParticles = [];
@@ -1349,8 +1349,8 @@
         const px = sx + p.rx*sw, py = sy + p.ry*sh;
         ctx.beginPath();
         ctx.arc(px, py, p.r, 0, Math.PI*2);
-        ctx.fillStyle = '#94a3b8';
-        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = '#a5b4fc';
+        ctx.globalAlpha = 0.7;
         ctx.fill();
         ctx.globalAlpha = 1;
       });
@@ -1365,8 +1365,8 @@
             ctx.beginPath();
             ctx.moveTo(sx+a.rx*sw, sy+a.ry*sh);
             ctx.lineTo(sx+b.rx*sw, sy+b.ry*sh);
-            ctx.strokeStyle = '#94a3b8';
-            ctx.globalAlpha = 0.15*(1-dist/(sh*0.22));
+            ctx.strokeStyle = '#a5b4fc';
+            ctx.globalAlpha = 0.25*(1-dist/(sh*0.22));
             ctx.lineWidth = 0.5;
             ctx.setLineDash([2,4]);
             ctx.stroke();
@@ -1379,7 +1379,7 @@
       // === TRAVELERS ===
       for (let i = travelers.length-1; i >= 0; i--) {
         const tr = travelers[i];
-        tr.t += 0.012;
+        tr.t += 0.025;
         const cluster = clusters[tr.clusterIdx];
         const sd = cluster.def;
         const pt = sd.pts[tr.slot % sd.pts.length];
@@ -1403,12 +1403,12 @@
         const cc = clusterColors[tr.clusterIdx];
         // Color transition: grey → cluster color
         const colorBlend = Math.min(1, tr.t * 2);
-        const color = colorBlend > 0.5 ? cc.node : '#94a3b8';
+        const color = colorBlend > 0.5 ? cc.node : '#a5b4fc';
 
         ctx.beginPath();
         ctx.arc(px, py, tr.r * (1 + tr.t*0.4), 0, Math.PI*2);
         ctx.fillStyle = color;
-        ctx.globalAlpha = 0.4 + tr.t*0.5;
+        ctx.globalAlpha = 0.6 + tr.t*0.4;
         ctx.fill();
 
         // Glow at destination when close
@@ -1416,7 +1416,7 @@
           ctx.beginPath();
           ctx.arc(destX, destY, 8*(tr.t-0.7)/0.3, 0, Math.PI*2);
           ctx.fillStyle = cc.node;
-          ctx.globalAlpha = 0.12*(tr.t-0.7)/0.3;
+          ctx.globalAlpha = 0.25*(tr.t-0.7)/0.3;
           ctx.fill();
         }
 
@@ -1456,7 +1456,7 @@
                 ctx.moveTo(ax, ay);
                 ctx.lineTo(bx, by);
                 ctx.strokeStyle = cc.line;
-                ctx.globalAlpha = 0.15 * shapeAlpha;
+                ctx.globalAlpha = 0.3 * shapeAlpha;
                 ctx.lineWidth = 0.7;
                 ctx.stroke();
               }
