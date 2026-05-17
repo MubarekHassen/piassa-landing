@@ -231,19 +231,32 @@
       align-items: center;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 40px 56px;
+      gap: 32px 48px;
       max-width: 1000px;
       margin: 0 auto;
     }
-    .pedigree-logos img {
-      height: 28px;
-      opacity: 0.55;
-      filter: grayscale(100%);
-      transition: opacity 0.3s, filter 0.3s;
+    .pedigree-logos span {
+      font-size: 17px;
+      font-weight: 600;
+      color: #1a1a2e;
+      opacity: 0.45;
+      letter-spacing: 0.3px;
+      transition: opacity 0.3s;
+      white-space: nowrap;
     }
-    .pedigree-logos img:hover {
-      opacity: 0.9;
-      filter: grayscale(0%);
+    .pedigree-logos span:hover {
+      opacity: 0.85;
+    }
+    .pedigree-logos span.serif {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-weight: 400;
+      font-size: 18px;
+    }
+    .pedigree-logos span.bold-caps {
+      font-weight: 800;
+      letter-spacing: 2px;
+      font-size: 15px;
+      text-transform: uppercase;
     }
     .pedigree-logos img.logo-tall { height: 36px; }
     .pedigree-logos img.logo-short { height: 22px; }
@@ -788,8 +801,10 @@
       /* Trust bar */
       .team-pedigree { padding: 48px 24px 40px; }
       .team-pedigree h2 { font-size: 28px; }
-      .pedigree-logos { gap: 28px 36px; }
-      .pedigree-logos img { height: 22px; }
+      .pedigree-logos { gap: 20px 28px; }
+      .pedigree-logos span { font-size: 14px; }
+      .pedigree-logos span.serif { font-size: 15px; }
+      .pedigree-logos span.bold-caps { font-size: 13px; }
       .pedigree-logos img.logo-tall { height: 28px; }
       .pedigree-logos img.logo-short { height: 18px; }
       .trust-bar { padding: 24px 16px; }
@@ -888,16 +903,16 @@
   <div class="team-pedigree">
     <h2>Built by the top minds in real estate and AI.</h2>
     <div class="pedigree-logos">
-      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 28'%3E%3Ctext x='0' y='22' font-family='Georgia,serif' font-size='18' font-weight='700' fill='%23333'%3EHarvard Business School%3C/text%3E%3C/svg%3E" alt="Harvard Business School" style="height:28px;">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a1/Seal_of_University_of_California%2C_Berkeley.svg" alt="UC Berkeley" class="logo-tall">
-      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 28'%3E%3Ctext x='0' y='22' font-family='Arial,sans-serif' font-size='24' font-weight='700' fill='%23333' letter-spacing='-1'%3EMIT%3C/text%3E%3C/svg%3E" alt="MIT" style="height:28px;">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google" class="logo-short">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" style="height:30px;">
-      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 28'%3E%3Ctext x='0' y='21' font-family='Georgia,serif' font-size='16' font-weight='400' fill='%23333' letter-spacing='0.5'%3EMcKinsey %26 Company%3C/text%3E%3C/svg%3E" alt="McKinsey & Company" style="height:24px;">
-      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 28'%3E%3Ctext x='0' y='22' font-family='Arial,sans-serif' font-size='22' font-weight='700' fill='%23006A4D' letter-spacing='2'%3ECBRE%3C/text%3E%3C/svg%3E" alt="CBRE" style="height:26px;">
-      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 28'%3E%3Ctext x='0' y='22' font-family='Arial,sans-serif' font-size='20' font-weight='700' fill='%23052049' letter-spacing='0'%3EUCSF%3C/text%3E%3C/svg%3E" alt="UCSF" style="height:24px;">
-      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 28'%3E%3Ctext x='0' y='21' font-family='Arial,sans-serif' font-size='16' font-weight='700' fill='%23333' letter-spacing='0.5'%3EDPR Construction%3C/text%3E%3C/svg%3E" alt="DPR Construction" style="height:22px;">
-      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 28'%3E%3Ctext x='0' y='21' font-family='Georgia,serif' font-size='15' font-weight='400' fill='%23333' letter-spacing='0.5'%3ELincoln Property%3C/text%3E%3C/svg%3E" alt="Lincoln Property" style="height:22px;">
+      <span class="serif">Harvard Business School</span>
+      <span>UC Berkeley</span>
+      <span style="font-weight:800;letter-spacing:-0.5px;">MIT</span>
+      <span style="color:#4285F4;">Google</span>
+      <span>Apple</span>
+      <span class="serif">McKinsey &amp; Company</span>
+      <span class="bold-caps" style="color:#006A4D;">CBRE</span>
+      <span class="bold-caps" style="color:#052049;">UCSF</span>
+      <span>DPR Construction</span>
+      <span class="serif">Lincoln Property</span>
     </div>
   </div>
 
