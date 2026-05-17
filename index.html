@@ -1259,13 +1259,14 @@
     const ORDER_HOLD_MS = 2500;
     const CONVERGE_MS = 2000;
     const UNIFIED_HOLD_MS = 3000;
-    const FADE_MS = 1200;
+    const DIVERGE_MS = 2000;
+    const SCATTER_HOLD_MS = 1500;
 
     let clusters = [];
     let chaosParticles = [];
     let travelers = [];
     let shapeAlpha = 0;
-    // chaos → ordered → converging → unified → fading
+    // chaos → ordered → converging → unified → diverging → scattering → chaos (loop)
     let phase = 'chaos';
     let phaseTimer = 0;
     let collectTimer = 0;
@@ -1334,11 +1335,11 @@
       ctx.save();
 
       const sx = rect.left, sy = rect.top, sw = rect.width, sh = rect.height;
-      const zoneX = sx + sw * 0.15;
+      const zoneX = sx + sw * 0.05;
       const zoneW = sw * 0.70;
       const zoneY = sy + sh * 0.03;
       const zoneH = sh * 0.60;
-      const zoneCX = zoneX + zoneW * 0.5;
+      const zoneCX = zoneX + zoneW * 0.35;
       const zoneCY = zoneY + zoneH * 0.50;
       const now = Date.now();
 
@@ -1369,11 +1370,16 @@
         shapeAlpha = 1;
         convergeProgress = 1;
         phaseTimer += dt;
-        if (phaseTimer >= UNIFIED_HOLD_MS) { phase = 'fading'; phaseTimer = 0; }
-      } else if (phase === 'fading') {
+        if (phaseTimer >= UNIFIED_HOLD_MS) { phase = 'diverging'; phaseTimer = 0; }
+      } else if (phase === 'diverging') {
+        shapeAlpha = 1;
         phaseTimer += dt;
-        shapeAlpha = Math.max(0, 1 - phaseTimer / FADE_MS);
-        if (phaseTimer >= FADE_MS) resetCycle();
+        convergeProgress = Math.max(0, 1 - phaseTimer / DIVERGE_MS);
+        if (phaseTimer >= DIVERGE_MS) { phase = 'scattering'; phaseTimer = 0; convergeProgress = 0; }
+      } else if (phase === 'scattering') {
+        phaseTimer += dt;
+        shapeAlpha = Math.max(0, 1 - phaseTimer / SCATTER_HOLD_MS);
+        if (phaseTimer >= SCATTER_HOLD_MS) resetCycle();
       }
 
       const t = now * 0.001;
