@@ -1139,26 +1139,14 @@
         _template: 'table'
       };
       // Send to both email addresses for reliability
-      const targets = [
-        'https://formsubmit.co/ajax/mubarek@berkeley.edu',
-        'https://formsubmit.co/ajax/info@piassa.ai'
-      ];
-      // Timeout after 8s so form never gets stuck
-      const timeout = new Promise(resolve => setTimeout(resolve, 8000));
-      const submissions = Promise.allSettled(targets.map(url =>
-        fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify(payload)
-        })
-      ));
-      Promise.race([submissions, timeout]).then(() => {
-        document.getElementById('formContent').style.display = 'none';
-        document.getElementById('formSuccess').style.display = 'block';
-      }).catch(() => {
-        document.getElementById('formContent').style.display = 'none';
-        document.getElementById('formSuccess').style.display = 'block';
-      });
+      // Show success immediately, send in background
+      document.getElementById('formContent').style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
+      fetch('https://formsubmit.co/ajax/info@piassa.ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(() => {});
     }
 
     // Nav scroll
