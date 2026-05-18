@@ -518,41 +518,42 @@
 
     /* ===================== HOW IT WORKS ===================== */
     .how-it-works { border-top: 1px solid var(--border); }
-    .how-layout {
+    .how-top {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 64px;
-      align-items: start;
+      gap: 48px;
+      align-items: center;
+      margin-bottom: 64px;
     }
-    .how-left { display: flex; flex-direction: column; gap: 48px; }
     .how-header { margin-bottom: 0; }
     .how-canvas-area {
-      position: sticky;
-      top: 80px;
-      min-height: 480px;
-      align-self: start;
+      position: relative;
+      height: 280px;
       overflow: hidden;
     }
     .how-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 32px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 48px;
       position: relative;
     }
-    .how-steps::before { display: none; }
+    .how-steps::before {
+      content: '';
+      position: absolute;
+      top: 32px; left: 20%; right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-bright), var(--border-bright), transparent);
+    }
     .how-step {
-      text-align: left; position: relative;
+      text-align: center; position: relative;
       background: transparent;
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 24px 28px;
+      padding: 48px 32px 40px;
       overflow: hidden;
       transition: all 0.4s;
-      display: flex;
-      align-items: center;
-      gap: 20px;
     }
-    .how-step:hover { border-color: var(--border-bright); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.04); }
+    .how-step:hover { border-color: var(--border-bright); transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.04); }
     .how-step-bg {
       position: absolute; inset: 0;
       background-size: cover; background-position: center;
@@ -562,15 +563,14 @@
     .how-step:hover .how-step-bg { opacity: 0.9; }
     .how-step > *:not(.how-step-bg) { position: relative; z-index: 1; }
     .step-num {
-      width: 48px; height: 48px;
-      min-width: 48px;
+      width: 64px; height: 64px;
       border-radius: 50%;
       background: var(--bg);
       border: 1px solid var(--border-bright);
       display: flex; align-items: center; justify-content: center;
-      margin: 0;
+      margin: 0 auto 24px;
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 18px;
+      font-size: 24px;
       font-weight: 600;
       color: var(--text-muted);
       position: relative;
@@ -809,14 +809,15 @@
       .metric-box .number { font-size: 26px; }
       .metric-box .label { font-size: 9px; }
       /* How It Works */
-      .how-layout { grid-template-columns: 1fr; gap: 32px; }
-      .how-canvas-area { min-height: 300px; order: -1; }
+      .how-top { grid-template-columns: 1fr; gap: 24px; }
+      .how-canvas-area { height: 200px; }
       .how-header { margin-bottom: 0; }
-      .how-step { padding: 16px 14px; }
-      .how-step .step-text { padding: 4px 8px; }
+      .how-steps { grid-template-columns: 1fr; }
+      .how-step { padding: 24px 16px 20px; }
+      .how-step .step-text { padding: 8px 10px; }
       .how-step h3 { font-size: 13px; }
       .how-step p { font-size: 10px; line-height: 1.4; }
-      .step-num { width: 36px; height: 36px; min-width: 36px; font-size: 14px; margin: 0; }
+      .step-num { width: 36px; height: 36px; font-size: 14px; margin-bottom: 12px; }
       /* CTA */
       .cta-inner { padding: 20px 18px; max-width: 80%; }
       .cta .section-title { font-size: 18px; }
@@ -919,15 +920,18 @@
 
   <!-- HOW IT WORKS -->
   <section class="how-it-works" id="how">
-    <div class="how-layout">
-      <div class="how-left">
-        <div class="how-header">
-          <h2 class="section-title reveal reveal-delay-1">From chaos to clarity.</h2>
-          <p class="section-subtitle reveal reveal-delay-2">A seamless workflow that turns your fragmented building data into prioritized, actionable intelligence.</p>
-        </div>
-        <div class="how-steps">
+    <div class="how-top">
+      <div class="how-header">
+        <h2 class="section-title reveal reveal-delay-1">From chaos to clarity.</h2>
+        <p class="section-subtitle reveal reveal-delay-2">A seamless workflow that turns your fragmented building data into prioritized, actionable intelligence.</p>
+      </div>
+      <div class="how-canvas-area" id="howCanvasArea">
+        <canvas id="networkCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
+      </div>
+    </div>
+    <div class="how-steps">
       <div class="how-step reveal">
-        <div class="how-step-bg"></div>
+        <div class="how-step-bg" style="background-image: url('https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&q=80')"></div>
         <div class="step-num">01</div>
         <div class="step-text">
           <h3>Ingest</h3>
@@ -935,7 +939,7 @@
         </div>
       </div>
       <div class="how-step reveal reveal-delay-1">
-        <div class="how-step-bg"></div>
+        <div class="how-step-bg" style="background-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80')"></div>
         <div class="step-num">02</div>
         <div class="step-text">
           <h3>Analyze</h3>
@@ -943,19 +947,14 @@
         </div>
       </div>
       <div class="how-step reveal reveal-delay-2">
-        <div class="how-step-bg"></div>
+        <div class="how-step-bg" style="background-image: url('https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?w=800&q=80')"></div>
         <div class="step-num">03</div>
         <div class="step-text">
           <h3>Act</h3>
           <p>Work orders, maintenance schedules, and institutional-ready reports — generated and delivered so your team can act immediately, not weeks later.</p>
         </div>
       </div>
-      </div> <!-- /how-steps -->
-      </div> <!-- /how-left -->
-      <div class="how-canvas-area" id="howCanvasArea">
-        <canvas id="networkCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
-      </div>
-    </div> <!-- /how-layout -->
+    </div>
   </section>
 
   <!-- TRUST BAR -->
@@ -1374,7 +1373,7 @@
         ry: 0.10 + Math.random() * 0.80,
         vx: (Math.random()-0.5)*0.002,
         vy: (Math.random()-0.5)*0.001,
-        r: Math.random()*3 + 3,
+        r: Math.random()*2.5 + 2,
         phase: Math.random()*Math.PI*2
       };
     }
