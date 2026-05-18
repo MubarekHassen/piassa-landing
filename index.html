@@ -531,36 +531,38 @@
       height: 220px;
       overflow: hidden;
     }
-    .question-bubbles {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      z-index: 2;
-      pointer-events: none;
+    .question-ticker {
+      grid-column: 1 / -1;
+      overflow: hidden;
+      position: relative;
+      height: 44px;
+      margin-top: -8px;
+      margin-bottom: 8px;
+      mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    }
+    .question-track {
+      display: flex;
+      gap: 32px;
+      width: max-content;
+      animation: tickerScroll 50s linear infinite;
     }
     .q-bubble {
-      position: absolute;
-      background: rgba(255,255,255,0.88);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(0,0,0,0.08);
-      border-radius: 12px;
-      padding: 10px 16px;
+      flex-shrink: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-bright);
+      border-radius: 100px;
+      padding: 10px 20px;
       font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--text-secondary);
       line-height: 1.4;
-      max-width: 280px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-      opacity: 0;
-      animation: bubbleFade 9s ease-in-out infinite;
+      white-space: nowrap;
     }
-    .q-bubble:nth-child(1) { top: 8%; left: 5%; animation-delay: 0s; }
-    .q-bubble:nth-child(2) { top: 42%; right: 3%; left: auto; animation-delay: 3s; }
-    .q-bubble:nth-child(3) { bottom: 8%; left: 12%; top: auto; animation-delay: 6s; }
-    @keyframes bubbleFade {
-      0%, 100% { opacity: 0; transform: translateY(6px); }
-      15%, 75% { opacity: 0.92; transform: translateY(0); }
-      90% { opacity: 0; transform: translateY(-4px); }
+    @keyframes tickerScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
     .how-steps {
       display: grid;
@@ -842,7 +844,7 @@
       /* How It Works */
       .how-top { grid-template-columns: 1fr; gap: 24px; }
       .how-canvas-area { height: 200px; }
-      .question-bubbles { display: none; }
+      .question-ticker { display: none; }
       .how-header { margin-bottom: 0; }
       .how-steps { grid-template-columns: 1fr; }
       .how-step { padding: 24px 16px 20px; }
@@ -959,10 +961,30 @@
       </div>
       <div class="how-canvas-area" id="howCanvasArea">
         <canvas id="networkCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
-        <div class="question-bubbles">
-          <div class="q-bubble">"What equipment should I prioritize for maintenance this year?"</div>
-          <div class="q-bubble">"Would my maintenance records hold up in an insurance claim?"</div>
-          <div class="q-bubble">"When do I need to budget for replacing major equipment?"</div>
+      </div>
+      <div class="question-ticker">
+        <div class="question-track">
+          <div class="q-bubble">What equipment should I prioritize for maintenance this year?</div>
+          <div class="q-bubble">Would my maintenance records hold up in an insurance claim?</div>
+          <div class="q-bubble">When do I need to budget for replacing major equipment?</div>
+          <div class="q-bubble">Am I doing everything I can to prevent expensive downtime?</div>
+          <div class="q-bubble">What's the real cost of skipping this year's maintenance?</div>
+          <div class="q-bubble">How do I avoid surprising my boss with emergency capital expenses?</div>
+          <div class="q-bubble">Are we compliant with manufacturer maintenance requirements?</div>
+          <div class="q-bubble">Where am I overspending — and where am I underspending?</div>
+          <div class="q-bubble">What's my biggest risk across the portfolio right now?</div>
+          <div class="q-bubble">Which buildings are going to need the most capital next year?</div>
+          <!-- duplicate for seamless loop -->
+          <div class="q-bubble">What equipment should I prioritize for maintenance this year?</div>
+          <div class="q-bubble">Would my maintenance records hold up in an insurance claim?</div>
+          <div class="q-bubble">When do I need to budget for replacing major equipment?</div>
+          <div class="q-bubble">Am I doing everything I can to prevent expensive downtime?</div>
+          <div class="q-bubble">What's the real cost of skipping this year's maintenance?</div>
+          <div class="q-bubble">How do I avoid surprising my boss with emergency capital expenses?</div>
+          <div class="q-bubble">Are we compliant with manufacturer maintenance requirements?</div>
+          <div class="q-bubble">Where am I overspending — and where am I underspending?</div>
+          <div class="q-bubble">What's my biggest risk across the portfolio right now?</div>
+          <div class="q-bubble">Which buildings are going to need the most capital next year?</div>
         </div>
       </div>
     </div>
