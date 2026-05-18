@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>piassa.ai — Building Intelligence</title>
-  <meta name="description" content="piassa.ai transforms building data into institutional-grade intelligence. One platform. Total visibility.">
+  <meta name="description" content="piassa.ai — AI-native building intelligence for operators and owners. One platform. Total visibility.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -531,6 +531,37 @@
       height: 220px;
       overflow: hidden;
     }
+    .question-bubbles {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .q-bubble {
+      position: absolute;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.4;
+      max-width: 280px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      opacity: 0;
+      animation: bubbleFade 9s ease-in-out infinite;
+    }
+    .q-bubble:nth-child(1) { top: 8%; left: 5%; animation-delay: 0s; }
+    .q-bubble:nth-child(2) { top: 42%; right: 3%; left: auto; animation-delay: 3s; }
+    .q-bubble:nth-child(3) { bottom: 8%; left: 12%; top: auto; animation-delay: 6s; }
+    @keyframes bubbleFade {
+      0%, 100% { opacity: 0; transform: translateY(6px); }
+      15%, 75% { opacity: 0.92; transform: translateY(0); }
+      90% { opacity: 0; transform: translateY(-4px); }
+    }
     .how-steps {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -811,6 +842,7 @@
       /* How It Works */
       .how-top { grid-template-columns: 1fr; gap: 24px; }
       .how-canvas-area { height: 200px; }
+      .question-bubbles { display: none; }
       .how-header { margin-bottom: 0; }
       .how-steps { grid-template-columns: 1fr; }
       .how-step { padding: 24px 16px 20px; }
@@ -849,7 +881,7 @@
 
   <!-- NAV -->
   <nav id="nav">
-    <a href="#" class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">piassa<span>.ai</span></a>
+    <a href="#" class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">piassa</a>
     <div class="nav-links">
       <a href="#capabilities">Platform</a>
       <a href="#results">Results</a>
@@ -873,7 +905,7 @@
         <span class="gradient">We make it actionable.</span>
       </h1>
       <p class="reveal reveal-delay-2">
-        piassa.ai is an AI-native platform that transforms fragmented building data into institutional-grade intelligence — giving operators, owners, and capital allocators total visibility across their portfolio.
+        Today you're juggling spreadsheets, vendor reports, and four different systems to understand what's happening in your buildings. Piassa gives you one place to see it all and act on it.
       </p>
       <div class="hero-actions reveal reveal-delay-3">
         <a href="#" class="btn-primary" onclick="openAccessForm(); return false;">
@@ -927,6 +959,11 @@
       </div>
       <div class="how-canvas-area" id="howCanvasArea">
         <canvas id="networkCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
+        <div class="question-bubbles">
+          <div class="q-bubble">"What equipment should I prioritize for maintenance this year?"</div>
+          <div class="q-bubble">"Would my maintenance records hold up in an insurance claim?"</div>
+          <div class="q-bubble">"When do I need to budget for replacing major equipment?"</div>
+        </div>
       </div>
     </div>
     <div class="how-steps">
@@ -994,23 +1031,23 @@
     <div class="capabilities-header">
       <div class="section-tag reveal">Platform</div>
       <h2 class="section-title reveal reveal-delay-1">One platform.<br>Total building intelligence.</h2>
-      <p class="section-subtitle reveal reveal-delay-2">From field inspection to portfolio analytics — piassa.ai unifies every layer of building operations into a single source of truth.</p>
+      <p class="section-subtitle reveal reveal-delay-2">No new hardware. No rip-and-replace. Piassa plugs into the tools you already use and gives you one place to see everything happening across your buildings.</p>
     </div>
     <div class="capabilities-grid">
       <div class="cap-card reveal">
         <div class="cap-icon blue">◎</div>
         <h3>Asset Intelligence</h3>
-        <p>Comprehensive condition data for HVAC, electrical, plumbing, roofing, and structural systems — captured in the field and structured for analysis in real time.</p>
+        <p>Stop flying blind on equipment condition. Get structured data on every HVAC, electrical, plumbing, and roofing system — captured in the field and ready to act on.</p>
       </div>
       <div class="cap-card reveal reveal-delay-1">
         <div class="cap-icon purple">⬡</div>
         <h3>Predictive Operations</h3>
-        <p>AI-driven maintenance prioritization that turns reactive spend into proactive strategy. Know what breaks before it breaks.</p>
+        <p>Catch equipment failures before they become emergency capital expenses. Maintenance prioritization that prevents costly downtime and protects your insurance coverage.</p>
       </div>
       <div class="cap-card reveal reveal-delay-2">
         <div class="cap-icon green">◈</div>
         <h3>Portfolio Analytics</h3>
-        <p>Institutional-grade reporting across your entire portfolio — auditable and built for facility managers, owners, investors, insurance providers, and capital partners.</p>
+        <p>Audit-ready reporting across your entire portfolio. Maintenance records that hold up for insurance and compliance — built for facility managers, owners, and their teams.</p>
       </div>
     </div>
   </section>
@@ -1020,13 +1057,13 @@
     <div class="metrics-bg"></div>
     <div class="metrics-inner">
       <div class="metrics-text">
-        <div class="trust-label reveal" style="margin-bottom: 20px;">Trusted by institutional owners and operators</div>
+        <div class="trust-label reveal" style="margin-bottom: 20px;">Trusted by owners and operators</div>
         <div class="section-tag reveal">Results</div>
         <div class="reveal" style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
           <span style="display: inline-block; padding: 4px 12px; background: rgba(2,132,199,0.08); border: 1px solid rgba(2,132,199,0.2); border-radius: 100px; font-size: 11px; font-weight: 600; color: #0369a1; letter-spacing: 0.5px;">Virginia</span>
           <span style="display: inline-block; padding: 4px 12px; background: rgba(5,150,105,0.08); border: 1px solid rgba(5,150,105,0.2); border-radius: 100px; font-size: 11px; font-weight: 600; color: #047857; letter-spacing: 0.5px;">May 2026</span>
         </div>
-        <h2 class="section-title reveal reveal-delay-1">Built for<br>real performance.</h2>
+        <h2 class="section-title reveal reveal-delay-1">Real results<br>from day one.</h2>
         <p class="section-subtitle reveal reveal-delay-2">piassa.ai delivered measurable operational improvements from day one for a vertically integrated real estate owner and operator — compressing timelines, surfacing hidden risk, and turning fragmented data into clear action.</p>
         <div style="margin-top: 40px;">
           <div class="metric-highlight reveal">
@@ -1073,8 +1110,8 @@
     <div class="cta-bg"></div>
     <div class="cta-inner">
       <div class="section-tag reveal">Early Access</div>
-      <h2 class="section-title reveal reveal-delay-1">The future of building<br>operations is here.</h2>
-      <p class="section-subtitle reveal reveal-delay-2">Join the operators and capital allocators who are transforming how they see, manage, and invest in real assets.</p>
+      <h2 class="section-title reveal reveal-delay-1">Stop reacting.<br>Start knowing.</h2>
+      <p class="section-subtitle reveal reveal-delay-2">Join the operators and owners who are taking control of their buildings — no new hardware, no rip-and-replace, just answers.</p>
       <a href="#" class="btn-primary reveal reveal-delay-3" onclick="openAccessForm(); return false;">
         Request Access
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
