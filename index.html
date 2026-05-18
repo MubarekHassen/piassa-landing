@@ -1269,7 +1269,8 @@
     const COLLECT_INTERVAL = 300;
     const ORDER_HOLD_MS = 2500;
     const CONVERGE_MS = 2000;
-    const UNIFIED_HOLD_MS = 3000;
+    const UNIFIED_HOLD_MS = 2000;
+    const RADIATE_MS = 2500;
     const DIVERGE_MS = 2000;
     const SCATTER_HOLD_MS = 1500;
 
@@ -1391,7 +1392,12 @@
         shapeAlpha = 1;
         convergeProgress = 1;
         phaseTimer += dt;
-        if (phaseTimer >= UNIFIED_HOLD_MS) { phase = 'diverging'; phaseTimer = 0; }
+        if (phaseTimer >= UNIFIED_HOLD_MS) { phase = 'radiating'; phaseTimer = 0; }
+      } else if (phase === 'radiating') {
+        shapeAlpha = 1;
+        convergeProgress = 1;
+        phaseTimer += dt;
+        if (phaseTimer >= RADIATE_MS) { phase = 'diverging'; phaseTimer = 0; }
       } else if (phase === 'diverging') {
         shapeAlpha = 1;
         phaseTimer += dt;
@@ -1485,12 +1491,12 @@
       }
 
       // === DRAW SHAPES (scattered or converging) ===
+      let allNodes = [];
       if (shapeAlpha > 0.01) {
         // Compute unified ring radius
         const uniR = Math.min(zoneW, zoneH) * 0.38;
 
         // Build all node positions (scattered + unified targets)
-        let allNodes = [];
         clusters.forEach((cluster, ci) => {
           const sd = cluster.def;
           const cc = clusterColors[ci % clusterColors.length];
@@ -1605,6 +1611,51 @@
               ctx.stroke();
             }
           }
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      // === RADIATING CLARITY EFFECT ===
+      if (phase === 'radiating') {
+        const rp = phaseTimer / RADIATE_MS; // 0→1
+        const uniR = Math.min(zoneW, zoneH) * 0.38;
+        // Multiple expanding rings
+        for (let i = 0; i < 4; i++) {
+          const delay = i * 0.2;
+          const ringT = rp - delay;
+          if (ringT > 0 && ringT < 0.8) {
+            const expand = ringT / 0.8;
+            const pr = uniR * (1 + expand * 2.5);
+            const fade = 1 - expand;
+            ctx.beginPath();
+            ctx.arc(zoneCX, zoneCY, pr, 0, Math.PI*2);
+            ctx.strokeStyle = '#818cf8';
+            ctx.globalAlpha = fade * 0.35;
+            ctx.lineWidth = 2 - expand * 1.5;
+            ctx.stroke();
+          }
+        }
+        // Bright center glow pulse
+        const glowPulse = Math.sin(rp * Math.PI) * 0.8;
+        const gr = 12 + glowPulse * 20;
+        const grad = ctx.createRadialGradient(zoneCX, zoneCY, 0, zoneCX, zoneCY, gr);
+        grad.addColorStop(0, 'rgba(129,140,248,' + (0.6 * glowPulse) + ')');
+        grad.addColorStop(0.5, 'rgba(165,180,252,' + (0.3 * glowPulse) + ')');
+        grad.addColorStop(1, 'rgba(165,180,252,0)');
+        ctx.beginPath();
+        ctx.arc(zoneCX, zoneCY, gr, 0, Math.PI*2);
+        ctx.fillStyle = grad;
+        ctx.globalAlpha = 1;
+        ctx.fill();
+        // Node brightness boost
+        if (allNodes && allNodes.length > 0) {
+          allNodes.forEach(n => {
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, 6 + glowPulse * 2, 0, Math.PI*2);
+            ctx.fillStyle = n.cc.node;
+            ctx.globalAlpha = 0.3 + glowPulse * 0.5;
+            ctx.fill();
+          });
         }
         ctx.globalAlpha = 1;
       }
