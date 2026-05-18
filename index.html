@@ -531,6 +531,7 @@
       top: 80px;
       min-height: 480px;
       align-self: start;
+      overflow: hidden;
     }
     .how-steps {
       display: flex;
@@ -951,7 +952,9 @@
       </div>
       </div> <!-- /how-steps -->
       </div> <!-- /how-left -->
-      <div class="how-canvas-area" id="howCanvasArea"></div>
+      <div class="how-canvas-area" id="howCanvasArea">
+        <canvas id="networkCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
+      </div>
     </div> <!-- /how-layout -->
   </section>
 
@@ -1239,12 +1242,12 @@
     });
   </script>
 
-  <!-- NETWORK ANIMATION — chaos-to-order cycle in process header white space -->
-  <canvas id="networkCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
+  <!-- NETWORK ANIMATION — chaos-to-order cycle in how-it-works right column -->
   <script>
   (function() {
     const canvas = document.getElementById('networkCanvas');
     const ctx = canvas.getContext('2d');
+    const container = document.getElementById('howCanvasArea');
     let w, h;
 
     const clusterColors = [
@@ -1342,22 +1345,26 @@
     let lastFrameTime = 0;
 
     function resize() {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
+      const rect = container.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      w = rect.width;
+      h = rect.height;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       resetCycle();
     }
 
     function getSection() {
-      const area = document.getElementById('howCanvasArea');
-      if (!area) return null;
-      const rect = area.getBoundingClientRect();
-      if (rect.width < 10 || rect.height < 10) return null;
+      if (w < 10 || h < 10) return null;
       return {
-        left: rect.left,
-        top: rect.top,
-        bottom: rect.bottom,
-        width: rect.width,
-        height: rect.height
+        left: 0,
+        top: 0,
+        bottom: h,
+        width: w,
+        height: h
       };
     }
 
@@ -1404,18 +1411,17 @@
       lastFrameTime = timestamp;
 
       ctx.clearRect(0, 0, w, h);
-      const rect = getSection();
-      if (!rect || rect.bottom < 0 || rect.top > h) { requestAnimationFrame(animate); return; }
+      if (w < 10 || h < 10) { requestAnimationFrame(animate); return; }
 
       ctx.save();
 
-      const sx = rect.left, sy = rect.top, sw = rect.width, sh = rect.height;
-      const zoneX = sx;
+      const sx = 0, sy = 0, sw = w, sh = h;
+      const zoneX = 0;
       const zoneW = sw;
-      const zoneY = sy;
+      const zoneY = 0;
       const zoneH = sh;
-      const zoneCX = zoneX + zoneW * 0.30;
-      const zoneCY = zoneY + zoneH * 0.50;
+      const zoneCX = zoneW * 0.50;
+      const zoneCY = zoneH * 0.50;
       const now = Date.now();
 
       // Phase machine
@@ -1748,6 +1754,9 @@
     }
 
     window.addEventListener('resize', resize);
+    if (window.ResizeObserver) {
+      new ResizeObserver(resize).observe(container);
+    }
     resize();
     requestAnimationFrame(animate);
   })();
