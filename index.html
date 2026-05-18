@@ -1229,12 +1229,12 @@
     let w, h;
 
     const clusterColors = [
-      { node: '#818cf8', line: '#818cf8' },
-      { node: '#38bdf8', line: '#38bdf8' },
-      { node: '#34d399', line: '#34d399' },
-      { node: '#a78bfa', line: '#a78bfa' },
-      { node: '#f472b6', line: '#f472b6' },
-      { node: '#fbbf24', line: '#fbbf24' },
+      { node: '#475569', line: '#475569' },  // slate-600
+      { node: '#1e3a5f', line: '#1e3a5f' },  // deep navy
+      { node: '#2d6a7a', line: '#2d6a7a' },  // muted teal
+      { node: '#64748b', line: '#64748b' },  // slate-500
+      { node: '#1e40af', line: '#1e40af' },  // dark blue
+      { node: '#334155', line: '#334155' },  // slate-700
     ];
 
     // 6 scattered shapes spread across the horizontal whitespace band
@@ -1405,8 +1405,37 @@
         if (phaseTimer >= DIVERGE_MS) { phase = 'scattering'; phaseTimer = 0; convergeProgress = 0; }
       } else if (phase === 'scattering') {
         phaseTimer += dt;
-        shapeAlpha = Math.max(0, 1 - phaseTimer / SCATTER_HOLD_MS);
-        if (phaseTimer >= SCATTER_HOLD_MS) resetCycle();
+        const scatterProg = Math.min(1, phaseTimer / SCATTER_HOLD_MS);
+        shapeAlpha = Math.max(0, 1 - scatterProg);
+        // Gradually spawn new chaos particles as shapes fade
+        const targetChaos = Math.floor(scatterProg * TOTAL_CHAOS);
+        while (chaosParticles.length < targetChaos) {
+          // Spawn from a random node position for continuity
+          const ci = Math.floor(Math.random() * clusters.length);
+          const sd = clusters[ci].def;
+          const pi = Math.floor(Math.random() * sd.pts.length);
+          const pt = sd.pts[pi];
+          const p = makeChaos();
+          // Start near the node's position instead of random
+          p.rx = sd.cx + pt.ax * sd.radius * 0.5;
+          p.ry = sd.cy + pt.ay * sd.radius * 0.5;
+          p.rx = Math.max(0.05, Math.min(0.95, p.rx));
+          p.ry = Math.max(0.05, Math.min(0.95, p.ry));
+          chaosParticles.push(p);
+        }
+        if (phaseTimer >= SCATTER_HOLD_MS) {
+          // Seamless transition: chaos particles already in place
+          travelers = [];
+          arrivedCount = 0;
+          convergeProgress = 0;
+          phase = 'chaos';
+          phaseTimer = 0;
+          collectTimer = 0;
+          clusters = shapeDefs.map((sd, ci) => ({ def: sd, colorIdx: ci, nodeAlpha: [] }));
+          clusters.forEach(c => c.def.pts.forEach(() => c.nodeAlpha.push(0)));
+          // Top up to full chaos count if needed
+          while (chaosParticles.length < TOTAL_CHAOS) chaosParticles.push(makeChaos());
+        }
       }
 
       const t = now * 0.001;
@@ -1424,8 +1453,8 @@
         const px = sx + p.rx*sw, py = sy + p.ry*sh;
         ctx.beginPath();
         ctx.arc(px, py, p.r, 0, Math.PI*2);
-        ctx.fillStyle = '#a5b4fc';
-        ctx.globalAlpha = 0.75;
+        ctx.fillStyle = '#94a3b8';
+        ctx.globalAlpha = 0.6;
         ctx.fill();
         ctx.globalAlpha = 1;
       });
@@ -1440,8 +1469,8 @@
             ctx.beginPath();
             ctx.moveTo(sx+a.rx*sw, sy+a.ry*sh);
             ctx.lineTo(sx+b.rx*sw, sy+b.ry*sh);
-            ctx.strokeStyle = '#a5b4fc';
-            ctx.globalAlpha = 0.25*(1-dist/(sh*0.25));
+            ctx.strokeStyle = '#94a3b8';
+            ctx.globalAlpha = 0.2*(1-dist/(sh*0.25));
             ctx.lineWidth = 0.5;
             ctx.setLineDash([2,5]);
             ctx.stroke();
@@ -1472,7 +1501,7 @@
         const px = startX + (destX-startX)*ease;
         const py = startY + (destY-startY)*ease;
         const cc = clusterColors[tr.clusterIdx % clusterColors.length];
-        const color = tr.t > 0.4 ? cc.node : '#a5b4fc';
+        const color = tr.t > 0.4 ? cc.node : '#94a3b8';
         ctx.beginPath();
         ctx.arc(px, py, tr.r*(1+tr.t*0.3), 0, Math.PI*2);
         ctx.fillStyle = color;
@@ -1575,7 +1604,7 @@
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = '#818cf8';
+            ctx.strokeStyle = '#1e3a5f';
             ctx.globalAlpha = ringAlpha;
             ctx.lineWidth = 1.2;
             ctx.stroke();
@@ -1586,7 +1615,7 @@
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(zoneCX, zoneCY);
-            ctx.strokeStyle = '#a5b4fc';
+            ctx.strokeStyle = '#475569';
             ctx.globalAlpha = ringAlpha * 0.5;
             ctx.lineWidth = 0.7;
             ctx.stroke();
@@ -1595,7 +1624,7 @@
           const glowR = 8 + Math.sin(t*1.5)*3;
           ctx.beginPath();
           ctx.arc(zoneCX, zoneCY, glowR, 0, Math.PI*2);
-          ctx.fillStyle = '#818cf8';
+          ctx.fillStyle = '#1e3a5f';
           ctx.globalAlpha = ringAlpha * 0.6;
           ctx.fill();
           // Outer pulse ring
@@ -1605,7 +1634,7 @@
               const pr = uniR * (0.6 + pulseT * 0.4);
               ctx.beginPath();
               ctx.arc(zoneCX, zoneCY, pr, 0, Math.PI*2);
-              ctx.strokeStyle = '#818cf8';
+              ctx.strokeStyle = '#1e3a5f';
               ctx.globalAlpha = (1.5 - pulseT) / 1.5 * 0.2 * shapeAlpha;
               ctx.lineWidth = 1.5;
               ctx.stroke();
@@ -1629,8 +1658,8 @@
             const fade = 1 - expand;
             ctx.beginPath();
             ctx.arc(zoneCX, zoneCY, pr, 0, Math.PI*2);
-            ctx.strokeStyle = '#818cf8';
-            ctx.globalAlpha = fade * 0.35;
+            ctx.strokeStyle = '#1e3a5f';
+            ctx.globalAlpha = fade * 0.3;
             ctx.lineWidth = 2 - expand * 1.5;
             ctx.stroke();
           }
@@ -1639,9 +1668,9 @@
         const glowPulse = Math.sin(rp * Math.PI) * 0.8;
         const gr = 12 + glowPulse * 20;
         const grad = ctx.createRadialGradient(zoneCX, zoneCY, 0, zoneCX, zoneCY, gr);
-        grad.addColorStop(0, 'rgba(129,140,248,' + (0.6 * glowPulse) + ')');
-        grad.addColorStop(0.5, 'rgba(165,180,252,' + (0.3 * glowPulse) + ')');
-        grad.addColorStop(1, 'rgba(165,180,252,0)');
+        grad.addColorStop(0, 'rgba(30,58,95,' + (0.6 * glowPulse) + ')');
+        grad.addColorStop(0.5, 'rgba(71,85,105,' + (0.3 * glowPulse) + ')');
+        grad.addColorStop(1, 'rgba(71,85,105,0)');
         ctx.beginPath();
         ctx.arc(zoneCX, zoneCY, gr, 0, Math.PI*2);
         ctx.fillStyle = grad;
