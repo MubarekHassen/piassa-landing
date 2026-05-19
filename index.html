@@ -528,23 +528,33 @@
       text-align: center;
       padding-top: 16px;
     }
+    .how-animation-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      height: 280px;
+    }
     .how-canvas-area {
       position: relative;
-      width: 100%;
-      height: 260px;
+      width: 75%;
+      height: 100%;
       overflow: hidden;
+      flex-shrink: 0;
     }
     .floating-bubbles {
-      position: absolute;
-      z-index: 3;
-      left: 0; right: 0;
-      bottom: 20px;
-      height: 100px;
+      position: relative;
+      width: 25%;
+      height: 100%;
       overflow: hidden;
       pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      padding-right: 16px;
     }
     .float-bubble {
-      position: absolute;
+      position: relative;
       background: var(--bg-card);
       border: 1px solid var(--border-bright);
       border-radius: 16px;
@@ -971,8 +981,10 @@
         <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">From <span id="chaosWord">chaos</span> to clarity.</h2>
         <p class="section-subtitle reveal reveal-delay-2" style="text-align:center;margin:0 auto;">A seamless workflow that turns your fragmented building data into prioritized, actionable intelligence.</p>
       </div>
-      <div class="how-canvas-area" id="howCanvasArea">
-        <canvas id="networkCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
+      <div class="how-animation-row">
+        <div class="how-canvas-area" id="howCanvasArea">
+          <canvas id="networkCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
+        </div>
         <div class="floating-bubbles" id="floatingBubbles"></div>
       </div>
     </div>
@@ -1922,43 +1934,25 @@
       "How do I get my regional managers on the same page?"
     ];
     let idx = 0;
-    const positions = [
-      { left: '2%', top: '5%' },
-      { left: '30%', top: '50%' },
-      { left: '5%', top: '55%' },
-      { left: '35%', top: '5%' },
-      { left: '12%', top: '30%' },
-      { left: '45%', top: '35%' },
-      { left: '20%', top: '60%' },
-      { left: '50%', top: '55%' },
-      { left: '8%', top: '8%' },
-      { left: '40%', top: '25%' },
-      { left: '3%', top: '45%' },
-      { left: '25%', top: '10%' },
-      { left: '48%', top: '48%' },
-      { left: '15%', top: '55%' },
-      { left: '38%', top: '15%' }
-    ];
 
     function spawnBubble() {
+      // Keep max 3 bubbles visible
+      while (container.children.length >= 3) {
+        container.removeChild(container.firstChild);
+      }
       const bubble = document.createElement('div');
       bubble.className = 'float-bubble';
       bubble.textContent = questions[idx];
-      const pos = positions[idx % positions.length];
-      bubble.style.left = pos.left;
-      bubble.style.top = pos.top;
-      bubble.style.maxWidth = '320px';
+      bubble.style.maxWidth = '100%';
       container.appendChild(bubble);
-      // Trigger animation
       requestAnimationFrame(() => { bubble.classList.add('pop-in'); });
-      // Remove after full animation cycle (pop-in 0.5s + float 3s + fade-out 0.6s)
-      setTimeout(() => { if (bubble.parentNode) bubble.parentNode.removeChild(bubble); }, 4200);
+      setTimeout(() => { if (bubble.parentNode) bubble.parentNode.removeChild(bubble); }, 7000);
       idx = (idx + 1) % questions.length;
     }
 
-    // Spawn first bubble immediately, then every 4 seconds (slower)
+    // Spawn first bubble immediately, then every 3 seconds
     spawnBubble();
-    setInterval(spawnBubble, 4000);
+    setInterval(spawnBubble, 3000);
   })();
   </script>
 
