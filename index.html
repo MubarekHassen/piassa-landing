@@ -1353,17 +1353,10 @@
     let currentLoop = 0;
     let shapeDefs = shapeDefsAll[currentLoop];
 
-    // Unified shape: large hexagonal network at center
-    const unifiedPts = [];
-    for (let ring = 0; ring < 3; ring++) {
-      const n = ring === 0 ? 1 : ring * 6;
-      const r = ring * 0.33;
-      if (ring === 0) { unifiedPts.push({ax:0, ay:0}); continue; }
-      for (let i = 0; i < n; i++) {
-        const a = (i/n)*Math.PI*2 - Math.PI/2;
-        unifiedPts.push({ax: Math.cos(a)*r, ay: Math.sin(a)*r});
-      }
-    }
+    // Unified shape: analytics dashboard — bar chart + trend line + grid
+    // These are relative positions (centered at 0,0) that nodes will converge to
+    // Layout: left half = bar chart, right half = grid/table, top-right = trend line
+    const unifiedPts = []; // not used directly anymore; positions computed inline
 
     const TOTAL_CHAOS = 20;
     const COLLECT_INTERVAL = 480;
@@ -1630,8 +1623,57 @@
       // === DRAW SHAPES (scattered or converging) ===
       let allNodes = [];
       if (shapeAlpha > 0.01) {
-        // Compute unified ring radius
+        // Analytics dashboard layout scale
         const uniR = Math.min(zoneW, zoneH) * 0.38;
+        const totalAllPts = shapeDefs.reduce((s,d) => s+d.pts.length, 0);
+
+        // Pre-compute analytics target positions for all nodes
+        const analyticTargets = [];
+        const chartScale = uniR * 1.1;
+        const chartOX = zoneCX - chartScale * 0.55; // left edge of chart
+        const chartOY = zoneCY + chartScale * 0.45; // bottom of chart
+        const chartW = chartScale * 1.3;
+        const chartH = chartScale * 1.1;
+
+        // Distribute nodes: 50% bars, 30% trend line, 20% axes/grid
+        const nBars = Math.max(5, Math.floor(totalAllPts * 0.5));
+        const nTrend = Math.max(4, Math.floor(totalAllPts * 0.3));
+        const nAxes = totalAllPts - nBars - nTrend;
+
+        // Bar chart positions (5 bars of varying heights)
+        const barHeights = [0.35, 0.6, 0.45, 0.8, 1.0];
+        const barSpacing = chartW / 5.5;
+        for (let i = 0; i < nBars; i++) {
+          const barIdx = i % 5;
+          const stackPos = Math.floor(i / 5);
+          const bx = chartOX + barSpacing * 0.6 + barIdx * barSpacing;
+          const barH = barHeights[barIdx] * chartH * 0.85;
+          const maxStack = Math.ceil(nBars / 5);
+          const ny = chartOY - (stackPos / Math.max(1, maxStack - 1)) * barH;
+          analyticTargets.push({ x: bx, y: ny });
+        }
+
+        // Trend line positions (smooth upward curve across top)
+        for (let i = 0; i < nTrend; i++) {
+          const prog = i / (nTrend - 1);
+          const tx = chartOX + prog * chartW;
+          const ty = chartOY - chartH * 0.35 - prog * chartH * 0.45
+                   + Math.sin(prog * Math.PI * 1.5) * chartH * 0.12;
+          analyticTargets.push({ x: tx, y: ty });
+        }
+
+        // Axis/grid nodes
+        for (let i = 0; i < nAxes; i++) {
+          if (i % 2 === 0) {
+            // Y-axis points
+            const prog = (i / 2) / Math.max(1, Math.ceil(nAxes / 2) - 1);
+            analyticTargets.push({ x: chartOX - chartScale * 0.06, y: chartOY - prog * chartH });
+          } else {
+            // X-axis points
+            const prog = ((i - 1) / 2) / Math.max(1, Math.floor(nAxes / 2) - 1);
+            analyticTargets.push({ x: chartOX + prog * chartW, y: chartOY + chartScale * 0.06 });
+          }
+        }
 
         // Build all node positions (scattered + unified targets)
         clusters.forEach((cluster, ci) => {
@@ -1641,8 +1683,6 @@
           const scatterCY = zoneY + sd.cy*zoneH;
           const r = sd.radius * Math.min(zoneW, zoneH);
 
-          // Unified positions: distribute this cluster's nodes on the big ring
-          const totalAllPts = shapeDefs.reduce((s,d) => s+d.pts.length, 0);
           let globalOffset = 0;
           for (let k = 0; k < ci; k++) globalOffset += shapeDefs[k].pts.length;
 
@@ -1655,11 +1695,10 @@
             // Scattered position
             const sX = scatterCX + pt.ax*r;
             const sY = scatterCY + pt.ay*r;
-            // Unified position on big ring
-            const uniAngle = ((globalOffset + pi) / totalAllPts) * Math.PI * 2 - Math.PI/2;
-            const uniDist = (pi === 0 && sd.pts.length > 4) ? uniR*0.4 : uniR;
-            const uX = zoneCX + Math.cos(uniAngle) * uniDist;
-            const uY = zoneCY + Math.sin(uniAngle) * uniDist;
+            // Unified position: analytics dashboard target
+            const targetIdx = (globalOffset + pi) % analyticTargets.length;
+            const uX = analyticTargets[targetIdx].x;
+            const uY = analyticTargets[targetIdx].y;
             // Interpolate
             const breathe = Math.sin(t*1.2 + pi*0.8 + ci*2) * 1.2;
             const nx = sX + (uX - sX) * convergeEase + breathe * (1 - convergeEase*0.7);
@@ -1681,12 +1720,18 @@
           if (edgeAlpha > 0.01) {
             for (let i = 0; i < sd.pts.length; i++) {
               const a = sd.pts[i];
-              const aX = scatterCX + a.ax*r + (zoneCX + Math.cos(((globalOffset+i)/totalAllPts)*Math.PI*2 - Math.PI/2)*uniR - (scatterCX + a.ax*r)) * convergeEase;
-              const aY = scatterCY + a.ay*r + (zoneCY + Math.sin(((globalOffset+i)/totalAllPts)*Math.PI*2 - Math.PI/2)*uniR - (scatterCY + a.ay*r)) * convergeEase;
+              const aTIdx = (globalOffset + i) % analyticTargets.length;
+              const aUX = analyticTargets[aTIdx].x;
+              const aUY = analyticTargets[aTIdx].y;
+              const aX = scatterCX + a.ax*r + (aUX - (scatterCX + a.ax*r)) * convergeEase;
+              const aY = scatterCY + a.ay*r + (aUY - (scatterCY + a.ay*r)) * convergeEase;
               for (let j = i+1; j < sd.pts.length; j++) {
                 const b = sd.pts[j];
-                const bX = scatterCX + b.ax*r + (zoneCX + Math.cos(((globalOffset+j)/totalAllPts)*Math.PI*2 - Math.PI/2)*uniR - (scatterCX + b.ax*r)) * convergeEase;
-                const bY = scatterCY + b.ay*r + (zoneCY + Math.sin(((globalOffset+j)/totalAllPts)*Math.PI*2 - Math.PI/2)*uniR - (scatterCY + b.ay*r)) * convergeEase;
+                const bTIdx = (globalOffset + j) % analyticTargets.length;
+                const bUX = analyticTargets[bTIdx].x;
+                const bUY = analyticTargets[bTIdx].y;
+                const bX = scatterCX + b.ax*r + (bUX - (scatterCX + b.ax*r)) * convergeEase;
+                const bY = scatterCY + b.ay*r + (bUY - (scatterCY + b.ay*r)) * convergeEase;
                 const dx = aX-bX, dy = aY-bY;
                 if (Math.sqrt(dx*dx+dy*dy) < r*1.8 || convergeEase > 0.5) {
                   ctx.beginPath();
@@ -1738,95 +1783,148 @@
           }
         }
 
-        // Draw unified ring connections when converging
+        // Draw analytics dashboard structure when converging
         if (convergeEase > 0.3) {
-          const ringAlpha = (convergeEase - 0.3) / 0.7 * 0.5 * shapeAlpha;
-          // Connect adjacent nodes in the unified ring
-          for (let i = 0; i < allNodes.length; i++) {
-            const a = allNodes[i];
-            const b = allNodes[(i+1) % allNodes.length];
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = '#1e3a5f';
-            ctx.globalAlpha = ringAlpha;
-            ctx.lineWidth = 1.2;
-            ctx.stroke();
-          }
-          // Spokes to center
-          for (let i = 0; i < allNodes.length; i += 3) {
-            const a = allNodes[i];
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(zoneCX, zoneCY);
-            ctx.strokeStyle = '#475569';
-            ctx.globalAlpha = ringAlpha * 0.5;
-            ctx.lineWidth = 0.7;
-            ctx.stroke();
-          }
-          // Center glow
-          const glowR = 8 + Math.sin(t*1.5)*3;
+          const dashAlpha = (convergeEase - 0.3) / 0.7 * 0.6 * shapeAlpha;
+
+          // Chart axes (L-shape)
           ctx.beginPath();
-          ctx.arc(zoneCX, zoneCY, glowR, 0, Math.PI*2);
-          ctx.fillStyle = '#1e3a5f';
-          ctx.globalAlpha = ringAlpha * 0.6;
-          ctx.fill();
-          // Outer pulse ring
-          if (convergeEase > 0.8) {
-            const pulseT = (t * 0.6) % 2;
-            if (pulseT < 1.5) {
-              const pr = uniR * (0.6 + pulseT * 0.4);
+          ctx.moveTo(chartOX - 2, chartOY - chartH - 10);
+          ctx.lineTo(chartOX - 2, chartOY + 2);
+          ctx.lineTo(chartOX + chartW + 10, chartOY + 2);
+          ctx.strokeStyle = '#1e3a5f';
+          ctx.globalAlpha = dashAlpha;
+          ctx.lineWidth = 1.8;
+          ctx.stroke();
+
+          // Horizontal grid lines (3 subtle lines)
+          for (let g = 1; g <= 3; g++) {
+            const gy = chartOY - (g / 3.5) * chartH;
+            ctx.beginPath();
+            ctx.moveTo(chartOX, gy);
+            ctx.lineTo(chartOX + chartW, gy);
+            ctx.strokeStyle = '#475569';
+            ctx.globalAlpha = dashAlpha * 0.2;
+            ctx.lineWidth = 0.7;
+            ctx.setLineDash([3, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+
+          // Connect trend line nodes (smooth curve)
+          const trendNodes = allNodes.filter((n, idx) => {
+            const gIdx = 0; let off = 0;
+            for (let ci2 = 0; ci2 < clusters.length; ci2++) {
+              const pts = shapeDefs[ci2].pts;
+              for (let pi2 = 0; pi2 < pts.length; pi2++) {
+                const tIdx = (off + pi2) % analyticTargets.length;
+                if (tIdx >= nBars && tIdx < nBars + nTrend) {
+                  if (n.ci === ci2 && n.pi === pi2) return true;
+                }
+                off++;
+              }
+              off = 0;
+            }
+            return false;
+          });
+
+          // Sort trend nodes by x position and draw connecting line
+          if (trendNodes.length > 1 && convergeEase > 0.5) {
+            const sorted = [...trendNodes].sort((a, b) => a.x - b.x);
+            ctx.beginPath();
+            ctx.moveTo(sorted[0].x, sorted[0].y);
+            for (let i = 1; i < sorted.length; i++) {
+              const prev = sorted[i - 1];
+              const curr = sorted[i];
+              const cpx = (prev.x + curr.x) / 2;
+              ctx.quadraticCurveTo(prev.x + (curr.x - prev.x) * 0.5, prev.y, curr.x, curr.y);
+            }
+            ctx.strokeStyle = '#3b82f6';
+            ctx.globalAlpha = dashAlpha * 0.8;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
+
+          // Bar chart column highlight lines (vertical bars from axis)
+          if (convergeEase > 0.6) {
+            const barAlpha = (convergeEase - 0.6) / 0.4 * dashAlpha * 0.3;
+            for (let b = 0; b < 5; b++) {
+              const bx = chartOX + barSpacing * 0.6 + b * barSpacing;
+              const barH2 = barHeights[b] * chartH * 0.85;
               ctx.beginPath();
-              ctx.arc(zoneCX, zoneCY, pr, 0, Math.PI*2);
-              ctx.strokeStyle = '#1e3a5f';
-              ctx.globalAlpha = (1.5 - pulseT) / 1.5 * 0.2 * shapeAlpha;
-              ctx.lineWidth = 1.5;
+              ctx.moveTo(bx, chartOY);
+              ctx.lineTo(bx, chartOY - barH2);
+              ctx.strokeStyle = clusterColors[b % clusterColors.length].node;
+              ctx.globalAlpha = barAlpha;
+              ctx.lineWidth = barSpacing * 0.5;
               ctx.stroke();
             }
+          }
+
+          // Axis tick marks
+          for (let b = 0; b < 5; b++) {
+            const bx = chartOX + barSpacing * 0.6 + b * barSpacing;
+            ctx.beginPath();
+            ctx.moveTo(bx, chartOY + 2);
+            ctx.lineTo(bx, chartOY + 7);
+            ctx.strokeStyle = '#1e3a5f';
+            ctx.globalAlpha = dashAlpha * 0.7;
+            ctx.lineWidth = 1;
+            ctx.stroke();
           }
         }
         ctx.globalAlpha = 1;
       }
 
-      // === RADIATING CLARITY EFFECT ===
+      // === RADIATING CLARITY EFFECT (analytics pulse) ===
       if (phase === 'radiating') {
         const rp = phaseTimer / RADIATE_MS; // 0→1
-        const uniR = Math.min(zoneW, zoneH) * 0.38;
-        // Multiple expanding rings
-        for (let i = 0; i < 4; i++) {
-          const delay = i * 0.2;
-          const ringT = rp - delay;
-          if (ringT > 0 && ringT < 0.8) {
-            const expand = ringT / 0.8;
-            const pr = uniR * (1 + expand * 2.5);
+        const glowPulse = Math.sin(rp * Math.PI) * 0.8;
+
+        // Sweep line moving right across the chart (like a data scan)
+        const sweepX = chartOX + rp * chartW * 1.1;
+        ctx.beginPath();
+        ctx.moveTo(sweepX, chartOY - chartH - 10);
+        ctx.lineTo(sweepX, chartOY + 10);
+        ctx.strokeStyle = '#3b82f6';
+        ctx.globalAlpha = (1 - rp) * 0.4;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        // Sweep glow
+        const sweepGrad = ctx.createLinearGradient(sweepX - 20, 0, sweepX + 5, 0);
+        sweepGrad.addColorStop(0, 'rgba(59,130,246,0)');
+        sweepGrad.addColorStop(0.7, 'rgba(59,130,246,' + (0.1 * (1 - rp)) + ')');
+        sweepGrad.addColorStop(1, 'rgba(59,130,246,0)');
+        ctx.fillStyle = sweepGrad;
+        ctx.fillRect(sweepX - 20, chartOY - chartH - 10, 25, chartH + 20);
+
+        // Expanding data insight markers
+        for (let i = 0; i < 3; i++) {
+          const delay = i * 0.25;
+          const mT = rp - delay;
+          if (mT > 0 && mT < 0.6) {
+            const expand = mT / 0.6;
             const fade = 1 - expand;
+            const mx = chartOX + (0.2 + i * 0.3) * chartW;
+            const my = chartOY - (0.3 + i * 0.2) * chartH;
             ctx.beginPath();
-            ctx.arc(zoneCX, zoneCY, pr, 0, Math.PI*2);
+            ctx.arc(mx, my, 4 + expand * 15, 0, Math.PI * 2);
             ctx.strokeStyle = '#1e3a5f';
             ctx.globalAlpha = fade * 0.3;
-            ctx.lineWidth = 2 - expand * 1.5;
+            ctx.lineWidth = 1.5;
             ctx.stroke();
           }
         }
-        // Bright center glow pulse
-        const glowPulse = Math.sin(rp * Math.PI) * 0.8;
-        const gr = 12 + glowPulse * 20;
-        const grad = ctx.createRadialGradient(zoneCX, zoneCY, 0, zoneCX, zoneCY, gr);
-        grad.addColorStop(0, 'rgba(30,58,95,' + (0.6 * glowPulse) + ')');
-        grad.addColorStop(0.5, 'rgba(71,85,105,' + (0.3 * glowPulse) + ')');
-        grad.addColorStop(1, 'rgba(71,85,105,0)');
-        ctx.beginPath();
-        ctx.arc(zoneCX, zoneCY, gr, 0, Math.PI*2);
-        ctx.fillStyle = grad;
-        ctx.globalAlpha = 1;
-        ctx.fill();
+
         // Node brightness boost
         if (allNodes && allNodes.length > 0) {
           allNodes.forEach(n => {
+            // Nodes light up as sweep passes them
+            const pastSweep = n.x < sweepX ? 1 : 0;
             ctx.beginPath();
-            ctx.arc(n.x, n.y, 6 + glowPulse * 2, 0, Math.PI*2);
+            ctx.arc(n.x, n.y, 5 + glowPulse * 2 * pastSweep, 0, Math.PI * 2);
             ctx.fillStyle = n.cc.node;
-            ctx.globalAlpha = 0.3 + glowPulse * 0.5;
+            ctx.globalAlpha = 0.2 + pastSweep * (0.4 + glowPulse * 0.3);
             ctx.fill();
           });
         }
