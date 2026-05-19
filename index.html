@@ -521,7 +521,6 @@
     .how-top {
       position: relative;
       margin-bottom: 12px;
-      height: 280px;
     }
     .how-header {
       position: relative; z-index: 2;
@@ -530,15 +529,16 @@
       padding-top: 16px;
     }
     .how-canvas-area {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      position: relative;
+      width: 100%;
+      height: 260px;
       overflow: hidden;
     }
     .floating-bubbles {
       position: absolute;
       z-index: 3;
       left: 0; right: 0;
-      bottom: 60px;
+      bottom: 20px;
       height: 100px;
       overflow: hidden;
       pointer-events: none;
@@ -855,7 +855,7 @@
       .metric-box .number { font-size: 26px; }
       .metric-box .label { font-size: 9px; }
       /* How It Works */
-      .how-top { min-height: 280px; }
+      .how-top { min-height: auto; }
       .floating-bubbles { display: none; }
       .how-header { margin-bottom: 0; }
       .how-steps { grid-template-columns: 1fr; }
@@ -967,14 +967,14 @@
   <!-- HOW IT WORKS -->
   <section class="how-it-works" id="how">
     <div class="how-top">
-      <div class="how-canvas-area" id="howCanvasArea">
-        <canvas id="networkCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
-      </div>
       <div class="how-header">
         <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">From <span id="chaosWord">chaos</span> to clarity.</h2>
         <p class="section-subtitle reveal reveal-delay-2" style="text-align:center;margin:0 auto;">A seamless workflow that turns your fragmented building data into prioritized, actionable intelligence.</p>
       </div>
-      <div class="floating-bubbles" id="floatingBubbles"></div>
+      <div class="how-canvas-area" id="howCanvasArea">
+        <canvas id="networkCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
+        <div class="floating-bubbles" id="floatingBubbles"></div>
+      </div>
     </div>
     <div class="how-steps">
       <div class="how-step reveal">
@@ -1406,14 +1406,15 @@
 
     function getChaosWordOrigin() {
       const chaosEl = document.getElementById('chaosWord');
-      if (!chaosEl && !canvas) return { rx: 0.5, ry: 0.5 };
+      if (!chaosEl || !canvas) return { rx: 0.5, ry: 0.1 };
       const canvasRect = canvas.getBoundingClientRect();
       const wordRect = chaosEl.getBoundingClientRect();
       const rx = (wordRect.left + wordRect.width / 2 - canvasRect.left) / canvasRect.width;
-      const ry = (wordRect.top + wordRect.height / 2 - canvasRect.top) / canvasRect.height;
+      // Text is above canvas now — spawn from top center of canvas
+      const ry = Math.max(0.05, (wordRect.bottom - canvasRect.top) / canvasRect.height);
       return {
         rx: Math.max(0.05, Math.min(0.95, rx)),
-        ry: Math.max(0.05, Math.min(0.95, ry))
+        ry: Math.max(0.05, Math.min(0.30, ry))
       };
     }
 
