@@ -758,17 +758,18 @@
       letter-spacing: 0.5px; text-transform: uppercase;
       margin-bottom: 6px;
     }
-    .form-group input {
+    .form-group input, .form-group textarea {
       width: 100%; padding: 12px 14px;
       border: 1px solid var(--border-bright);
       border-radius: 8px;
       font-family: inherit; font-size: 14px;
       color: var(--text);
+      background: transparent;
       transition: border-color 0.2s;
       outline: none;
     }
-    .form-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-    .form-group input::placeholder { color: var(--text-muted); }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-muted); }
     .form-submit {
       width: 100%; padding: 14px;
       background: var(--text);
