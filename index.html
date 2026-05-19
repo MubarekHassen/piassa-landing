@@ -550,42 +550,64 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 12px;
-      padding-right: 16px;
+      gap: 6px;
+      padding-right: 24px;
+      padding-left: 8px;
     }
     .float-bubble {
       position: relative;
-      background: #f0f4f8;
-      border: 1px solid rgba(37,99,235,0.15);
-      border-radius: 16px;
-      padding: 12px 18px;
-      font-size: 13px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 8px 0;
+      font-size: 13.5px;
       font-style: italic;
-      font-weight: 500;
-      color: #374151;
-      line-height: 1.4;
+      font-weight: 400;
+      color: #9ca3af;
+      line-height: 1.5;
       white-space: normal;
       opacity: 0;
-      transform: scale(0);
+      transform: translateY(8px);
       pointer-events: none;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      text-align: right;
+      border-right: 2px solid rgba(37,99,235,0.15);
+      padding-right: 14px;
+    }
+    .float-bubble::before {
+      content: '?';
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: rgba(37,99,235,0.08);
+      color: rgba(37,99,235,0.4);
+      font-size: 9px;
+      font-style: normal;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
     .float-bubble.pop-in {
-      animation: bubblePopIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-                 bubbleFloat 5s ease-in-out 0.8s infinite alternate,
-                 bubbleFadeOut 0.8s ease-in 6s forwards;
+      animation: bubblePopIn 1s ease-out forwards,
+                 bubbleFloat 6s ease-in-out 1s infinite alternate,
+                 bubbleFadeOut 1s ease-in 6s forwards;
     }
     @keyframes bubblePopIn {
-      0% { opacity: 0; transform: scale(0); }
-      100% { opacity: 1; transform: scale(1); }
+      0% { opacity: 0; transform: translateY(12px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
     @keyframes bubbleFloat {
-      0% { transform: scale(1) translateY(0px); }
-      100% { transform: scale(1) translateY(-8px); }
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-4px); }
     }
     @keyframes bubbleFadeOut {
       0% { opacity: 1; }
-      100% { opacity: 0; transform: scale(0.8) translateY(-12px); }
+      100% { opacity: 0; transform: translateY(-8px); }
     }
     .how-steps {
       display: grid;
