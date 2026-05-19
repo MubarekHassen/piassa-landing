@@ -560,9 +560,9 @@
       pointer-events: none;
     }
     .float-bubble.pop-in {
-      animation: bubblePopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-                 bubbleFloat 3s ease-in-out 0.5s infinite alternate,
-                 bubbleFadeOut 0.6s ease-in 3.5s forwards;
+      animation: bubblePopIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                 bubbleFloat 5s ease-in-out 0.8s infinite alternate,
+                 bubbleFadeOut 0.8s ease-in 6s forwards;
     }
     @keyframes bubblePopIn {
       0% { opacity: 0; transform: scale(0); }
@@ -1360,7 +1360,7 @@
     // Unified shape: large ring — nodes converge to a circle
 
     const TOTAL_CHAOS = 35;
-    const COLLECT_INTERVAL = 320;
+    const COLLECT_INTERVAL = 600;   // slower collection = chaos stays longer
     const ORDER_HOLD_MS = 2000;
     const CONVERGE_MS = 2500;
     const UNIFIED_HOLD_MS = 3000;
@@ -1420,12 +1420,12 @@
     function makeChaos() {
       const origin = getChaosWordOrigin();
       const angle = Math.random() * Math.PI * 2;
-      const spread = Math.random() * 0.40;
+      const spread = Math.random() * 0.08; // spawn tight around "chaos" word
       return {
         rx: Math.max(0.03, Math.min(0.97, origin.rx + Math.cos(angle) * spread)),
         ry: Math.max(0.03, Math.min(0.97, origin.ry + Math.sin(angle) * spread)),
-        vx: (Math.random()-0.5)*0.003,
-        vy: (Math.random()-0.5)*0.002,
+        vx: (Math.random()-0.5)*0.004,  // faster drift outward
+        vy: (Math.random()-0.5)*0.003,
         r: Math.random()*3 + 2.5,
         phase: Math.random()*Math.PI*2,
         colorIdx: Math.floor(Math.random() * clusterColors.length)
@@ -1483,7 +1483,6 @@
         if (collectTimer >= COLLECT_INTERVAL && chaosParticles.length > 0) {
           collectParticle();
           collectTimer = 0;
-          if (chaosParticles.length < 4) collectParticle();
         }
         if (chaosParticles.length === 0 && travelers.length === 0) {
           phase = 'ordered'; phaseTimer = 0;
@@ -1904,9 +1903,9 @@
       idx = (idx + 1) % questions.length;
     }
 
-    // Spawn first bubble immediately, then every 2 seconds
+    // Spawn first bubble immediately, then every 4 seconds (slower)
     spawnBubble();
-    setInterval(spawnBubble, 2000);
+    setInterval(spawnBubble, 4000);
   })();
   </script>
 
