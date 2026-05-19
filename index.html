@@ -534,7 +534,7 @@
     .floating-bubbles {
       grid-column: 1 / 2;
       position: relative;
-      height: 120px;
+      height: 160px;
       margin-top: -8px;
       margin-bottom: 8px;
       overflow: hidden;
@@ -543,14 +543,14 @@
       position: absolute;
       background: var(--bg-card);
       border: 1px solid var(--border-bright);
-      border-radius: 100px;
-      padding: 10px 20px;
+      border-radius: 16px;
+      padding: 12px 18px;
       font-size: 13px;
       font-style: italic;
       font-weight: 400;
       color: var(--text-secondary);
       line-height: 1.4;
-      white-space: nowrap;
+      white-space: normal;
       opacity: 0;
       transform: scale(0);
       pointer-events: none;
@@ -1852,29 +1852,39 @@
     const container = document.getElementById('floatingBubbles');
     if (!container) return;
     const questions = [
-      "What equipment should I prioritize for maintenance this year?",
-      "Would my maintenance records hold up in an insurance claim?",
-      "When do I need to budget for replacing major equipment?",
-      "Am I doing everything I can to prevent expensive downtime?",
-      "What's the real cost of skipping this year's maintenance?",
-      "How do I avoid surprising my boss with emergency capital expenses?",
-      "Are we compliant with manufacturer maintenance requirements?",
-      "Where am I overspending — and where am I underspending?",
-      "What's my biggest risk across the portfolio right now?",
-      "Which buildings are going to need the most capital next year?"
+      "Which of my buildings is the biggest liability right now?",
+      "Would my records hold up in an insurance claim or audit?",
+      "Where am I bleeding money across the portfolio?",
+      "What's going to break next — and how much will it cost?",
+      "Are my tenants about to leave over unresolved issues?",
+      "How do I budget for capital expenses I can't see coming?",
+      "Is my team actually completing work orders on time?",
+      "Am I in compliance across every property?",
+      "What's the real condition of a building I'm about to acquire?",
+      "Why do I have four systems and still no clear picture?",
+      "How do I prove the value of my maintenance spend to investors?",
+      "Which vendor is overcharging me — and which one is underperforming?",
+      "What should I prioritize to protect my NOI this year?",
+      "Are we at risk of a code violation I don't know about?",
+      "How do I get my regional managers on the same page?"
     ];
     let idx = 0;
     const positions = [
-      { left: '2%', top: '10%' },
-      { left: '35%', top: '55%' },
-      { left: '5%', top: '60%' },
-      { left: '40%', top: '10%' },
-      { left: '15%', top: '35%' },
-      { left: '50%', top: '40%' },
-      { left: '25%', top: '70%' },
-      { left: '55%', top: '65%' },
-      { left: '10%', top: '5%' },
-      { left: '45%', top: '30%' }
+      { left: '2%', top: '5%' },
+      { left: '30%', top: '50%' },
+      { left: '5%', top: '55%' },
+      { left: '35%', top: '5%' },
+      { left: '12%', top: '30%' },
+      { left: '45%', top: '35%' },
+      { left: '20%', top: '60%' },
+      { left: '50%', top: '55%' },
+      { left: '8%', top: '8%' },
+      { left: '40%', top: '25%' },
+      { left: '3%', top: '45%' },
+      { left: '25%', top: '10%' },
+      { left: '48%', top: '48%' },
+      { left: '15%', top: '55%' },
+      { left: '38%', top: '15%' }
     ];
 
     function spawnBubble() {
@@ -1884,7 +1894,7 @@
       const pos = positions[idx % positions.length];
       bubble.style.left = pos.left;
       bubble.style.top = pos.top;
-      bubble.style.maxWidth = '280px';
+      bubble.style.maxWidth = '320px';
       container.appendChild(bubble);
       // Trigger animation
       requestAnimationFrame(() => { bubble.classList.add('pop-in'); });
