@@ -517,18 +517,21 @@
     }
 
     /* ===================== HOW IT WORKS ===================== */
-    .how-it-works { border-top: 1px solid var(--border); padding-top: 60px !important; padding-bottom: 80px !important; }
+    .how-it-works { border-top: 1px solid var(--border); padding-top: 24px !important; padding-bottom: 32px !important; position: relative; }
     .how-top {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
-      align-items: center;
-      margin-bottom: 40px;
-    }
-    .how-header { margin-bottom: 0; }
-    .how-canvas-area {
       position: relative;
-      height: 220px;
+      margin-bottom: 16px;
+      min-height: 420px;
+    }
+    .how-header {
+      position: relative; z-index: 2;
+      margin-bottom: 0;
+      text-align: center;
+      padding-top: 8px;
+    }
+    .how-canvas-area {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
       overflow: hidden;
     }
     .floating-bubbles {
@@ -575,7 +578,7 @@
     .how-steps {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 48px;
+      gap: 24px;
       position: relative;
     }
     .how-steps::before {
@@ -590,9 +593,9 @@
       background: transparent;
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 48px 32px 40px;
+      padding: 32px 24px 28px;
       overflow: hidden;
-      transition: all 0.4s;
+      transition: all 0.4;
     }
     .how-step:hover { border-color: var(--border-bright); transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.04); }
     .how-step-bg {
@@ -851,8 +854,7 @@
       .metric-box .number { font-size: 26px; }
       .metric-box .label { font-size: 9px; }
       /* How It Works */
-      .how-top { grid-template-columns: 1fr; gap: 24px; }
-      .how-canvas-area { height: 200px; }
+      .how-top { min-height: 280px; }
       .floating-bubbles { display: none; }
       .how-header { margin-bottom: 0; }
       .how-steps { grid-template-columns: 1fr; }
@@ -964,12 +966,12 @@
   <!-- HOW IT WORKS -->
   <section class="how-it-works" id="how">
     <div class="how-top">
-      <div class="how-header">
-        <h2 class="section-title reveal reveal-delay-1">From <span id="chaosWord">chaos</span> to clarity.</h2>
-        <p class="section-subtitle reveal reveal-delay-2">A seamless workflow that turns your fragmented building data into prioritized, actionable intelligence.</p>
-      </div>
       <div class="how-canvas-area" id="howCanvasArea">
         <canvas id="networkCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
+      </div>
+      <div class="how-header">
+        <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">From <span id="chaosWord">chaos</span> to clarity.</h2>
+        <p class="section-subtitle reveal reveal-delay-2" style="text-align:center;margin:0 auto;">A seamless workflow that turns your fragmented building data into prioritized, actionable intelligence.</p>
       </div>
       <div class="floating-bubbles" id="floatingBubbles"></div>
     </div>
@@ -1294,59 +1296,59 @@
     let w, h;
 
     const clusterColors = [
-      { node: '#1e40af', line: '#1e40af' },  // blue
-      { node: '#047857', line: '#047857' },  // emerald green
-      { node: '#1e3a5f', line: '#1e3a5f' },  // navy
-      { node: '#7c3aed', line: '#7c3aed' },  // violet
-      { node: '#0891b2', line: '#0891b2' },  // cyan/teal
-      { node: '#475569', line: '#475569' },  // slate
+      { node: '#2563eb', line: '#2563eb' },  // vibrant blue
+      { node: '#dc2626', line: '#dc2626' },  // rich red
+      { node: '#eab308', line: '#eab308' },  // golden yellow
+      { node: '#1d4ed8', line: '#1d4ed8' },  // deep blue
+      { node: '#ef4444', line: '#ef4444' },  // bright red
+      { node: '#f59e0b', line: '#f59e0b' },  // amber
     ];
 
-    // 3 different shape sets that cycle through loops
+    // 3 different shape sets that cycle — BIGGER shapes, spread across full canvas
     const shapeDefsAll = [
       // Loop 1: hexagon, rectangle, pentagon, square, triangle+center, octagon
       [
-        { cx: 0.08, cy: 0.30, radius: 0.08,
+        { cx: 0.10, cy: 0.25, radius: 0.14,
           pts: (() => { const p=[]; for(let i=0;i<6;i++){const a=(i/6)*Math.PI*2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
-        { cx: 0.28, cy: 0.65, radius: 0.07,
+        { cx: 0.30, cy: 0.70, radius: 0.12,
           pts: [{ax:-1,ay:-0.7},{ax:1,ay:-0.7},{ax:1,ay:0.7},{ax:-1,ay:0.7},{ax:0,ay:0}] },
-        { cx: 0.48, cy: 0.30, radius: 0.07,
+        { cx: 0.50, cy: 0.28, radius: 0.13,
           pts: (() => { const p=[]; for(let i=0;i<5;i++){const a=(i/5)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
-        { cx: 0.65, cy: 0.60, radius: 0.07,
+        { cx: 0.68, cy: 0.65, radius: 0.12,
           pts: (() => { const p=[]; for(let i=0;i<4;i++){const a=(i/4)*Math.PI*2 + Math.PI/4; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
-        { cx: 0.80, cy: 0.35, radius: 0.07,
+        { cx: 0.85, cy: 0.30, radius: 0.12,
           pts: (() => { const p=[]; for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} p.push({ax:0,ay:0}); return p; })() },
-        { cx: 0.92, cy: 0.65, radius: 0.06,
+        { cx: 0.90, cy: 0.72, radius: 0.10,
           pts: (() => { const p=[]; for(let i=0;i<8;i++){const a=(i/8)*Math.PI*2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
       ],
       // Loop 2: star, diamond, cross/plus, circle-ish, arrow, crescent
       [
-        { cx: 0.08, cy: 0.30, radius: 0.08,
-          pts: (() => { const p=[]; for(let i=0;i<5;i++){const a=(i/5)*Math.PI*2 - Math.PI/2; const r2=(i%2===0)?1:0.4; p.push({ax:Math.cos(a)*r2,ay:Math.sin(a)*r2});} return p; })() },
-        { cx: 0.28, cy: 0.65, radius: 0.07,
-          pts: [{ax:0,ay:-1},{ax:1,ay:0},{ax:0,ay:1},{ax:-1,ay:0}] },
-        { cx: 0.48, cy: 0.30, radius: 0.07,
-          pts: [{ax:0,ay:-1},{ax:0.3,ay:0},{ax:0,ay:1},{ax:-0.3,ay:0},{ax:0,ay:0}] },
-        { cx: 0.65, cy: 0.60, radius: 0.07,
-          pts: (() => { const p=[]; for(let i=0;i<7;i++){const a=(i/7)*Math.PI*2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
-        { cx: 0.80, cy: 0.35, radius: 0.07,
-          pts: [{ax:0,ay:-1},{ax:0.6,ay:0},{ax:0.3,ay:0.3},{ax:-0.3,ay:0.3},{ax:-0.6,ay:0}] },
-        { cx: 0.92, cy: 0.65, radius: 0.06,
-          pts: (() => { const p=[]; for(let i=0;i<6;i++){const a=(i/6)*Math.PI*2; const r2=(i<3)?1:0.5; p.push({ax:Math.cos(a)*r2,ay:Math.sin(a)*r2});} return p; })() },
+        { cx: 0.10, cy: 0.25, radius: 0.14,
+          pts: (() => { const p=[]; for(let i=0;i<10;i++){const a=(i/10)*Math.PI*2 - Math.PI/2; const r2=(i%2===0)?1:0.4; p.push({ax:Math.cos(a)*r2,ay:Math.sin(a)*r2});} return p; })() },
+        { cx: 0.30, cy: 0.70, radius: 0.12,
+          pts: [{ax:0,ay:-1},{ax:0.5,ay:-0.5},{ax:1,ay:0},{ax:0.5,ay:0.5},{ax:0,ay:1},{ax:-0.5,ay:0.5},{ax:-1,ay:0},{ax:-0.5,ay:-0.5}] },
+        { cx: 0.50, cy: 0.28, radius: 0.13,
+          pts: [{ax:0,ay:-1},{ax:0.3,ay:-0.3},{ax:1,ay:0},{ax:0.3,ay:0.3},{ax:0,ay:1},{ax:-0.3,ay:0.3},{ax:-1,ay:0},{ax:-0.3,ay:-0.3},{ax:0,ay:0}] },
+        { cx: 0.68, cy: 0.65, radius: 0.12,
+          pts: (() => { const p=[]; for(let i=0;i<9;i++){const a=(i/9)*Math.PI*2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} return p; })() },
+        { cx: 0.85, cy: 0.30, radius: 0.12,
+          pts: [{ax:0,ay:-1},{ax:0.7,ay:-0.2},{ax:0.4,ay:0.4},{ax:0,ay:0.2},{ax:-0.4,ay:0.4},{ax:-0.7,ay:-0.2}] },
+        { cx: 0.90, cy: 0.72, radius: 0.10,
+          pts: (() => { const p=[]; for(let i=0;i<7;i++){const a=(i/7)*Math.PI*2; const r2=(i<4)?1:0.5; p.push({ax:Math.cos(a)*r2,ay:Math.sin(a)*r2});} return p; })() },
       ],
       // Loop 3: grid (3x3), spiral, zigzag, wave, ring, double-triangle
       [
-        { cx: 0.08, cy: 0.30, radius: 0.08,
+        { cx: 0.10, cy: 0.25, radius: 0.14,
           pts: (() => { const p=[]; for(let r=0;r<3;r++) for(let c=0;c<3;c++) p.push({ax:(c-1)*0.8,ay:(r-1)*0.8}); return p; })() },
-        { cx: 0.28, cy: 0.65, radius: 0.07,
-          pts: (() => { const p=[]; for(let i=0;i<8;i++){const a=(i/8)*Math.PI*3; const r2=0.3+i*0.1; p.push({ax:Math.cos(a)*r2,ay:Math.sin(a)*r2});} return p; })() },
-        { cx: 0.48, cy: 0.30, radius: 0.07,
-          pts: [{ax:-1,ay:-0.8},{ax:-0.5,ay:0.8},{ax:0,ay:-0.8},{ax:0.5,ay:0.8},{ax:1,ay:-0.8},{ax:0,ay:0}] },
-        { cx: 0.65, cy: 0.60, radius: 0.07,
-          pts: (() => { const p=[]; for(let i=0;i<7;i++){const x=-1+i*0.33; p.push({ax:x,ay:Math.sin(x*Math.PI)*0.6});} return p; })() },
-        { cx: 0.80, cy: 0.35, radius: 0.07,
-          pts: (() => { const p=[]; for(let i=0;i<6;i++){const a=(i/6)*Math.PI*2; p.push({ax:Math.cos(a)*0.9,ay:Math.sin(a)*0.9});} return p; })() },
-        { cx: 0.92, cy: 0.65, radius: 0.06,
+        { cx: 0.30, cy: 0.70, radius: 0.12,
+          pts: (() => { const p=[]; for(let i=0;i<10;i++){const a=(i/10)*Math.PI*3; const r2=0.2+i*0.08; p.push({ax:Math.cos(a)*r2,ay:Math.sin(a)*r2});} return p; })() },
+        { cx: 0.50, cy: 0.28, radius: 0.13,
+          pts: [{ax:-1,ay:-0.8},{ax:-0.6,ay:0.8},{ax:-0.2,ay:-0.8},{ax:0.2,ay:0.8},{ax:0.6,ay:-0.8},{ax:1,ay:0.8},{ax:0,ay:0}] },
+        { cx: 0.68, cy: 0.65, radius: 0.12,
+          pts: (() => { const p=[]; for(let i=0;i<9;i++){const x=-1+i*0.25; p.push({ax:x,ay:Math.sin(x*Math.PI)*0.6});} return p; })() },
+        { cx: 0.85, cy: 0.30, radius: 0.12,
+          pts: (() => { const p=[]; for(let i=0;i<8;i++){const a=(i/8)*Math.PI*2; p.push({ax:Math.cos(a)*0.9,ay:Math.sin(a)*0.9});} return p; })() },
+        { cx: 0.90, cy: 0.72, radius: 0.10,
           pts: (() => { const p=[]; for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2 - Math.PI/2; p.push({ax:Math.cos(a),ay:Math.sin(a)});} for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2 + Math.PI/6; p.push({ax:Math.cos(a)*0.6,ay:Math.sin(a)*0.6});} return p; })() },
       ],
     ];
@@ -1354,16 +1356,13 @@
     let currentLoop = 0;
     let shapeDefs = shapeDefsAll[currentLoop];
 
-    // Unified shape: analytics dashboard — bar chart + trend line + grid
-    // These are relative positions (centered at 0,0) that nodes will converge to
-    // Layout: left half = bar chart, right half = grid/table, top-right = trend line
-    const unifiedPts = []; // not used directly anymore; positions computed inline
+    // Unified shape: large ring — nodes converge to a circle
 
-    const TOTAL_CHAOS = 20;
-    const COLLECT_INTERVAL = 480;
-    const ORDER_HOLD_MS = 2500;
-    const CONVERGE_MS = 2000;
-    const UNIFIED_HOLD_MS = 2000;
+    const TOTAL_CHAOS = 35;
+    const COLLECT_INTERVAL = 320;
+    const ORDER_HOLD_MS = 2000;
+    const CONVERGE_MS = 2500;
+    const UNIFIED_HOLD_MS = 3000;
     const RADIATE_MS = 2500;
     const DIVERGE_MS = 2000;
     const SCATTER_HOLD_MS = 1500;
@@ -1420,14 +1419,15 @@
     function makeChaos() {
       const origin = getChaosWordOrigin();
       const angle = Math.random() * Math.PI * 2;
-      const spread = Math.random() * 0.25;
+      const spread = Math.random() * 0.40;
       return {
-        rx: Math.max(0.05, Math.min(0.95, origin.rx + Math.cos(angle) * spread)),
-        ry: Math.max(0.05, Math.min(0.95, origin.ry + Math.sin(angle) * spread)),
-        vx: (Math.random()-0.5)*0.002,
-        vy: (Math.random()-0.5)*0.001,
-        r: Math.random()*2.5 + 2,
-        phase: Math.random()*Math.PI*2
+        rx: Math.max(0.03, Math.min(0.97, origin.rx + Math.cos(angle) * spread)),
+        ry: Math.max(0.03, Math.min(0.97, origin.ry + Math.sin(angle) * spread)),
+        vx: (Math.random()-0.5)*0.003,
+        vy: (Math.random()-0.5)*0.002,
+        r: Math.random()*3 + 2.5,
+        phase: Math.random()*Math.PI*2,
+        colorIdx: Math.floor(Math.random() * clusterColors.length)
       };
     }
 
@@ -1543,38 +1543,46 @@
       const t = now * 0.001;
       const convergeEase = easeInOut(convergeProgress);
 
-      // === CHAOS PARTICLES ===
+      // === CHAOS PARTICLES (colorful) ===
       chaosParticles.forEach(p => {
         p.phase += 0.025;
-        p.rx += p.vx + Math.sin(p.phase*1.7)*0.0015;
-        p.ry += p.vy + Math.cos(p.phase*2.3)*0.0015;
-        if (p.rx < 0.05 || p.rx > 0.95) p.vx *= -1;
-        if (p.ry < 0.05 || p.ry > 0.95) p.vy *= -1;
-        p.rx = Math.max(0.05, Math.min(0.95, p.rx));
-        p.ry = Math.max(0.05, Math.min(0.95, p.ry));
+        p.rx += p.vx + Math.sin(p.phase*1.7)*0.0018;
+        p.ry += p.vy + Math.cos(p.phase*2.3)*0.0018;
+        if (p.rx < 0.03 || p.rx > 0.97) p.vx *= -1;
+        if (p.ry < 0.03 || p.ry > 0.97) p.vy *= -1;
+        p.rx = Math.max(0.03, Math.min(0.97, p.rx));
+        p.ry = Math.max(0.03, Math.min(0.97, p.ry));
         const px = sx + p.rx*sw, py = sy + p.ry*sh;
+        const cc = clusterColors[p.colorIdx % clusterColors.length];
+        // Soft glow
+        ctx.beginPath();
+        ctx.arc(px, py, p.r * 2.5, 0, Math.PI*2);
+        ctx.fillStyle = cc.node;
+        ctx.globalAlpha = 0.08;
+        ctx.fill();
+        // Core
         ctx.beginPath();
         ctx.arc(px, py, p.r, 0, Math.PI*2);
-        ctx.fillStyle = '#94a3b8';
-        ctx.globalAlpha = 0.6;
+        ctx.fillStyle = cc.node;
+        ctx.globalAlpha = 0.7;
         ctx.fill();
         ctx.globalAlpha = 1;
       });
 
-      // Chaos connections
+      // Chaos connections (colored)
       for (let i = 0; i < chaosParticles.length; i++) {
         for (let j = i+1; j < chaosParticles.length; j++) {
           const a = chaosParticles[i], b = chaosParticles[j];
           const dx = (a.rx-b.rx)*sw, dy = (a.ry-b.ry)*sh;
           const dist = Math.sqrt(dx*dx+dy*dy);
-          if (dist < sh*0.25) {
+          if (dist < sh*0.30) {
             ctx.beginPath();
             ctx.moveTo(sx+a.rx*sw, sy+a.ry*sh);
             ctx.lineTo(sx+b.rx*sw, sy+b.ry*sh);
-            ctx.strokeStyle = '#94a3b8';
-            ctx.globalAlpha = 0.2*(1-dist/(sh*0.25));
-            ctx.lineWidth = 0.5;
-            ctx.setLineDash([2,5]);
+            ctx.strokeStyle = clusterColors[a.colorIdx % clusterColors.length].node;
+            ctx.globalAlpha = 0.15*(1-dist/(sh*0.30));
+            ctx.lineWidth = 0.8;
+            ctx.setLineDash([3,6]);
             ctx.stroke();
             ctx.setLineDash([]);
             ctx.globalAlpha = 1;
@@ -1621,62 +1629,15 @@
         ctx.globalAlpha = 1;
       }
 
-      // === DRAW SHAPES (scattered or converging) ===
+      // === DRAW SHAPES (scattered or converging to LARGE CIRCLE) ===
       let allNodes = [];
       if (shapeAlpha > 0.01) {
-        // Analytics dashboard layout scale
-        const uniR = Math.min(zoneW, zoneH) * 0.38;
+        // Large circle parameters — fills the canvas
+        const circleR = Math.min(zoneW, zoneH) * 0.42;
         const totalAllPts = shapeDefs.reduce((s,d) => s+d.pts.length, 0);
 
-        // Pre-compute analytics target positions for all nodes
-        const analyticTargets = [];
-        const chartScale = uniR * 1.1;
-        const chartOX = zoneCX - chartScale * 0.55; // left edge of chart
-        const chartOY = zoneCY + chartScale * 0.45; // bottom of chart
-        const chartW = chartScale * 1.3;
-        const chartH = chartScale * 1.1;
-
-        // Distribute nodes: 50% bars, 30% trend line, 20% axes/grid
-        const nBars = Math.max(5, Math.floor(totalAllPts * 0.5));
-        const nTrend = Math.max(4, Math.floor(totalAllPts * 0.3));
-        const nAxes = totalAllPts - nBars - nTrend;
-
-        // Bar chart positions (5 bars of varying heights)
-        const barHeights = [0.35, 0.6, 0.45, 0.8, 1.0];
-        const barSpacing = chartW / 5.5;
-        for (let i = 0; i < nBars; i++) {
-          const barIdx = i % 5;
-          const stackPos = Math.floor(i / 5);
-          const bx = chartOX + barSpacing * 0.6 + barIdx * barSpacing;
-          const barH = barHeights[barIdx] * chartH * 0.85;
-          const maxStack = Math.ceil(nBars / 5);
-          const ny = chartOY - (stackPos / Math.max(1, maxStack - 1)) * barH;
-          analyticTargets.push({ x: bx, y: ny });
-        }
-
-        // Trend line positions (smooth upward curve across top)
-        for (let i = 0; i < nTrend; i++) {
-          const prog = i / (nTrend - 1);
-          const tx = chartOX + prog * chartW;
-          const ty = chartOY - chartH * 0.35 - prog * chartH * 0.45
-                   + Math.sin(prog * Math.PI * 1.5) * chartH * 0.12;
-          analyticTargets.push({ x: tx, y: ty });
-        }
-
-        // Axis/grid nodes
-        for (let i = 0; i < nAxes; i++) {
-          if (i % 2 === 0) {
-            // Y-axis points
-            const prog = (i / 2) / Math.max(1, Math.ceil(nAxes / 2) - 1);
-            analyticTargets.push({ x: chartOX - chartScale * 0.06, y: chartOY - prog * chartH });
-          } else {
-            // X-axis points
-            const prog = ((i - 1) / 2) / Math.max(1, Math.floor(nAxes / 2) - 1);
-            analyticTargets.push({ x: chartOX + prog * chartW, y: chartOY + chartScale * 0.06 });
-          }
-        }
-
-        // Build all node positions (scattered + unified targets)
+        // Build all node positions (scattered + unified ring targets)
+        let globalNodeIdx = 0;
         clusters.forEach((cluster, ci) => {
           const sd = cluster.def;
           const cc = clusterColors[ci % clusterColors.length];
@@ -1684,63 +1645,75 @@
           const scatterCY = zoneY + sd.cy*zoneH;
           const r = sd.radius * Math.min(zoneW, zoneH);
 
-          let globalOffset = 0;
-          for (let k = 0; k < ci; k++) globalOffset += shapeDefs[k].pts.length;
-
           sd.pts.forEach((pt, pi) => {
             const targetA = shapeAlpha * 0.8;
-            if (cluster.nodeAlpha[pi] < targetA) cluster.nodeAlpha[pi] += 0.008;
+            if (cluster.nodeAlpha[pi] < targetA) cluster.nodeAlpha[pi] += 0.01;
             const nodeA = Math.min(1, cluster.nodeAlpha[pi]);
-            if (nodeA < 0.01) return;
+            if (nodeA < 0.01) { globalNodeIdx++; return; }
 
             // Scattered position
             const sX = scatterCX + pt.ax*r;
             const sY = scatterCY + pt.ay*r;
-            // Unified position: analytics dashboard target
-            const targetIdx = (globalOffset + pi) % analyticTargets.length;
-            const uX = analyticTargets[targetIdx].x;
-            const uY = analyticTargets[targetIdx].y;
-            // Interpolate
-            const breathe = Math.sin(t*1.2 + pi*0.8 + ci*2) * 1.2;
+
+            // Unified position: evenly distributed around the large circle
+            const ringAngle = (globalNodeIdx / totalAllPts) * Math.PI * 2 - Math.PI/2;
+            const uX = zoneCX + Math.cos(ringAngle) * circleR;
+            const uY = zoneCY + Math.sin(ringAngle) * circleR;
+
+            // Interpolate between scattered and ring
+            const breathe = Math.sin(t*1.5 + pi*0.8 + ci*2) * 2;
             const nx = sX + (uX - sX) * convergeEase + breathe * (1 - convergeEase*0.7);
-            const ny = sY + (uY - sY) * convergeEase + Math.cos(t + pi)*0.8 * (1 - convergeEase*0.7);
-            const nodeSize = 4.5 + convergeEase * 1.5;
+            const ny = sY + (uY - sY) * convergeEase + Math.cos(t*1.3 + pi)*1.5 * (1 - convergeEase*0.7);
+            const nodeSize = 5 + convergeEase * 2;
 
-            allNodes.push({ x: nx, y: ny, cc, nodeA, ci, pi });
+            allNodes.push({ x: nx, y: ny, cc, nodeA, ci, pi, ringAngle });
 
+            // Outer glow when converged
+            if (convergeEase > 0.5) {
+              ctx.beginPath();
+              ctx.arc(nx, ny, nodeSize * 2.5, 0, Math.PI*2);
+              ctx.fillStyle = cc.node;
+              ctx.globalAlpha = nodeA * shapeAlpha * (convergeEase - 0.5) * 0.15;
+              ctx.fill();
+            }
+            // Core node
             ctx.beginPath();
             ctx.arc(nx, ny, nodeSize, 0, Math.PI*2);
             ctx.fillStyle = cc.node;
             ctx.globalAlpha = nodeA * shapeAlpha;
             ctx.fill();
             ctx.globalAlpha = 1;
+
+            globalNodeIdx++;
           });
 
           // Draw edges within cluster (fade as converge)
-          const edgeAlpha = 0.4 * shapeAlpha * (1 - convergeEase * 0.6);
+          const edgeAlpha = 0.35 * shapeAlpha * (1 - convergeEase * 0.5);
           if (edgeAlpha > 0.01) {
+            let gOff = 0;
+            for (let k = 0; k < ci; k++) gOff += shapeDefs[k].pts.length;
             for (let i = 0; i < sd.pts.length; i++) {
               const a = sd.pts[i];
-              const aTIdx = (globalOffset + i) % analyticTargets.length;
-              const aUX = analyticTargets[aTIdx].x;
-              const aUY = analyticTargets[aTIdx].y;
+              const aRingA = ((gOff + i) / totalAllPts) * Math.PI * 2 - Math.PI/2;
+              const aUX = zoneCX + Math.cos(aRingA) * circleR;
+              const aUY = zoneCY + Math.sin(aRingA) * circleR;
               const aX = scatterCX + a.ax*r + (aUX - (scatterCX + a.ax*r)) * convergeEase;
               const aY = scatterCY + a.ay*r + (aUY - (scatterCY + a.ay*r)) * convergeEase;
               for (let j = i+1; j < sd.pts.length; j++) {
                 const b = sd.pts[j];
-                const bTIdx = (globalOffset + j) % analyticTargets.length;
-                const bUX = analyticTargets[bTIdx].x;
-                const bUY = analyticTargets[bTIdx].y;
+                const bRingA = ((gOff + j) / totalAllPts) * Math.PI * 2 - Math.PI/2;
+                const bUX = zoneCX + Math.cos(bRingA) * circleR;
+                const bUY = zoneCY + Math.sin(bRingA) * circleR;
                 const bX = scatterCX + b.ax*r + (bUX - (scatterCX + b.ax*r)) * convergeEase;
                 const bY = scatterCY + b.ay*r + (bUY - (scatterCY + b.ay*r)) * convergeEase;
                 const dx = aX-bX, dy = aY-bY;
-                if (Math.sqrt(dx*dx+dy*dy) < r*1.8 || convergeEase > 0.5) {
+                if (Math.sqrt(dx*dx+dy*dy) < r*2.2 || convergeEase > 0.5) {
                   ctx.beginPath();
                   ctx.moveTo(aX, aY);
                   ctx.lineTo(bX, bY);
                   ctx.strokeStyle = cc.line;
                   ctx.globalAlpha = edgeAlpha;
-                  ctx.lineWidth = 1;
+                  ctx.lineWidth = 1.2;
                   ctx.stroke();
                 }
               }
@@ -1748,17 +1721,15 @@
           }
         });
 
-        // Draw inter-cluster connections during ordered phase (before converging)
+        // Draw inter-cluster connections during ordered phase
         if (phase === 'ordered' || (phase === 'converging' && convergeEase < 0.5)) {
-          const interAlpha = (phase === 'ordered') ? 0.25 * shapeAlpha : 0.25 * shapeAlpha * (1 - convergeEase * 2);
+          const interAlpha = (phase === 'ordered') ? 0.2 * shapeAlpha : 0.2 * shapeAlpha * (1 - convergeEase * 2);
           if (interAlpha > 0.01 && allNodes.length > 0) {
-            // For each cluster, find closest node in other clusters and connect
             for (let ci = 0; ci < clusters.length; ci++) {
               const myNodes = allNodes.filter(n => n.ci === ci);
               for (let cj = ci + 1; cj < clusters.length; cj++) {
                 const otherNodes = allNodes.filter(n => n.ci === cj);
                 if (myNodes.length === 0 || otherNodes.length === 0) continue;
-                // Find closest pair
                 let bestDist = Infinity, bestA = null, bestB = null;
                 for (const a of myNodes) {
                   for (const b of otherNodes) {
@@ -1784,92 +1755,31 @@
           }
         }
 
-        // Draw analytics dashboard structure when converging
+        // Draw the ring outline when converging
         if (convergeEase > 0.3) {
-          const dashAlpha = (convergeEase - 0.3) / 0.7 * 0.6 * shapeAlpha;
-
-          // Chart axes (L-shape)
+          const ringAlpha = (convergeEase - 0.3) / 0.7 * 0.25 * shapeAlpha;
           ctx.beginPath();
-          ctx.moveTo(chartOX - 2, chartOY - chartH - 10);
-          ctx.lineTo(chartOX - 2, chartOY + 2);
-          ctx.lineTo(chartOX + chartW + 10, chartOY + 2);
-          ctx.strokeStyle = '#1e3a5f';
-          ctx.globalAlpha = dashAlpha;
-          ctx.lineWidth = 1.8;
+          ctx.arc(zoneCX, zoneCY, circleR, 0, Math.PI*2);
+          ctx.strokeStyle = '#2563eb';
+          ctx.globalAlpha = ringAlpha;
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([6, 8]);
           ctx.stroke();
+          ctx.setLineDash([]);
+        }
 
-          // Horizontal grid lines (3 subtle lines)
-          for (let g = 1; g <= 3; g++) {
-            const gy = chartOY - (g / 3.5) * chartH;
+        // Draw ring connections (arc segments between adjacent nodes on ring)
+        if (convergeEase > 0.6 && allNodes.length > 1) {
+          const arcAlpha = (convergeEase - 0.6) / 0.4 * 0.3 * shapeAlpha;
+          const sorted = [...allNodes].sort((a,b) => a.ringAngle - b.ringAngle);
+          for (let i = 0; i < sorted.length; i++) {
+            const a = sorted[i];
+            const b = sorted[(i+1) % sorted.length];
             ctx.beginPath();
-            ctx.moveTo(chartOX, gy);
-            ctx.lineTo(chartOX + chartW, gy);
-            ctx.strokeStyle = '#475569';
-            ctx.globalAlpha = dashAlpha * 0.2;
-            ctx.lineWidth = 0.7;
-            ctx.setLineDash([3, 5]);
-            ctx.stroke();
-            ctx.setLineDash([]);
-          }
-
-          // Connect trend line nodes (smooth curve)
-          const trendNodes = allNodes.filter((n, idx) => {
-            const gIdx = 0; let off = 0;
-            for (let ci2 = 0; ci2 < clusters.length; ci2++) {
-              const pts = shapeDefs[ci2].pts;
-              for (let pi2 = 0; pi2 < pts.length; pi2++) {
-                const tIdx = (off + pi2) % analyticTargets.length;
-                if (tIdx >= nBars && tIdx < nBars + nTrend) {
-                  if (n.ci === ci2 && n.pi === pi2) return true;
-                }
-                off++;
-              }
-              off = 0;
-            }
-            return false;
-          });
-
-          // Sort trend nodes by x position and draw connecting line
-          if (trendNodes.length > 1 && convergeEase > 0.5) {
-            const sorted = [...trendNodes].sort((a, b) => a.x - b.x);
-            ctx.beginPath();
-            ctx.moveTo(sorted[0].x, sorted[0].y);
-            for (let i = 1; i < sorted.length; i++) {
-              const prev = sorted[i - 1];
-              const curr = sorted[i];
-              const cpx = (prev.x + curr.x) / 2;
-              ctx.quadraticCurveTo(prev.x + (curr.x - prev.x) * 0.5, prev.y, curr.x, curr.y);
-            }
-            ctx.strokeStyle = '#3b82f6';
-            ctx.globalAlpha = dashAlpha * 0.8;
-            ctx.lineWidth = 2;
-            ctx.stroke();
-          }
-
-          // Bar chart column highlight lines (vertical bars from axis)
-          if (convergeEase > 0.6) {
-            const barAlpha = (convergeEase - 0.6) / 0.4 * dashAlpha * 0.3;
-            for (let b = 0; b < 5; b++) {
-              const bx = chartOX + barSpacing * 0.6 + b * barSpacing;
-              const barH2 = barHeights[b] * chartH * 0.85;
-              ctx.beginPath();
-              ctx.moveTo(bx, chartOY);
-              ctx.lineTo(bx, chartOY - barH2);
-              ctx.strokeStyle = clusterColors[b % clusterColors.length].node;
-              ctx.globalAlpha = barAlpha;
-              ctx.lineWidth = barSpacing * 0.5;
-              ctx.stroke();
-            }
-          }
-
-          // Axis tick marks
-          for (let b = 0; b < 5; b++) {
-            const bx = chartOX + barSpacing * 0.6 + b * barSpacing;
-            ctx.beginPath();
-            ctx.moveTo(bx, chartOY + 2);
-            ctx.lineTo(bx, chartOY + 7);
-            ctx.strokeStyle = '#1e3a5f';
-            ctx.globalAlpha = dashAlpha * 0.7;
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = a.cc.node;
+            ctx.globalAlpha = arcAlpha;
             ctx.lineWidth = 1;
             ctx.stroke();
           }
@@ -1877,55 +1787,46 @@
         ctx.globalAlpha = 1;
       }
 
-      // === RADIATING CLARITY EFFECT (analytics pulse) ===
+      // === RADIATING CLARITY EFFECT (ring pulse) ===
       if (phase === 'radiating') {
-        const rp = phaseTimer / RADIATE_MS; // 0→1
-        const glowPulse = Math.sin(rp * Math.PI) * 0.8;
+        const rp = phaseTimer / RADIATE_MS;
+        const circleR = Math.min(zoneW, zoneH) * 0.42;
 
-        // Sweep line moving right across the chart (like a data scan)
-        const sweepX = chartOX + rp * chartW * 1.1;
-        ctx.beginPath();
-        ctx.moveTo(sweepX, chartOY - chartH - 10);
-        ctx.lineTo(sweepX, chartOY + 10);
-        ctx.strokeStyle = '#3b82f6';
-        ctx.globalAlpha = (1 - rp) * 0.4;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        // Sweep glow
-        const sweepGrad = ctx.createLinearGradient(sweepX - 20, 0, sweepX + 5, 0);
-        sweepGrad.addColorStop(0, 'rgba(59,130,246,0)');
-        sweepGrad.addColorStop(0.7, 'rgba(59,130,246,' + (0.1 * (1 - rp)) + ')');
-        sweepGrad.addColorStop(1, 'rgba(59,130,246,0)');
-        ctx.fillStyle = sweepGrad;
-        ctx.fillRect(sweepX - 20, chartOY - chartH - 10, 25, chartH + 20);
-
-        // Expanding data insight markers
-        for (let i = 0; i < 3; i++) {
-          const delay = i * 0.25;
-          const mT = rp - delay;
-          if (mT > 0 && mT < 0.6) {
-            const expand = mT / 0.6;
+        // Expanding pulse rings
+        for (let ring = 0; ring < 3; ring++) {
+          const delay = ring * 0.2;
+          const rt = rp - delay;
+          if (rt > 0 && rt < 0.8) {
+            const expand = rt / 0.8;
             const fade = 1 - expand;
-            const mx = chartOX + (0.2 + i * 0.3) * chartW;
-            const my = chartOY - (0.3 + i * 0.2) * chartH;
             ctx.beginPath();
-            ctx.arc(mx, my, 4 + expand * 15, 0, Math.PI * 2);
-            ctx.strokeStyle = '#1e3a5f';
-            ctx.globalAlpha = fade * 0.3;
-            ctx.lineWidth = 1.5;
+            ctx.arc(zoneCX, zoneCY, circleR * (0.7 + expand * 0.8), 0, Math.PI*2);
+            ctx.strokeStyle = ['#2563eb', '#eab308', '#dc2626'][ring];
+            ctx.globalAlpha = fade * 0.25;
+            ctx.lineWidth = 2;
             ctx.stroke();
           }
         }
 
+        // Rotating highlight arc
+        const arcStart = rp * Math.PI * 4 - Math.PI/2;
+        ctx.beginPath();
+        ctx.arc(zoneCX, zoneCY, circleR, arcStart, arcStart + Math.PI * 0.5);
+        ctx.strokeStyle = '#eab308';
+        ctx.globalAlpha = 0.5 * (1 - rp * 0.5);
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
         // Node brightness boost
         if (allNodes && allNodes.length > 0) {
-          allNodes.forEach(n => {
-            // Nodes light up as sweep passes them
-            const pastSweep = n.x < sweepX ? 1 : 0;
+          const glowPulse = Math.sin(rp * Math.PI * 2) * 0.5 + 0.5;
+          allNodes.forEach((n, i) => {
+            const nodePhase = (i / allNodes.length + rp * 2) % 1;
+            const brightness = Math.sin(nodePhase * Math.PI) * 0.6;
             ctx.beginPath();
-            ctx.arc(n.x, n.y, 5 + glowPulse * 2 * pastSweep, 0, Math.PI * 2);
+            ctx.arc(n.x, n.y, 6 + brightness * 4, 0, Math.PI*2);
             ctx.fillStyle = n.cc.node;
-            ctx.globalAlpha = 0.2 + pastSweep * (0.4 + glowPulse * 0.3);
+            ctx.globalAlpha = 0.3 + brightness * 0.5;
             ctx.fill();
           });
         }
