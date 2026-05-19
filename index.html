@@ -517,17 +517,17 @@
     }
 
     /* ===================== HOW IT WORKS ===================== */
-    .how-it-works { border-top: 1px solid var(--border); padding-top: 24px !important; padding-bottom: 32px !important; position: relative; }
+    .how-it-works { border-top: 1px solid var(--border); padding-top: 16px !important; padding-bottom: 24px !important; position: relative; }
     .how-top {
       position: relative;
-      margin-bottom: 16px;
-      min-height: 420px;
+      margin-bottom: 8px;
+      height: 340px;
     }
     .how-header {
       position: relative; z-index: 2;
       margin-bottom: 0;
       text-align: center;
-      padding-top: 8px;
+      padding-top: 24px;
     }
     .how-canvas-area {
       position: absolute;
@@ -535,12 +535,13 @@
       overflow: hidden;
     }
     .floating-bubbles {
-      grid-column: 1 / 2;
-      position: relative;
-      height: 160px;
-      margin-top: -8px;
-      margin-bottom: 8px;
+      position: absolute;
+      z-index: 3;
+      left: 0; right: 0;
+      bottom: 60px;
+      height: 100px;
       overflow: hidden;
+      pointer-events: none;
     }
     .float-bubble {
       position: absolute;
