@@ -1688,8 +1688,8 @@
             globalNodeIdx++;
           });
 
-          // Draw edges within cluster (fade as converge)
-          const edgeAlpha = 0.35 * shapeAlpha * (1 - convergeEase * 0.5);
+          // Draw edges within cluster (keep visible even when converged)
+          const edgeAlpha = 0.35 * shapeAlpha * (1 - convergeEase * 0.2);
           if (edgeAlpha > 0.01) {
             let gOff = 0;
             for (let k = 0; k < ci; k++) gOff += shapeDefs[k].pts.length;
@@ -1785,6 +1785,51 @@
             ctx.stroke();
           }
         }
+
+        // Draw internal cross-connections through center when converged
+        if (convergeEase > 0.7 && allNodes.length > 4) {
+          const crossAlpha = (convergeEase - 0.7) / 0.3 * 0.12 * shapeAlpha;
+          const step = Math.max(1, Math.floor(allNodes.length / 12));
+          for (let i = 0; i < allNodes.length; i += step) {
+            const opposite = (i + Math.floor(allNodes.length / 2)) % allNodes.length;
+            ctx.beginPath();
+            ctx.moveTo(allNodes[i].x, allNodes[i].y);
+            ctx.lineTo(allNodes[opposite].x, allNodes[opposite].y);
+            ctx.strokeStyle = allNodes[i].cc.line;
+            ctx.globalAlpha = crossAlpha;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+        }
+
+        // Big center dot — clarity & control (grows as circle forms)
+        if (convergeEase > 0.5) {
+          const dotProgress = (convergeEase - 0.5) / 0.5;
+          const dotR = 12 * dotProgress;
+          const pulse = Math.sin(t * 2) * 2 * dotProgress;
+          // Outer glow
+          const grad = ctx.createRadialGradient(zoneCX, zoneCY, 0, zoneCX, zoneCY, dotR * 3 + pulse);
+          grad.addColorStop(0, 'rgba(37,99,235,0.25)');
+          grad.addColorStop(0.5, 'rgba(37,99,235,0.08)');
+          grad.addColorStop(1, 'rgba(37,99,235,0)');
+          ctx.beginPath();
+          ctx.arc(zoneCX, zoneCY, dotR * 3 + pulse, 0, Math.PI*2);
+          ctx.fillStyle = grad;
+          ctx.globalAlpha = shapeAlpha;
+          ctx.fill();
+          // Core dot
+          ctx.beginPath();
+          ctx.arc(zoneCX, zoneCY, dotR + pulse * 0.3, 0, Math.PI*2);
+          ctx.fillStyle = '#2563eb';
+          ctx.globalAlpha = 0.9 * shapeAlpha * dotProgress;
+          ctx.fill();
+          // Inner bright spot
+          ctx.beginPath();
+          ctx.arc(zoneCX, zoneCY, dotR * 0.4, 0, Math.PI*2);
+          ctx.fillStyle = '#ffffff';
+          ctx.globalAlpha = 0.7 * shapeAlpha * dotProgress;
+          ctx.fill();
+        }
         ctx.globalAlpha = 1;
       }
 
@@ -1817,6 +1862,28 @@
         ctx.globalAlpha = 0.5 * (1 - rp * 0.5);
         ctx.lineWidth = 3;
         ctx.stroke();
+
+        // Big center dot — enlarged and pulsing during radiate
+        const radiateDotR = 14 + Math.sin(rp * Math.PI * 3) * 4;
+        const radGrad = ctx.createRadialGradient(zoneCX, zoneCY, 0, zoneCX, zoneCY, radiateDotR * 4);
+        radGrad.addColorStop(0, 'rgba(37,99,235,0.35)');
+        radGrad.addColorStop(0.4, 'rgba(234,179,8,0.12)');
+        radGrad.addColorStop(1, 'rgba(37,99,235,0)');
+        ctx.beginPath();
+        ctx.arc(zoneCX, zoneCY, radiateDotR * 4, 0, Math.PI*2);
+        ctx.fillStyle = radGrad;
+        ctx.globalAlpha = 0.8;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(zoneCX, zoneCY, radiateDotR, 0, Math.PI*2);
+        ctx.fillStyle = '#2563eb';
+        ctx.globalAlpha = 0.95;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(zoneCX, zoneCY, radiateDotR * 0.35, 0, Math.PI*2);
+        ctx.fillStyle = '#ffffff';
+        ctx.globalAlpha = 0.8;
+        ctx.fill();
 
         // Node brightness boost
         if (allNodes && allNodes.length > 0) {
