@@ -529,85 +529,74 @@
       padding-top: 16px;
     }
     .how-animation-row {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      height: 280px;
+      position: relative;
+      height: 320px;
     }
     .how-canvas-area {
       position: relative;
-      width: 75%;
+      width: 100%;
       height: 100%;
       overflow: hidden;
-      flex-shrink: 0;
     }
     .floating-bubbles {
-      position: relative;
-      width: 25%;
-      height: 100%;
-      overflow: hidden;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
       pointer-events: none;
       display: flex;
-      flex-direction: column;
       justify-content: center;
-      gap: 6px;
-      padding-right: 24px;
-      padding-left: 8px;
+      gap: 12px;
+      padding: 0 24px 16px;
+      z-index: 3;
     }
     .float-bubble {
       position: relative;
-      background: transparent;
-      border: none;
-      border-radius: 0;
-      padding: 8px 0;
-      font-size: 13.5px;
-      font-style: italic;
-      font-weight: 400;
-      color: #9ca3af;
-      line-height: 1.5;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #e2e8f0;
+      line-height: 1.45;
       white-space: normal;
       opacity: 0;
-      transform: translateY(8px);
+      transform: translateY(16px) scale(0.95);
       pointer-events: none;
-      text-align: right;
-      border-right: 2px solid rgba(37,99,235,0.15);
-      padding-right: 14px;
+      text-align: center;
+      flex: 1;
+      max-width: 320px;
+      min-width: 200px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
     }
     .float-bubble::before {
-      content: '?';
+      content: '';
       position: absolute;
-      right: -8px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: rgba(37,99,235,0.08);
-      color: rgba(37,99,235,0.4);
-      font-size: 9px;
-      font-style: normal;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
+      top: -1px;
+      left: 20%;
+      right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(37,99,235,0.4), transparent);
     }
     .float-bubble.pop-in {
-      animation: bubblePopIn 1s ease-out forwards,
-                 bubbleFloat 6s ease-in-out 1s infinite alternate,
-                 bubbleFadeOut 1s ease-in 6s forwards;
+      animation: bubblePopIn 0.6s cubic-bezier(0.16,1,0.3,1) forwards,
+                 bubblePulse 3s ease-in-out 0.6s infinite alternate,
+                 bubbleFadeOut 0.5s ease-in 4s forwards;
     }
     @keyframes bubblePopIn {
-      0% { opacity: 0; transform: translateY(12px); }
-      100% { opacity: 1; transform: translateY(0); }
+      0% { opacity: 0; transform: translateY(16px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
     }
-    @keyframes bubbleFloat {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-4px); }
+    @keyframes bubblePulse {
+      0% { border-color: rgba(37,99,235,0.2); }
+      100% { border-color: rgba(37,99,235,0.35); }
     }
     @keyframes bubbleFadeOut {
-      0% { opacity: 1; }
-      100% { opacity: 0; transform: translateY(-8px); }
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-10px) scale(0.97); }
     }
     .how-steps {
       display: grid;
@@ -1007,8 +996,8 @@
       <div class="how-animation-row">
         <div class="how-canvas-area" id="howCanvasArea">
           <canvas id="networkCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
+          <div class="floating-bubbles" id="floatingBubbles"></div>
         </div>
-        <div class="floating-bubbles" id="floatingBubbles"></div>
       </div>
     </div>
     <div class="how-steps">
@@ -1394,14 +1383,15 @@
 
     // Unified shape: large ring — nodes converge to a circle
 
-    const TOTAL_CHAOS = 35;
-    const COLLECT_INTERVAL = 250;   // faster collection = chaos resolves quicker
-    const ORDER_HOLD_MS = 1200;
-    const CONVERGE_MS = 1500;
-    const UNIFIED_HOLD_MS = 2500;
-    const RADIATE_MS = 1500;
-    const DIVERGE_MS = 1200;
-    const SCATTER_HOLD_MS = 1000;
+    const TOTAL_CHAOS = 30;
+    const COLLECT_INTERVAL = 140;   // faster collection for ~10s loop
+    const ORDER_HOLD_MS = 700;
+    const CONVERGE_MS = 1000;
+    const UNIFIED_HOLD_MS = 1800;
+    const RADIATE_MS = 1000;
+    const DIVERGE_MS = 800;
+    const SCATTER_HOLD_MS = 700;
+    let animationStarted = false;
 
     let clusters = [];
     let chaosParticles = [];
@@ -1930,54 +1920,64 @@
     if (window.ResizeObserver) {
       new ResizeObserver(resize).observe(container);
     }
-    resize();
-    requestAnimationFrame(animate);
-  })();
-  </script>
 
-  <!-- FLOATING QUESTION BUBBLES -->
-  <script>
-  (function() {
-    const container = document.getElementById('floatingBubbles');
-    if (!container) return;
+    // Only start animation when section scrolls into view
+    const howSection = document.getElementById('how');
+    const howObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !animationStarted) {
+          animationStarted = true;
+          resize();
+          requestAnimationFrame(animate);
+          startQuestionBubbles();
+          howObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.15 });
+    howObserver.observe(howSection);
+  })();
+
+  // FLOATING QUESTION BUBBLES
+  function startQuestionBubbles() {
+    const qContainer = document.getElementById('floatingBubbles');
+    if (!qContainer) return;
     const questions = [
-      "Which of my buildings is the biggest liability right now?",
-      "Would my records hold up in an insurance claim or audit?",
-      "Where am I bleeding money across the portfolio?",
-      "What's going to break next — and how much will it cost?",
-      "Are my tenants about to leave over unresolved issues?",
-      "How do I budget for capital expenses I can't see coming?",
-      "Is my team actually completing work orders on time?",
+      "Which building is my biggest liability?",
+      "Would my records survive an audit?",
+      "Where am I bleeding money?",
+      "What's going to break next?",
+      "Are tenants about to leave over unresolved issues?",
+      "How do I budget for unseen capital expenses?",
+      "Is my team completing work orders on time?",
       "Am I in compliance across every property?",
-      "What's the real condition of a building I'm about to acquire?",
+      "What's the real condition of this acquisition target?",
       "Why do I have four systems and still no clear picture?",
-      "How do I prove the value of my maintenance spend to investors?",
-      "Which vendor is overcharging me — and which one is underperforming?",
-      "What should I prioritize to protect my NOI this year?",
-      "Are we at risk of a code violation I don't know about?",
-      "How do I get my regional managers on the same page?"
+      "How do I prove maintenance ROI to investors?",
+      "Which vendor is overcharging me?",
+      "What should I prioritize to protect NOI?",
+      "Are we at risk of a code violation?",
+      "How do I get regional managers aligned?"
     ];
-    let idx = 0;
+    let qIdx = 0;
 
     function spawnBubble() {
       // Keep max 3 bubbles visible
-      while (container.children.length >= 3) {
-        container.removeChild(container.firstChild);
+      while (qContainer.children.length >= 3) {
+        qContainer.removeChild(qContainer.firstChild);
       }
       const bubble = document.createElement('div');
       bubble.className = 'float-bubble';
-      bubble.textContent = questions[idx];
-      bubble.style.maxWidth = '100%';
-      container.appendChild(bubble);
+      bubble.textContent = questions[qIdx];
+      qContainer.appendChild(bubble);
       requestAnimationFrame(() => { bubble.classList.add('pop-in'); });
-      setTimeout(() => { if (bubble.parentNode) bubble.parentNode.removeChild(bubble); }, 7000);
-      idx = (idx + 1) % questions.length;
+      setTimeout(() => { if (bubble.parentNode) bubble.parentNode.removeChild(bubble); }, 4500);
+      qIdx = (qIdx + 1) % questions.length;
     }
 
-    // Spawn first bubble immediately, then every 3 seconds
+    // Spawn first bubble immediately, then every 2.2 seconds
     spawnBubble();
-    setInterval(spawnBubble, 3000);
-  })();
+    setInterval(spawnBubble, 2200);
+  }
   </script>
 
 </body>
