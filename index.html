@@ -1503,6 +1503,7 @@
         collectTimer += dt;
         if (collectTimer >= COLLECT_INTERVAL && chaosParticles.length > 0) {
           collectParticle();
+          if (chaosParticles.length > 0) collectParticle(); // collect 2 at a time
           collectTimer = 0;
         }
         if (chaosParticles.length === 0 && travelers.length === 0) {
