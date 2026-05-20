@@ -1395,13 +1395,13 @@
     // Unified shape: large ring — nodes converge to a circle
 
     const TOTAL_CHAOS = 35;
-    const COLLECT_INTERVAL = 600;   // slower collection = chaos stays longer
-    const ORDER_HOLD_MS = 2000;
-    const CONVERGE_MS = 2500;
-    const UNIFIED_HOLD_MS = 3000;
-    const RADIATE_MS = 2500;
-    const DIVERGE_MS = 2000;
-    const SCATTER_HOLD_MS = 1500;
+    const COLLECT_INTERVAL = 250;   // faster collection = chaos resolves quicker
+    const ORDER_HOLD_MS = 1200;
+    const CONVERGE_MS = 1500;
+    const UNIFIED_HOLD_MS = 2500;
+    const RADIATE_MS = 1500;
+    const DIVERGE_MS = 1200;
+    const SCATTER_HOLD_MS = 1000;
 
     let clusters = [];
     let chaosParticles = [];
