@@ -552,50 +552,38 @@
     }
     .float-bubble {
       position: relative;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(37, 99, 235, 0.2);
-      border-radius: 12px;
-      padding: 14px 20px;
-      font-size: 15px;
-      font-weight: 500;
-      color: #e2e8f0;
-      line-height: 1.45;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 6px 0;
+      font-size: 13px;
+      font-weight: 400;
+      font-style: italic;
+      color: rgba(148, 163, 184, 0.6);
+      letter-spacing: 0.01em;
+      line-height: 1.4;
       white-space: normal;
       opacity: 0;
-      transform: translateY(16px) scale(0.95);
+      transform: translateY(6px);
       pointer-events: none;
       text-align: center;
       flex: 1;
-      max-width: 320px;
-      min-width: 200px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+      max-width: 280px;
+      min-width: 160px;
     }
     .float-bubble::before {
-      content: '';
-      position: absolute;
-      top: -1px;
-      left: 20%;
-      right: 20%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(37,99,235,0.4), transparent);
+      display: none;
     }
     .float-bubble.pop-in {
-      animation: bubblePopIn 0.6s cubic-bezier(0.16,1,0.3,1) forwards,
-                 bubblePulse 3s ease-in-out 0.6s infinite alternate,
-                 bubbleFadeOut 0.5s ease-in 4s forwards;
+      animation: bubblePopIn 1.2s ease-out forwards,
+                 bubbleFadeOut 1s ease-in 5.5s forwards;
     }
     @keyframes bubblePopIn {
-      0% { opacity: 0; transform: translateY(16px) scale(0.95); }
-      100% { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    @keyframes bubblePulse {
-      0% { border-color: rgba(37,99,235,0.2); }
-      100% { border-color: rgba(37,99,235,0.35); }
+      0% { opacity: 0; transform: translateY(6px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
     @keyframes bubbleFadeOut {
-      0% { opacity: 1; transform: translateY(0) scale(1); }
+      0% { opacity: 1; transform: translateY(0); }
       100% { opacity: 0; transform: translateY(-10px) scale(0.97); }
     }
     .how-steps {
@@ -1384,13 +1372,13 @@
     // Unified shape: large ring — nodes converge to a circle
 
     const TOTAL_CHAOS = 30;
-    const COLLECT_INTERVAL = 140;   // faster collection for ~10s loop
-    const ORDER_HOLD_MS = 700;
-    const CONVERGE_MS = 1000;
-    const UNIFIED_HOLD_MS = 1800;
-    const RADIATE_MS = 1000;
-    const DIVERGE_MS = 800;
-    const SCATTER_HOLD_MS = 700;
+    const COLLECT_INTERVAL = 200;
+    const ORDER_HOLD_MS = 1400;
+    const CONVERGE_MS = 1800;
+    const UNIFIED_HOLD_MS = 3000;
+    const RADIATE_MS = 1800;
+    const DIVERGE_MS = 1200;
+    const SCATTER_HOLD_MS = 1000;
     let animationStarted = false;
 
     let clusters = [];
@@ -1942,27 +1930,22 @@
     const qContainer = document.getElementById('floatingBubbles');
     if (!qContainer) return;
     const questions = [
-      "Which building is my biggest liability?",
-      "Would my records survive an audit?",
-      "Where am I bleeding money?",
-      "What's going to break next?",
-      "Are tenants about to leave over unresolved issues?",
-      "How do I budget for unseen capital expenses?",
-      "Is my team completing work orders on time?",
-      "Am I in compliance across every property?",
-      "What's the real condition of this acquisition target?",
-      "Why do I have four systems and still no clear picture?",
-      "How do I prove maintenance ROI to investors?",
-      "Which vendor is overcharging me?",
-      "What should I prioritize to protect NOI?",
-      "Are we at risk of a code violation?",
-      "How do I get regional managers aligned?"
+      "Is this system still running as designed?",
+      "What drifted — and when?",
+      "Which alarms actually matter?",
+      "Where is deferred maintenance hiding?",
+      "What breaks next?",
+      "How far from spec are we?",
+      "Are we compliant — or just hoping?",
+      "What did the last inspection miss?",
+      "Is this building aging faster than it should?",
+      "What's the real cost of waiting?"
     ];
     let qIdx = 0;
 
     function spawnBubble() {
-      // Keep max 3 bubbles visible
-      while (qContainer.children.length >= 3) {
+      // Keep max 2 bubbles visible
+      while (qContainer.children.length >= 2) {
         qContainer.removeChild(qContainer.firstChild);
       }
       const bubble = document.createElement('div');
@@ -1970,13 +1953,13 @@
       bubble.textContent = questions[qIdx];
       qContainer.appendChild(bubble);
       requestAnimationFrame(() => { bubble.classList.add('pop-in'); });
-      setTimeout(() => { if (bubble.parentNode) bubble.parentNode.removeChild(bubble); }, 4500);
+      setTimeout(() => { if (bubble.parentNode) bubble.parentNode.removeChild(bubble); }, 6500);
       qIdx = (qIdx + 1) % questions.length;
     }
 
-    // Spawn first bubble immediately, then every 2.2 seconds
-    spawnBubble();
-    setInterval(spawnBubble, 2200);
+    // Spawn first bubble after a short delay, then every 3.5 seconds
+    setTimeout(spawnBubble, 1500);
+    setInterval(spawnBubble, 3500);
   }
   </script>
 
