@@ -1384,13 +1384,14 @@
     let chaosParticles = [];
     let travelers = [];
     let shapeAlpha = 0;
-    // chaos → ordered → converging → unified → diverging → scattering → chaos (loop)
+    // chaos → ordered → converging → unified → radiating → diverging → final (stop)
     let phase = 'chaos';
     let phaseTimer = 0;
     let collectTimer = 0;
     let arrivedCount = 0;
     let convergeProgress = 0;
     let lastFrameTime = 0;
+    let quotesStarted = false;
 
     function resize() {
       const rect = container.getBoundingClientRect();
@@ -1510,33 +1511,20 @@
         shapeAlpha = 1;
         phaseTimer += dt;
         convergeProgress = Math.max(0, 1 - phaseTimer / DIVERGE_MS);
-        if (phaseTimer >= DIVERGE_MS) { phase = 'scattering'; phaseTimer = 0; convergeProgress = 0; }
-      } else if (phase === 'scattering') {
-        phaseTimer += dt;
-        const scatterProg = Math.min(1, phaseTimer / SCATTER_HOLD_MS);
-        shapeAlpha = Math.max(0, 1 - scatterProg);
-        // Gradually spawn new chaos particles from the "chaos" word origin
-        const targetChaos = Math.floor(scatterProg * TOTAL_CHAOS);
-        while (chaosParticles.length < targetChaos) {
-          const p = makeChaos(); // spawns from chaos word origin
-          chaosParticles.push(p);
-        }
-        if (phaseTimer >= SCATTER_HOLD_MS) {
-          // Seamless transition: chaos particles already in place
-          travelers = [];
-          arrivedCount = 0;
-          convergeProgress = 0;
-          phase = 'chaos';
+        if (phaseTimer >= DIVERGE_MS) {
+          phase = 'final';
           phaseTimer = 0;
-          collectTimer = 0;
-          // Cycle to next shape set
-          currentLoop = (currentLoop + 1) % 3;
-          shapeDefs = shapeDefsAll[currentLoop];
-          clusters = shapeDefs.map((sd, ci) => ({ def: sd, colorIdx: ci, nodeAlpha: [] }));
-          clusters.forEach(c => c.def.pts.forEach(() => c.nodeAlpha.push(0)));
-          // Top up to full chaos count if needed
-          while (chaosParticles.length < TOTAL_CHAOS) chaosParticles.push(makeChaos());
+          convergeProgress = 0;
+          // Start quotes now that the animation has settled
+          if (!quotesStarted) {
+            quotesStarted = true;
+            startQuestionBubbles();
+          }
         }
+      } else if (phase === 'final') {
+        // Hold the shapes with gentle breathing — animation is done
+        shapeAlpha = 1;
+        convergeProgress = 0;
       }
 
       const t = now * 0.001;
@@ -1916,7 +1904,6 @@
           animationStarted = true;
           resize();
           requestAnimationFrame(animate);
-          startQuestionBubbles();
           howObserver.disconnect();
         }
       });
