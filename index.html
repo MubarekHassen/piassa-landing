@@ -1491,6 +1491,10 @@
       } else if (phase === 'ordered') {
         shapeAlpha = 1;
         phaseTimer += dt;
+        if (!quotesStarted) {
+          quotesStarted = true;
+          startQuestionBubbles();
+        }
         if (phaseTimer >= ORDER_HOLD_MS) { phase = 'converging'; phaseTimer = 0; convergeProgress = 0; }
       } else if (phase === 'converging') {
         shapeAlpha = 1;
@@ -1515,11 +1519,6 @@
           phase = 'final';
           phaseTimer = 0;
           convergeProgress = 0;
-          // Start quotes now that the animation has settled
-          if (!quotesStarted) {
-            quotesStarted = true;
-            startQuestionBubbles();
-          }
         }
       } else if (phase === 'final') {
         // Hold the shapes with gentle breathing — animation is done
