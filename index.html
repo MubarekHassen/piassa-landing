@@ -1915,21 +1915,49 @@
     const qContainer = document.getElementById('floatingBubbles');
     if (!qContainer) return;
     const questions = [
-      "Which of my buildings is the biggest liability right now?",
-      "Would my records hold up in an insurance claim or audit?",
-      "Where am I bleeding money across the portfolio?",
-      "What's going to break next — and how much will it cost?",
-      "Are my tenants about to leave over unresolved issues?",
-      "How do I budget for capital expenses I can't see coming?",
-      "Is my team actually completing work orders on time?",
-      "Am I in compliance across every property?",
-      "What's the real condition of a building I'm about to acquire?",
-      "Why do I have four systems and still no clear picture?",
-      "How do I prove the value of my maintenance spend to investors?",
-      "Which vendor is overcharging me — and which one is underperforming?",
-      "What should I prioritize to protect my NOI this year?",
-      "Are we at risk of a code violation I don't know about?",
-      "How do I get my regional managers on the same page?"
+      // Energy & Utilities
+      "Where is my energy cost coming from?",
+      "What can I do to reduce my utility bill?",
+      "Which building is my most expensive to operate per square foot?",
+      "Are my HVAC systems running efficiently or degrading?",
+      "Why did my electricity bill spike this quarter?",
+      "Which systems should I retrofit first for the best payback period?",
+      "What's my energy use intensity trending toward across the portfolio?",
+      "Am I paying for cooling and heating simultaneously anywhere?",
+      // Maintenance & OpEx
+      "How much am I spending on reactive vs preventive maintenance?",
+      "Which assets are crossing the repair-vs-replace threshold?",
+      "What's my maintenance cost per unit trending year over year?",
+      "How much did emergency callouts cost me last quarter?",
+      "Which vendor contracts are underperforming relative to spend?",
+      "What's the correlation between deferred maintenance and tenant complaints?",
+      "Am I carrying redundant service contracts across buildings?",
+      // Uptime & Reliability
+      "Which systems have the most unplanned downtime?",
+      "What's my mean time to repair across critical systems?",
+      "What equipment is showing early warning signs before failure?",
+      "How many work orders are recurring on the same asset?",
+      "What's my first-time fix rate on maintenance requests?",
+      "Which failures are cascading into other system issues?",
+      // Lifecycle & Capital Planning
+      "Which equipment is approaching end of useful life?",
+      "What's my deferred maintenance backlog in dollars?",
+      "How does my actual asset lifespan compare to manufacturer specs?",
+      "What's the total cost of ownership for my rooftop units?",
+      "Where should I allocate next year's capital budget for maximum impact?",
+      "What's the risk-adjusted cost of deferring this replacement another year?",
+      // Compliance & Risk
+      "Which buildings have overdue inspection certifications?",
+      "What's my insurance exposure from deferred maintenance?",
+      "Are any life safety systems out of compliance right now?",
+      "What's the liability gap between my inspection records and actual conditions?",
+      "How does my portfolio compare against code requirements adopted last cycle?",
+      // Tenant & Revenue Impact
+      "What's my average unit turnover cost including make-ready?",
+      "Which maintenance issues are driving the most lease non-renewals?",
+      "How long is my average make-ready cycle and where's the bottleneck?",
+      "What's the revenue impact of my current vacancy days per unit?",
+      "Which capital improvements would command the highest rent premium?"
     ];
     let qIdx = 0;
 
