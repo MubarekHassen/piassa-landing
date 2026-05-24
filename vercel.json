@@ -10,6 +10,14 @@
     {
       "source": "/fieldcapture/:path*",
       "destination": "https://fieldcapture.piassa.ai/:path*"
+    },
+    {
+      "source": "/config/:path*",
+      "destination": "https://buildingos.piassa.ai/config/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://buildingos.piassa.ai/api/:path*"
     }
   ],
   "headers": [
