@@ -18,6 +18,18 @@
     {
       "source": "/api/:path*",
       "destination": "https://buildingos.piassa.ai/api/:path*"
+    },
+    {
+      "source": "/health",
+      "destination": "https://buildingos.piassa.ai/health"
+    },
+    {
+      "source": "/documents/:path*",
+      "destination": "https://buildingos.piassa.ai/documents/:path*"
+    },
+    {
+      "source": "/buildings/:path*",
+      "destination": "https://buildingos.piassa.ai/buildings/:path*"
     }
   ],
   "headers": [
