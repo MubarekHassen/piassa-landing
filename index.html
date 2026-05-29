@@ -30,13 +30,17 @@
       --amber: #d97706;
     }
 
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--text);
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+    }
+    /* Full-page snap scrolling */
+    .hero, .how-it-works, .capabilities, .metrics, .cta {
+      scroll-snap-align: start;
     }
 
     /* ===================== NAV ===================== */
@@ -1980,92 +1984,7 @@
     setInterval(spawnBubble, 4000);
   }
 
-  // ===================== FULL-PAGE SCROLL SNAP =====================
-  (function() {
-    const sections = [...document.querySelectorAll('.hero, .how-it-works, .team-pedigree, .capabilities, .metrics, .cta')];
-    let currentIndex = 0;
-    let isAnimating = false;
-
-    // Sync currentIndex when user scrolls via nav links or other means
-    function syncIndex() {
-      const scrollY = window.scrollY;
-      for (let i = sections.length - 1; i >= 0; i--) {
-        if (scrollY >= sections[i].offsetTop - 100) { currentIndex = i; break; }
-      }
-    }
-    window.addEventListener('scrollend', syncIndex);
-    // Fallback for browsers without scrollend
-    let scrollTimer;
-    window.addEventListener('scroll', () => {
-      clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(syncIndex, 150);
-    });
-
-    function goToSection(index) {
-      if (index < 0 || index >= sections.length || isAnimating) return;
-      isAnimating = true;
-      currentIndex = index;
-      const targetY = sections[index].offsetTop;
-      window.scrollTo({ top: targetY, behavior: 'smooth' });
-      // Unlock after animation completes
-      setTimeout(() => { isAnimating = false; }, 900);
-    }
-
-    // Accumulate small trackpad deltas before triggering
-    let deltaAccum = 0;
-    let accumTimer;
-    const DELTA_THRESHOLD = 50;
-
-    window.addEventListener('wheel', function(e) {
-      if (document.getElementById('accessModal').classList.contains('active')) return;
-      e.preventDefault();
-      if (isAnimating) return;
-
-      deltaAccum += e.deltaY;
-      clearTimeout(accumTimer);
-      accumTimer = setTimeout(() => { deltaAccum = 0; }, 200);
-
-      if (Math.abs(deltaAccum) >= DELTA_THRESHOLD) {
-        if (deltaAccum > 0) goToSection(currentIndex + 1);
-        else goToSection(currentIndex - 1);
-        deltaAccum = 0;
-      }
-    }, { passive: false });
-
-    // Keyboard: arrows, page up/down, space
-    window.addEventListener('keydown', function(e) {
-      if (document.getElementById('accessModal').classList.contains('active')) return;
-      if (isAnimating) return;
-      if (e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey)) {
-        e.preventDefault(); goToSection(currentIndex + 1);
-      } else if (e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)) {
-        e.preventDefault(); goToSection(currentIndex - 1);
-      }
-    });
-
-    // Touch swipe support for mobile
-    let touchStartY = 0;
-    let touchActive = false;
-    window.addEventListener('touchstart', (e) => {
-      if (document.getElementById('accessModal').classList.contains('active')) return;
-      touchStartY = e.touches[0].clientY;
-      touchActive = true;
-    }, { passive: true });
-    window.addEventListener('touchmove', (e) => {
-      if (touchActive && !document.getElementById('accessModal').classList.contains('active')) {
-        e.preventDefault(); // prevent native scroll during swipe
-      }
-    }, { passive: false });
-    window.addEventListener('touchend', (e) => {
-      if (!touchActive || isAnimating) { touchActive = false; return; }
-      touchActive = false;
-      const diff = touchStartY - e.changedTouches[0].clientY;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) goToSection(currentIndex + 1);
-        else goToSection(currentIndex - 1);
-      }
-    });
-  })();
+  // CSS scroll-snap handles full-page snapping natively (set on html element)
   </script>
 
 </body>
