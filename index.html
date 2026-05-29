@@ -30,18 +30,13 @@
       --amber: #d97706;
     }
 
-    html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--text);
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
-    }
-
-    /* Scroll-snap: each major section snaps into view */
-    .hero, .how-it-works, .team-pedigree, .capabilities, .metrics, .cta {
-      scroll-snap-align: start;
     }
 
     /* ===================== NAV ===================== */
@@ -1984,6 +1979,67 @@
     setTimeout(spawnBubble, 1000);
     setInterval(spawnBubble, 4000);
   }
+
+  // ===================== FULL-PAGE SCROLL SNAP =====================
+  (function() {
+    const sections = document.querySelectorAll('.hero, .how-it-works, .team-pedigree, .capabilities, .metrics, .cta');
+    let isScrolling = false;
+    let lastScrollTime = 0;
+    const cooldown = 800; // ms between snaps
+
+    function getClosestSectionIndex() {
+      let closest = 0;
+      let minDist = Infinity;
+      sections.forEach((s, i) => {
+        const dist = Math.abs(s.getBoundingClientRect().top);
+        if (dist < minDist) { minDist = dist; closest = i; }
+      });
+      return closest;
+    }
+
+    function scrollToSection(index) {
+      if (index < 0 || index >= sections.length) return;
+      isScrolling = true;
+      sections[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => { isScrolling = false; }, cooldown);
+    }
+
+    window.addEventListener('wheel', function(e) {
+      // Don't hijack scroll if modal is open
+      if (document.getElementById('accessModal').classList.contains('active')) return;
+
+      const now = Date.now();
+      if (isScrolling || now - lastScrollTime < cooldown) return;
+
+      // Only trigger on deliberate scrolls (not tiny trackpad movements)
+      if (Math.abs(e.deltaY) < 30) return;
+
+      e.preventDefault();
+      lastScrollTime = now;
+
+      const current = getClosestSectionIndex();
+      if (e.deltaY > 0) {
+        scrollToSection(current + 1); // scroll down → next section
+      } else {
+        scrollToSection(current - 1); // scroll up → previous section
+      }
+    }, { passive: false });
+
+    // Keyboard support: arrow keys, page up/down, space
+    window.addEventListener('keydown', function(e) {
+      if (document.getElementById('accessModal').classList.contains('active')) return;
+      if (isScrolling) return;
+
+      const current = getClosestSectionIndex();
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey)) {
+        e.preventDefault();
+        scrollToSection(current + 1);
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)) {
+        e.preventDefault();
+        scrollToSection(current - 1);
+      }
+    });
+  })();
   </script>
 
 </body>
