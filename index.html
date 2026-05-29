@@ -30,13 +30,18 @@
       --amber: #d97706;
     }
 
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--text);
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+    }
+
+    /* Scroll-snap: each major section snaps into view */
+    .hero, .how-it-works, .team-pedigree, .capabilities, .metrics, .cta {
+      scroll-snap-align: start;
     }
 
     /* ===================== NAV ===================== */
