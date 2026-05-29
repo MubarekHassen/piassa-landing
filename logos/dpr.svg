@@ -1,4 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 56">
-  <text x="28" y="38" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="36" fill="#005B9C" font-weight="700" letter-spacing="1">dpr</text>
-  <text x="120" y="38" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="9.5" fill="#005B9C" font-weight="600" letter-spacing="3.5">CONSTRUCTION</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 100">
+  <!-- DPR Construction Logo -->
+  <!-- Gray staircase structure behind letters -->
+  <g fill="none" stroke="#A8A9AD" stroke-width="2.2">
+    <!-- Left stair steps ascending left to right -->
+    <polyline points="42,58 42,48 62,48 62,38 82,38 82,28 102,28 102,18"/>
+    <!-- Right stair steps ascending left to right -->
+    <polyline points="158,58 158,48 178,48 178,38 198,38 198,28 218,28 218,18"/>
+    <!-- Horizontal grid lines -->
+    <line x1="42" y1="28" x2="218" y2="28" stroke-width="1" opacity="0.4"/>
+    <line x1="42" y1="38" x2="218" y2="38" stroke-width="1" opacity="0.4"/>
+    <line x1="42" y1="48" x2="218" y2="48" stroke-width="1" opacity="0.4"/>
+  </g>
+  <!-- Red arc/swoosh curving from bottom-left upward -->
+  <path d="M20,80 C20,30 50,16 100,16" fill="none" stroke="#CC2229" stroke-width="5" stroke-linecap="round"/>
+  <!-- DPR letters -->
+  <text x="130" y="62" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="56" fill="#1B365D" text-anchor="middle" font-weight="700" letter-spacing="8">DPR</text>
+  <!-- CONSTRUCTION text below -->
+  <text x="130" y="84" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="15.5" fill="#1B365D" text-anchor="middle" font-weight="400" letter-spacing="7.5">CONSTRUCTION</text>
 </svg>

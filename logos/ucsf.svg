@@ -1,3 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 48">
-  <text x="80" y="36" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="38" fill="#052049" text-anchor="middle" font-weight="700" letter-spacing="2">UCSF</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80">
+  <!-- UCSF Logo with University of California San Francisco subtitle -->
+  <!-- UCSF in teal/blue-gray -->
+  <text x="150" y="42" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="52" fill="#90A4AE" text-anchor="middle" font-weight="700" letter-spacing="2">UCSF</text>
+  <!-- University of California line -->
+  <text x="150" y="60" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="13" fill="#546E7A" text-anchor="middle" font-weight="400" letter-spacing="0.5">University of California</text>
+  <!-- San Francisco line -->
+  <text x="150" y="76" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="13" fill="#546E7A" text-anchor="middle" font-weight="400" letter-spacing="0.5">San Francisco</text>
 </svg>
