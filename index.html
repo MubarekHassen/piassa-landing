@@ -1407,7 +1407,10 @@
       canvas.style.width = w + 'px';
       canvas.style.height = h + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      resetCycle();
+      // Only reset on first init — preserve animation state on mobile scroll/resize
+      if (!animationStarted) {
+        resetCycle();
+      }
     }
 
     function getSection() {
@@ -1904,8 +1907,8 @@
     const howObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting && !animationStarted) {
+          resize(); // first resize — animationStarted is still false, so resetCycle() runs
           animationStarted = true;
-          resize();
           requestAnimationFrame(animate);
           howObserver.disconnect();
         }
