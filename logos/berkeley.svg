@@ -1,31 +1,59 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 70">
-  <!-- UC Berkeley Logo - Seal + Berkeley wordmark -->
-  <!-- Simplified UC Seal -->
-  <g transform="translate(32, 35)">
-    <!-- Outer ring -->
-    <circle cx="0" cy="0" r="28" fill="none" stroke="#003262" stroke-width="2.2"/>
-    <circle cx="0" cy="0" r="24" fill="none" stroke="#003262" stroke-width="0.8"/>
-    <!-- Gold inner fill -->
-    <circle cx="0" cy="0" r="23" fill="#FDB515" opacity="0.2"/>
-    <!-- Open book -->
-    <path d="M-7,-1 L-7,7 L0,5 L7,7 L7,-1 L0,1 Z" fill="none" stroke="#003262" stroke-width="0.9"/>
-    <line x1="0" y1="1" x2="0" y2="5" stroke="#003262" stroke-width="0.5"/>
-    <!-- Star above book -->
-    <polygon points="0,-7 1,-4.8 3.2,-4.8 1.5,-3.2 2.2,-1 0,-2.5 -2.2,-1 -1.5,-3.2 -3.2,-4.8 -1,-4.8" fill="#FDB515" stroke="#003262" stroke-width="0.3"/>
-    <!-- Text along arcs -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 76">
+  <!-- UC Berkeley Official Logo — Seal + Wordmark -->
+  <defs>
+    <path id="sealTextTop" d="M38,10 A28,28 0 0,1 38,66"/>
+    <path id="sealTextBot" d="M38,66 A28,28 0 0,1 38,10"/>
+  </defs>
+
+  <!-- Seal circle — gold outer ring -->
+  <g transform="translate(38, 38)">
+    <!-- Gold outer ring -->
+    <circle cx="0" cy="0" r="34" fill="none" stroke="#C4820E" stroke-width="3"/>
+    <circle cx="0" cy="0" r="30.5" fill="none" stroke="#C4820E" stroke-width="1"/>
+    <!-- Inner gold fill -->
+    <circle cx="0" cy="0" r="29.5" fill="#FDB515" opacity="0.12"/>
+
+    <!-- Circular text — UNIVERSITY OF CALIFORNIA -->
     <defs>
-      <path id="topArc" d="M-20,-14 A26,26 0 0,1 20,-14"/>
-      <path id="botArc" d="M-18,18 A26,26 0 0,0 18,18"/>
+      <path id="topArcB" d="M-24,-18 A30,30 0 0,1 24,-18"/>
+      <path id="botArcB" d="M-22,22 A30,30 0 0,0 22,22"/>
     </defs>
-    <text font-family="Arial,sans-serif" font-size="4" fill="#003262" letter-spacing="0.8" font-weight="600">
-      <textPath href="#topArc" startOffset="50%" text-anchor="middle">UNIVERSITY OF CALIFORNIA</textPath>
+    <text font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="4.3" fill="#C4820E" letter-spacing="0.6" font-weight="600">
+      <textPath href="#topArcB" startOffset="50%" text-anchor="middle">UNIVERSITY OF CALIFORNIA</textPath>
     </text>
-    <!-- Year -->
-    <text x="-11" y="12" font-family="Georgia,serif" font-size="4.5" fill="#003262" font-style="italic">18</text>
-    <text x="7" y="12" font-family="Georgia,serif" font-size="4.5" fill="#003262" font-style="italic">68</text>
+
+    <!-- Decorative dots between text arcs -->
+    <circle cx="-26" cy="0" r="1.2" fill="#C4820E"/>
+    <circle cx="26" cy="0" r="1.2" fill="#C4820E"/>
+
+    <!-- Central emblem — book and star -->
+    <g fill="#C4820E" stroke="#C4820E" stroke-width="0.3">
+      <!-- Open book -->
+      <path d="M-8,0 L-8,8 L0,6.5 L8,8 L8,0 L0,1.5 Z" fill="none" stroke-width="0.9"/>
+      <line x1="0" y1="1.5" x2="0" y2="6.5" stroke-width="0.5"/>
+      <!-- Book lines -->
+      <line x1="-6" y1="2" x2="-1.5" y2="3" stroke-width="0.3"/>
+      <line x1="-6" y1="4" x2="-1.5" y2="4.5" stroke-width="0.3"/>
+      <line x1="-6" y1="6" x2="-1.5" y2="5.5" stroke-width="0.3"/>
+      <line x1="1.5" y1="3" x2="6" y2="2" stroke-width="0.3"/>
+      <line x1="1.5" y1="4.5" x2="6" y2="4" stroke-width="0.3"/>
+      <line x1="1.5" y1="5.5" x2="6" y2="6" stroke-width="0.3"/>
+      <!-- Star above book -->
+      <polygon points="0,-7 1.2,-4.5 3.8,-4.5 1.8,-2.8 2.6,-0.5 0,-2.2 -2.6,-0.5 -1.8,-2.8 -3.8,-4.5 -1.2,-4.5" fill="#C4820E"/>
+    </g>
+
+    <!-- Year flanking the book -->
+    <text x="-14" y="13" font-family="Georgia,serif" font-size="4.5" fill="#C4820E" font-style="italic">18</text>
+    <text x="8" y="13" font-family="Georgia,serif" font-size="4.5" fill="#C4820E" font-style="italic">68</text>
+
+    <!-- Bottom text on seal -->
+    <text font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="4" fill="#C4820E" letter-spacing="0.3" font-weight="600">
+      <textPath href="#botArcB" startOffset="50%" text-anchor="middle">LET THERE BE LIGHT</textPath>
+    </text>
   </g>
+
   <!-- "Berkeley" wordmark -->
-  <text x="74" y="42" font-family="Georgia,'Times New Roman',serif" font-size="38" fill="#003262" font-weight="400">Berkeley</text>
+  <text x="84" y="42" font-family="Georgia,'Times New Roman',serif" font-size="40" fill="#003262" font-weight="400">Berkeley</text>
   <!-- UNIVERSITY OF CALIFORNIA subtitle -->
-  <text x="75" y="60" font-family="Arial,Helvetica,sans-serif" font-size="10.5" fill="#003262" letter-spacing="1.2" font-weight="600">UNIVERSITY OF CALIFORNIA</text>
+  <text x="86" y="60" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="10.5" fill="#003262" letter-spacing="1.5" font-weight="600">UNIVERSITY OF CALIFORNIA</text>
 </svg>

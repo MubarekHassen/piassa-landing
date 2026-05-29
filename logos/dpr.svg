@@ -1,20 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 100">
-  <!-- DPR Construction Logo -->
-  <!-- Gray staircase structure behind letters -->
-  <g fill="none" stroke="#A8A9AD" stroke-width="2.2">
-    <!-- Left stair steps ascending left to right -->
-    <polyline points="42,58 42,48 62,48 62,38 82,38 82,28 102,28 102,18"/>
-    <!-- Right stair steps ascending left to right -->
-    <polyline points="158,58 158,48 178,48 178,38 198,38 198,28 218,28 218,18"/>
-    <!-- Horizontal grid lines -->
-    <line x1="42" y1="28" x2="218" y2="28" stroke-width="1" opacity="0.4"/>
-    <line x1="42" y1="38" x2="218" y2="38" stroke-width="1" opacity="0.4"/>
-    <line x1="42" y1="48" x2="218" y2="48" stroke-width="1" opacity="0.4"/>
+  <!-- DPR Construction — Official Logo -->
+
+  <!-- Gray staircase outline (ascending left to right, behind letters) -->
+  <g fill="none" stroke="#999999" stroke-width="2" stroke-linejoin="miter">
+    <!-- Staircase path: steps ascending from lower-left to upper-right -->
+    <polyline points="68,76 68,64 90,64 90,52 112,52 112,40 134,40 134,28 156,28 156,16 200,16"/>
+    <!-- Right side vertical drop -->
+    <line x1="200" y1="16" x2="200" y2="28"/>
+    <!-- Bottom continuation -->
+    <polyline points="156,76 156,64 178,64 178,52 200,52 200,40"/>
+    <!-- Small horizontal lines completing the staircase -->
+    <line x1="178" y1="28" x2="200" y2="28"/>
   </g>
-  <!-- Red arc/swoosh curving from bottom-left upward -->
-  <path d="M20,80 C20,30 50,16 100,16" fill="none" stroke="#CC2229" stroke-width="5" stroke-linecap="round"/>
-  <!-- DPR letters -->
-  <text x="130" y="62" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="56" fill="#1B365D" text-anchor="middle" font-weight="700" letter-spacing="8">DPR</text>
-  <!-- CONSTRUCTION text below -->
-  <text x="130" y="84" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="15.5" fill="#1B365D" text-anchor="middle" font-weight="400" letter-spacing="7.5">CONSTRUCTION</text>
+
+  <!-- Red arc swoosh from lower-left curving upward -->
+  <path d="M32,88 C32,50 42,22 72,12" fill="none" stroke="#C1272D" stroke-width="5.5" stroke-linecap="round"/>
+
+  <!-- "DPR" in blue bold serif -->
+  <text x="128" y="68" font-family="Georgia,'Times New Roman',serif" font-size="60" fill="#29558C" text-anchor="middle" font-weight="700" letter-spacing="8">DPR</text>
+
+  <!-- ® symbol -->
+  <text x="182" y="48" font-family="Arial,sans-serif" font-size="10" fill="#29558C">®</text>
+
+  <!-- "CONSTRUCTION" in blue spaced caps below -->
+  <text x="128" y="88" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="14.5" fill="#29558C" text-anchor="middle" font-weight="400" letter-spacing="7">CONSTRUCTION</text>
 </svg>
