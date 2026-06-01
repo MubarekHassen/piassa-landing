@@ -1203,13 +1203,13 @@
     // reasonable distance instead of flying down the page.
     // -----------------------------------------------------------------
     const lenis = new Lenis({
-      lerp: 0.085,
-      duration: 1.15,
-      easing: (t) => 1 - Math.pow(1 - t, 4),  // easeOutQuart
+      lerp: 0.11,                                  // snappier settle (was 0.085)
+      duration: 0.95,
+      easing: (t) => 1 - Math.pow(1 - t, 4),       // easeOutQuart
       smoothWheel: true,
-      smoothTouch: false,  // mobile keeps native momentum
-      wheelMultiplier: 0.85,
-      touchMultiplier: 1.4,
+      smoothTouch: false,                          // mobile keeps native momentum
+      wheelMultiplier: 1.05,                        // a bit faster per flick (was 0.85)
+      touchMultiplier: 1.5,
       autoResize: true,
     });
     function lenisRaf(time) {
