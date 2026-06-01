@@ -908,7 +908,7 @@
 
   <!-- NAV -->
   <nav id="nav">
-    <a href="#" class="logo" onclick="window.__lenis && window.__lenis.scrollTo(0, {duration: 1.4}); return false;">piassa</a>
+    <a href="#" class="logo" onclick="window.__lenis && window.__lenis.scrollTo(0, {duration: 0.9}); return false;">piassa</a>
     <div class="nav-links">
       <a href="#capabilities">Platform</a>
       <a href="#results">Results</a>
@@ -1203,13 +1203,13 @@
     // reasonable distance instead of flying down the page.
     // -----------------------------------------------------------------
     const lenis = new Lenis({
-      lerp: 0.11,                                  // snappier settle (was 0.085)
-      duration: 0.95,
-      easing: (t) => 1 - Math.pow(1 - t, 4),       // easeOutQuart
+      lerp: 0.18,                                  // very snappy settle, minimal drift
+      duration: 0.7,
+      easing: (t) => 1 - Math.pow(1 - t, 3),       // easeOutCubic — quicker landing
       smoothWheel: true,
       smoothTouch: false,                          // mobile keeps native momentum
-      wheelMultiplier: 1.05,                        // a bit faster per flick (was 0.85)
-      touchMultiplier: 1.5,
+      wheelMultiplier: 1.4,                         // bigger travel per scroll flick
+      touchMultiplier: 1.8,
       autoResize: true,
     });
     function lenisRaf(time) {
@@ -1318,7 +1318,7 @@
         const target = document.querySelector(href);
         if (!target) return;
         e.preventDefault();
-        lenis.scrollTo(target, { offset: -12, duration: 1.3 });
+        lenis.scrollTo(target, { offset: -12, duration: 0.8 });
       });
     });
   </script>
