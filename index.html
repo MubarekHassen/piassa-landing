@@ -8,8 +8,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Lenis: modern, properly-paced smooth scrolling (used by Apple-tier sites). -->
-  <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -31,8 +29,9 @@
       --amber: #d97706;
     }
 
-    /* Native trackpad / wheel scroll — no CSS smoothing, no scroll-snap. */
-    html { scroll-behavior: auto; }
+    /* Native trackpad/wheel scroll (fully smooth on macOS by default).
+       scroll-behavior: smooth only affects programmatic / anchor-link scrolls — not user wheel input. */
+    html { scroll-behavior: smooth; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
@@ -908,7 +907,7 @@
 
   <!-- NAV -->
   <nav id="nav">
-    <a href="#" class="logo" onclick="window.__lenis && window.__lenis.scrollTo(0, {duration: 0.9}); return false;">piassa</a>
+    <a href="#" class="logo" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">piassa</a>
     <div class="nav-links">
       <a href="#capabilities">Platform</a>
       <a href="#results">Results</a>
@@ -1196,40 +1195,18 @@
   </div>
 
   <script>
-    // -----------------------------------------------------------------
-    // SMOOTH SCROLL (Lenis) — modern, evenly-paced. No snap, no jank.
-    // Tuned for "clean & rightly paced": ~85ms response, easeOutQuart curve,
-    // wheel multiplier slightly under 1 so a single scroll-flick travels a
-    // reasonable distance instead of flying down the page.
-    // -----------------------------------------------------------------
-    const lenis = new Lenis({
-      lerp: 0.18,                                  // very snappy settle, minimal drift
-      duration: 0.7,
-      easing: (t) => 1 - Math.pow(1 - t, 3),       // easeOutCubic — quicker landing
-      smoothWheel: true,
-      smoothTouch: false,                          // mobile keeps native momentum
-      wheelMultiplier: 1.4,                         // bigger travel per scroll flick
-      touchMultiplier: 1.8,
-      autoResize: true,
-    });
-    function lenisRaf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(lenisRaf);
-    }
-    requestAnimationFrame(lenisRaf);
-    // Pause Lenis while a modal is open so its overlay scrolls naturally.
-    window.__lenis = lenis;
+    // Native trackpad/wheel scroll only. No JS interpolation layer (Lenis was tried —
+    // its frame-by-frame catch-up read as "sticky" on macOS). CSS scroll-behavior: smooth
+    // handles anchor-link scrolls. This gives the smoothest feel on every modern browser.
 
     // Access form modal
     function openAccessForm() {
       document.getElementById('accessModal').classList.add('active');
       document.body.style.overflow = 'hidden';
-      lenis.stop();
     }
     function closeAccessForm() {
       document.getElementById('accessModal').classList.remove('active');
       document.body.style.overflow = '';
-      lenis.start();
       // Reset after close
       setTimeout(() => {
         document.getElementById('formContent').style.display = '';
@@ -1310,7 +1287,8 @@
 
     document.querySelectorAll('[data-count]').forEach(el => countObserver.observe(el));
 
-    // Anchor-link nav: route through Lenis so it shares the same easing as wheel/trackpad.
+    // Anchor-link nav: native smooth-scroll via CSS scroll-behavior. JS just prevents the
+    // default URL hash jump and uses scrollIntoView with the browser's own easing.
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', e => {
         const href = a.getAttribute('href');
@@ -1318,7 +1296,7 @@
         const target = document.querySelector(href);
         if (!target) return;
         e.preventDefault();
-        lenis.scrollTo(target, { offset: -12, duration: 0.8 });
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
   </script>
